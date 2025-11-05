@@ -1,0 +1,1 @@
+ALTER TABLE "ihs_vessels" RENAME TO "vessels";

@@ -3,7 +3,7 @@ import { sql } from "drizzle-orm"
 
 
 
-export const ihsVessels = pgTable("ihs_vessels", {
+export const vessels = pgTable("vessels", {
 	ihslRorImoShipNo: numeric("IHSLRorIMOShipNo").notNull(),
 	shipName: text("ShipName"),
 	exName: text("ExName"),
