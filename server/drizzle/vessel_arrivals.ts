@@ -1,7 +1,7 @@
 import { pgTable, text, timestamp, primaryKey, uuid } from "drizzle-orm/pg-core";
 
 export const vesselArrivals = pgTable("vessel_arrivals", {
-    id: uuid("id").primaryKey(),
+    id: uuid("id").primaryKey().defaultRandom(),
     vesselName: text("vessel_name"),
     callsign: text("callsign"),
     imo: text("imo"),

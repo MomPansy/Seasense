@@ -1,0 +1,1 @@
+ALTER TABLE "vessel_arrivals" ALTER COLUMN "id" SET DEFAULT gen_random_uuid();
