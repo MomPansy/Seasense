@@ -2,6 +2,7 @@ import { serveStatic } from "@hono/node-server/serve-static";
 import { serve } from "@hono/node-server";
 import { factory } from "./factory.ts"
 import { route as exampleRoute } from "./routes/example.ts";
+import { route as vesselsRoute } from "./routes/vessels.ts";
 
 const app = factory.createApp();
 
@@ -12,6 +13,7 @@ app.get('/healthz', (c) => {
 export const apiRoutes = app
   .basePath('/api')
   .route('/example', exampleRoute)
+  .route('/vessels', vesselsRoute)
 
 export type ApiRoutes = typeof apiRoutes;
 
