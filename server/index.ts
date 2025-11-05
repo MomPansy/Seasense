@@ -3,6 +3,7 @@ import { serve } from "@hono/node-server";
 import { factory } from "./factory.ts"
 import { route as exampleRoute } from "./routes/example.ts";
 import { route as vesselsRoute } from "./routes/vessels.ts";
+import { scoreRoute } from "./routes/score.ts";
 
 const app = factory.createApp();
 
@@ -14,6 +15,7 @@ export const apiRoutes = app
   .basePath('/api')
   .route('/example', exampleRoute)
   .route('/vessels', vesselsRoute)
+  .route('/score', scoreRoute)
 
 export type ApiRoutes = typeof apiRoutes;
 
