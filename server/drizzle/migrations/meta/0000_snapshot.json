@@ -1,0 +1,166 @@
+{
+  "id": "d40301c6-b393-4f00-b942-36087573ac33",
+  "prevId": "00000000-0000-0000-0000-000000000000",
+  "version": "7",
+  "dialect": "postgresql",
+  "tables": {
+    "public.vessels": {
+      "name": "vessels",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "ihs_lr_or_imo_vesselno": {
+          "name": "ihs_lr_or_imo_vesselno",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "vessel_name": {
+          "name": "vessel_name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "call_sign": {
+          "name": "call_sign",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "flag_effective_date": {
+          "name": "flag_effective_date",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "flag_name": {
+          "name": "flag_name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "group_beneficial_owner": {
+          "name": "group_beneficial_owner",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "group_beneficial_owner_country_of_control": {
+          "name": "group_beneficial_owner_country_of_control",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "group_beneficial_owner_country_of_registration": {
+          "name": "group_beneficial_owner_country_of_registration",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "operator": {
+          "name": "operator",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "operator_country_of_control": {
+          "name": "operator_country_of_control",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "operator_country_of_registration": {
+          "name": "operator_country_of_registration",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "registered_owner": {
+          "name": "registered_owner",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "registered_owner_country_of_control": {
+          "name": "registered_owner_country_of_control",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "registered_owner_country_of_registration": {
+          "name": "registered_owner_country_of_registration",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "vessel_manager": {
+          "name": "vessel_manager",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "vessel_manager_country_of_control": {
+          "name": "vessel_manager_country_of_control",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "vessel_manager_country_of_registration": {
+          "name": "vessel_manager_country_of_registration",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "vesseltype_group": {
+          "name": "vesseltype_group",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "comments": {
+          "name": "comments",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    }
+  },
+  "enums": {},
+  "schemas": {},
+  "sequences": {},
+  "roles": {},
+  "policies": {},
+  "views": {},
+  "_meta": {
+    "columns": {},
+    "schemas": {},
+    "tables": {}
+  }
+}
