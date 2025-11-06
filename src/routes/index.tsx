@@ -1,48 +1,144 @@
+import { useState, useEffect } from 'react'
 import { createFileRoute } from '@tanstack/react-router'
-import logo from '../logo.svg'
-import { Button } from '@/components/ui/button'
+import { SearchBar } from '../components/SearchBar'
+import { VesselTable, Vessel } from '../components/VesselTable'
+import { VesselDetails } from '../components/VesselDetails'
+import { generateMockVessels, generateDetailedVessel, VesselDetails as VesselDetailsType } from '../utils/mockData'
 
 export const Route = createFileRoute('/')({
   component: App,
 })
 
 function App() {
+  const [vessels, setVessels] = useState<Vessel[]>([])
+  const [filteredVessels, setFilteredVessels] = useState<Vessel[]>([])
+  const [searchQuery, setSearchQuery] = useState('')
+  const [selectedVessel, setSelectedVessel] = useState<VesselDetailsType | null>(null)
+
+  useEffect(() => {
+    const mockVessels = generateMockVessels(30)
+    setVessels(mockVessels)
+    setFilteredVessels(mockVessels)
+  }, [])
+
+  const handleSearch = (query: string) => {
+    setSearchQuery(query)
+    if (!query.trim()) {
+      setFilteredVessels(vessels)
+      return
+    }
+
+    const lowerQuery = query.toLowerCase()
+    const filtered = vessels.filter(vessel =>
+      vessel.name.toLowerCase().includes(lowerQuery) ||
+      vessel.type.toLowerCase().includes(lowerQuery) ||
+      vessel.imo.toLowerCase().includes(lowerQuery)
+    )
+    setFilteredVessels(filtered)
+  }
+
+  const handleAdvancedSearch = (filters: any) => {
+    let filtered = [...vessels]
+
+    if (filters.vesselName) {
+      filtered = filtered.filter(v =>
+        v.name.toLowerCase().includes(filters.vesselName.toLowerCase())
+      )
+    }
+
+    if (filters.vesselType && filters.vesselType !== 'all') {
+      const typeMap: Record<string, string> = {
+        'container': 'Container Ship',
+        'tanker': 'Tanker',
+        'bulk': 'Bulk Carrier',
+        'cargo': 'Cargo Ship',
+        'passenger': 'Passenger Ship',
+      }
+      const mappedType = typeMap[filters.vesselType] || filters.vesselType
+      filtered = filtered.filter(v => v.type.includes(mappedType))
+    }
+
+    if (filters.imoNumber) {
+      filtered = filtered.filter(v =>
+        v.imo.toLowerCase().includes(filters.imoNumber.toLowerCase())
+      )
+    }
+
+    if (filters.threatScore && filters.threatScore !== 'all') {
+      filtered = filtered.filter(v => v.threatLevel === parseInt(filters.threatScore))
+    }
+
+    if (filters.arrivalDateFrom) {
+      const fromDate = new Date(filters.arrivalDateFrom)
+      filtered = filtered.filter(v => v.arrivalTime >= fromDate)
+    }
+
+    if (filters.arrivalDateTo) {
+      const toDate = new Date(filters.arrivalDateTo)
+      toDate.setHours(23, 59, 59, 999)
+      filtered = filtered.filter(v => v.arrivalTime <= toDate)
+    }
+
+    if (filters.lastArrivalFrom) {
+      const fromDate = new Date(filters.lastArrivalFrom)
+      filtered = filtered.filter(v => v.lastArrivalTime >= fromDate)
+    }
+
+    if (filters.lastArrivalTo) {
+      const toDate = new Date(filters.lastArrivalTo)
+      toDate.setHours(23, 59, 59, 999)
+      filtered = filtered.filter(v => v.lastArrivalTime <= toDate)
+    }
+
+    setFilteredVessels(filtered)
+  }
+
+  const handleRefresh = () => {
+    const mockVessels = generateMockVessels(30)
+    setVessels(mockVessels)
+    setFilteredVessels(mockVessels)
+    setSearchQuery('')
+  }
+
+  const handleVesselClick = (vesselId: string) => {
+    const vessel = vessels.find(v => v.id === vesselId)
+    if (vessel) {
+      const detailedVessel = generateDetailedVessel(vessel)
+      setSelectedVessel(detailedVessel)
+    }
+  }
+
+  const handleBackToList = () => {
+    setSelectedVessel(null)
+  }
+
   return (
-    <div className="text-center">
-      <header className="min-h-screen flex flex-col items-center justify-center bg-[#282c34] text-white text-[calc(10px+2vmin)]">
-        <img
-          src={logo}
-          className="h-[40vmin] pointer-events-none animate-[spin_20s_linear_infinite]"
-          alt="logo"
-        />
-        <p>
-          Edit <code>src/routes/index.tsx</code> and save to reload.
-        </p>
-        
-        <div className="mt-8 flex gap-4">
-          <Button variant="default">Default Button</Button>
-          <Button variant="secondary">Secondary</Button>
-          <Button variant="outline">Outline</Button>
-          <Button variant="ghost">Ghost</Button>
-        </div>
-        
-        <a
-          className="text-[#61dafb] hover:underline"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-        <a
-          className="text-[#61dafb] hover:underline"
-          href="https://tanstack.com"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn TanStack
-        </a>
-      </header>
-    </div>
+    <main className="px-8 py-6">
+      {selectedVessel ? (
+        <VesselDetails vessel={selectedVessel} onBack={handleBackToList} />
+      ) : (
+        <>
+          <div className="mb-6">
+            <h1 className="mb-2">Pre-Arrival Notice</h1>
+            <p className="text-muted-foreground">
+              Vessels arriving within 24-72 hours to Singapore
+            </p>
+          </div>
+
+          <div className="space-y-6">
+            <SearchBar
+              onSearch={handleSearch}
+              onAdvancedSearch={handleAdvancedSearch}
+            />
+
+            <VesselTable
+              vessels={filteredVessels}
+              onRefresh={handleRefresh}
+              onVesselClick={handleVesselClick}
+            />
+          </div>
+        </>
+      )}
+    </main>
   )
 }
