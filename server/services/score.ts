@@ -1,5 +1,5 @@
 import { eq } from "drizzle-orm"
-import { ihsVessels } from "server/drizzle/ihs_vessels"
+import { vessels } from "server/drizzle/vessels"
 import { db } from "server/lib/db"
 
 const SHIPTYPES_OF_INTEREST = [
@@ -58,7 +58,7 @@ const SHIPTYPES_OF_INTEREST = [
 // TODO: track tripped rules
 // TODO: make flexible (don't hardcode rules here)
 export const scoreVessel = async (imoNumber: string) => {
-    const vessel_info = (await db.select().from(ihsVessels).where(eq(ihsVessels.ihslRorImoShipNo, imoNumber)))[0]
+    const vessel_info = (await db.select().from(vessels).where(eq(vessels.ihslRorImoShipNo, imoNumber)))[0]
 
     let score = 0
     // door condition
