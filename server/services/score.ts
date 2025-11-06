@@ -1,7 +1,9 @@
 import { vessels } from "server/drizzle/vessels";
 
 const SHIPCODES_OF_INTEREST = [
-  "A1", // tankers
+  "A11", // LNG/LPG tankers
+  "A12", // chem tankers
+  "A13", // oil tankers
   "A22", // oil bulk carriers
   "W11", // non-seagoing tanker
 ];
@@ -28,7 +30,7 @@ export const scoreVessel = (vessel_info: (typeof vessels.$inferSelect)) => {
             tripped_rules.push('The vessel is on one or more of the OFAC, EU and UN sanction lists.')
         }
 
-        if (!vessel_info.registeredOwner) {
+        if (!vessel_info.registeredOwner || vessel_info.registeredOwner.match('Unknown')) {
             score += 10
             tripped_rules.push('The vessel has no registered owner.')
         }
