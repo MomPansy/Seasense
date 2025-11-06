@@ -1,116 +1,121 @@
-import { useState, useEffect } from 'react'
-import { createFileRoute } from '@tanstack/react-router'
-import { SearchBar } from '../components/SearchBar'
-import { VesselTable, Vessel } from '../components/VesselTable'
-import { VesselDetails } from '../components/VesselDetails'
-import { generateMockVessels, generateDetailedVessel, VesselDetails as VesselDetailsType } from '../utils/mockData'
+import { useState, useEffect } from "react";
+import { createFileRoute } from "@tanstack/react-router";
+import { SearchBar } from "../components/SearchBar";
+import { VesselTable, Vessel } from "../components/VesselTable";
+import { VesselDetails } from "../components/VesselDetails";
+import {
+  generateMockVessels,
+  generateDetailedVessel,
+  VesselDetails as VesselDetailsType,
+} from "../utils/mockData";
 
-export const Route = createFileRoute('/')({
+export const Route = createFileRoute("/")({
   component: App,
-})
+});
 
 function App() {
-  const [vessels, setVessels] = useState<Vessel[]>([])
-  const [filteredVessels, setFilteredVessels] = useState<Vessel[]>([])
-  const [searchQuery, setSearchQuery] = useState('')
-  const [selectedVessel, setSelectedVessel] = useState<VesselDetailsType | null>(null)
+  const [vessels, setVessels] = useState<Vessel[]>([]);
+  const [filteredVessels, setFilteredVessels] = useState<Vessel[]>([]);
+  const [selectedVessel, setSelectedVessel] =
+    useState<VesselDetailsType | null>(null);
 
   useEffect(() => {
-    const mockVessels = generateMockVessels(30)
-    setVessels(mockVessels)
-    setFilteredVessels(mockVessels)
-  }, [])
+    const mockVessels = generateMockVessels(30);
+    setVessels(mockVessels);
+    setFilteredVessels(mockVessels);
+  }, []);
 
   const handleSearch = (query: string) => {
-    setSearchQuery(query)
     if (!query.trim()) {
-      setFilteredVessels(vessels)
-      return
+      setFilteredVessels(vessels);
+      return;
     }
 
-    const lowerQuery = query.toLowerCase()
-    const filtered = vessels.filter(vessel =>
-      vessel.name.toLowerCase().includes(lowerQuery) ||
-      vessel.type.toLowerCase().includes(lowerQuery) ||
-      vessel.imo.toLowerCase().includes(lowerQuery)
-    )
-    setFilteredVessels(filtered)
-  }
+    const lowerQuery = query.toLowerCase();
+    const filtered = vessels.filter(
+      (vessel) =>
+        vessel.name.toLowerCase().includes(lowerQuery) ||
+        vessel.type.toLowerCase().includes(lowerQuery) ||
+        vessel.imo.toLowerCase().includes(lowerQuery),
+    );
+    setFilteredVessels(filtered);
+  };
 
   const handleAdvancedSearch = (filters: any) => {
-    let filtered = [...vessels]
+    let filtered = [...vessels];
 
     if (filters.vesselName) {
-      filtered = filtered.filter(v =>
-        v.name.toLowerCase().includes(filters.vesselName.toLowerCase())
-      )
+      filtered = filtered.filter((v) =>
+        v.name.toLowerCase().includes(filters.vesselName.toLowerCase()),
+      );
     }
 
-    if (filters.vesselType && filters.vesselType !== 'all') {
+    if (filters.vesselType && filters.vesselType !== "all") {
       const typeMap: Record<string, string> = {
-        'container': 'Container Ship',
-        'tanker': 'Tanker',
-        'bulk': 'Bulk Carrier',
-        'cargo': 'Cargo Ship',
-        'passenger': 'Passenger Ship',
-      }
-      const mappedType = typeMap[filters.vesselType] || filters.vesselType
-      filtered = filtered.filter(v => v.type.includes(mappedType))
+        container: "Container Ship",
+        tanker: "Tanker",
+        bulk: "Bulk Carrier",
+        cargo: "Cargo Ship",
+        passenger: "Passenger Ship",
+      };
+      const mappedType = typeMap[filters.vesselType] || filters.vesselType;
+      filtered = filtered.filter((v) => v.type.includes(mappedType));
     }
 
     if (filters.imoNumber) {
-      filtered = filtered.filter(v =>
-        v.imo.toLowerCase().includes(filters.imoNumber.toLowerCase())
-      )
+      filtered = filtered.filter((v) =>
+        v.imo.toLowerCase().includes(filters.imoNumber.toLowerCase()),
+      );
     }
 
-    if (filters.threatScore && filters.threatScore !== 'all') {
-      filtered = filtered.filter(v => v.threatLevel === parseInt(filters.threatScore))
+    if (filters.threatScore && filters.threatScore !== "all") {
+      filtered = filtered.filter(
+        (v) => v.threatLevel === parseInt(filters.threatScore),
+      );
     }
 
     if (filters.arrivalDateFrom) {
-      const fromDate = new Date(filters.arrivalDateFrom)
-      filtered = filtered.filter(v => v.arrivalTime >= fromDate)
+      const fromDate = new Date(filters.arrivalDateFrom);
+      filtered = filtered.filter((v) => v.arrivalTime >= fromDate);
     }
 
     if (filters.arrivalDateTo) {
-      const toDate = new Date(filters.arrivalDateTo)
-      toDate.setHours(23, 59, 59, 999)
-      filtered = filtered.filter(v => v.arrivalTime <= toDate)
+      const toDate = new Date(filters.arrivalDateTo);
+      toDate.setHours(23, 59, 59, 999);
+      filtered = filtered.filter((v) => v.arrivalTime <= toDate);
     }
 
     if (filters.lastArrivalFrom) {
-      const fromDate = new Date(filters.lastArrivalFrom)
-      filtered = filtered.filter(v => v.lastArrivalTime >= fromDate)
+      const fromDate = new Date(filters.lastArrivalFrom);
+      filtered = filtered.filter((v) => v.lastArrivalTime >= fromDate);
     }
 
     if (filters.lastArrivalTo) {
-      const toDate = new Date(filters.lastArrivalTo)
-      toDate.setHours(23, 59, 59, 999)
-      filtered = filtered.filter(v => v.lastArrivalTime <= toDate)
+      const toDate = new Date(filters.lastArrivalTo);
+      toDate.setHours(23, 59, 59, 999);
+      filtered = filtered.filter((v) => v.lastArrivalTime <= toDate);
     }
 
-    setFilteredVessels(filtered)
-  }
+    setFilteredVessels(filtered);
+  };
 
   const handleRefresh = () => {
-    const mockVessels = generateMockVessels(30)
-    setVessels(mockVessels)
-    setFilteredVessels(mockVessels)
-    setSearchQuery('')
-  }
+    const mockVessels = generateMockVessels(30);
+    setVessels(mockVessels);
+    setFilteredVessels(mockVessels);
+  };
 
   const handleVesselClick = (vesselId: string) => {
-    const vessel = vessels.find(v => v.id === vesselId)
+    const vessel = vessels.find((v) => v.id === vesselId);
     if (vessel) {
-      const detailedVessel = generateDetailedVessel(vessel)
-      setSelectedVessel(detailedVessel)
+      const detailedVessel = generateDetailedVessel(vessel);
+      setSelectedVessel(detailedVessel);
     }
-  }
+  };
 
   const handleBackToList = () => {
-    setSelectedVessel(null)
-  }
+    setSelectedVessel(null);
+  };
 
   return (
     <main className="px-8 py-6">
@@ -140,5 +145,5 @@ function App() {
         </>
       )}
     </main>
-  )
+  );
 }

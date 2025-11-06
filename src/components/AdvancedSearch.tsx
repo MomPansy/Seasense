@@ -1,25 +1,31 @@
-import React, { useState } from 'react';
-import { Input } from './ui/input';
-import { Label } from './ui/label';
-import { Button } from './ui/button';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
+import { useState } from "react";
+import { Input } from "./ui/input";
+import { Label } from "./ui/label";
+import { Button } from "./ui/button";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "./ui/select";
 
 interface AdvancedSearchProps {
   onSearch: (filters: any) => void;
   onClose: () => void;
 }
 
-export function AdvancedSearch({ onSearch, onClose }: AdvancedSearchProps) {
+export function AdvancedSearch({ onSearch }: AdvancedSearchProps) {
   const [filters, setFilters] = useState({
-    vesselName: '',
-    vesselType: '',
-    imoNumber: '',
-    threatScore: '',
-    arrivalDateFrom: '',
-    arrivalDateTo: '',
-    lastArrivalFrom: '',
-    lastArrivalTo: '',
-    lastPorts: '',
+    vesselName: "",
+    vesselType: "",
+    imoNumber: "",
+    threatScore: "",
+    arrivalDateFrom: "",
+    arrivalDateTo: "",
+    lastArrivalFrom: "",
+    lastArrivalTo: "",
+    lastPorts: "",
   });
 
   const handleSubmit = () => {
@@ -28,15 +34,15 @@ export function AdvancedSearch({ onSearch, onClose }: AdvancedSearchProps) {
 
   const handleReset = () => {
     setFilters({
-      vesselName: '',
-      vesselType: '',
-      imoNumber: '',
-      threatScore: '',
-      arrivalDateFrom: '',
-      arrivalDateTo: '',
-      lastArrivalFrom: '',
-      lastArrivalTo: '',
-      lastPorts: '',
+      vesselName: "",
+      vesselType: "",
+      imoNumber: "",
+      threatScore: "",
+      arrivalDateFrom: "",
+      arrivalDateTo: "",
+      lastArrivalFrom: "",
+      lastArrivalTo: "",
+      lastPorts: "",
     });
   };
 
@@ -52,13 +58,20 @@ export function AdvancedSearch({ onSearch, onClose }: AdvancedSearchProps) {
           <Input
             placeholder="Enter vessel name"
             value={filters.vesselName}
-            onChange={(e) => setFilters({ ...filters, vesselName: e.target.value })}
+            onChange={(e) =>
+              setFilters({ ...filters, vesselName: e.target.value })
+            }
           />
         </div>
 
         <div className="space-y-2">
           <Label>Vessel Type</Label>
-          <Select value={filters.vesselType} onValueChange={(value) => setFilters({ ...filters, vesselType: value })}>
+          <Select
+            value={filters.vesselType}
+            onValueChange={(value) =>
+              setFilters({ ...filters, vesselType: value })
+            }
+          >
             <SelectTrigger>
               <SelectValue placeholder="Select vessel type" />
             </SelectTrigger>
@@ -78,13 +91,20 @@ export function AdvancedSearch({ onSearch, onClose }: AdvancedSearchProps) {
           <Input
             placeholder="Enter IMO number"
             value={filters.imoNumber}
-            onChange={(e) => setFilters({ ...filters, imoNumber: e.target.value })}
+            onChange={(e) =>
+              setFilters({ ...filters, imoNumber: e.target.value })
+            }
           />
         </div>
 
         <div className="space-y-2">
           <Label>Threat Evaluation Score</Label>
-          <Select value={filters.threatScore} onValueChange={(value) => setFilters({ ...filters, threatScore: value })}>
+          <Select
+            value={filters.threatScore}
+            onValueChange={(value) =>
+              setFilters({ ...filters, threatScore: value })
+            }
+          >
             <SelectTrigger>
               <SelectValue placeholder="Select threat level" />
             </SelectTrigger>
@@ -104,7 +124,9 @@ export function AdvancedSearch({ onSearch, onClose }: AdvancedSearchProps) {
           <Input
             type="date"
             value={filters.arrivalDateFrom}
-            onChange={(e) => setFilters({ ...filters, arrivalDateFrom: e.target.value })}
+            onChange={(e) =>
+              setFilters({ ...filters, arrivalDateFrom: e.target.value })
+            }
           />
         </div>
 
@@ -113,7 +135,9 @@ export function AdvancedSearch({ onSearch, onClose }: AdvancedSearchProps) {
           <Input
             type="date"
             value={filters.arrivalDateTo}
-            onChange={(e) => setFilters({ ...filters, arrivalDateTo: e.target.value })}
+            onChange={(e) =>
+              setFilters({ ...filters, arrivalDateTo: e.target.value })
+            }
           />
         </div>
 
@@ -122,7 +146,9 @@ export function AdvancedSearch({ onSearch, onClose }: AdvancedSearchProps) {
           <Input
             type="date"
             value={filters.lastArrivalFrom}
-            onChange={(e) => setFilters({ ...filters, lastArrivalFrom: e.target.value })}
+            onChange={(e) =>
+              setFilters({ ...filters, lastArrivalFrom: e.target.value })
+            }
           />
         </div>
 
@@ -131,7 +157,9 @@ export function AdvancedSearch({ onSearch, onClose }: AdvancedSearchProps) {
           <Input
             type="date"
             value={filters.lastArrivalTo}
-            onChange={(e) => setFilters({ ...filters, lastArrivalTo: e.target.value })}
+            onChange={(e) =>
+              setFilters({ ...filters, lastArrivalTo: e.target.value })
+            }
           />
         </div>
 
@@ -140,7 +168,9 @@ export function AdvancedSearch({ onSearch, onClose }: AdvancedSearchProps) {
           <Input
             placeholder="Enter port name and country (e.g., Rotterdam, Netherlands)"
             value={filters.lastPorts}
-            onChange={(e) => setFilters({ ...filters, lastPorts: e.target.value })}
+            onChange={(e) =>
+              setFilters({ ...filters, lastPorts: e.target.value })
+            }
           />
         </div>
       </div>
@@ -149,9 +179,7 @@ export function AdvancedSearch({ onSearch, onClose }: AdvancedSearchProps) {
         <Button variant="outline" onClick={handleReset}>
           Reset
         </Button>
-        <Button onClick={handleSubmit}>
-          Apply Filters
-        </Button>
+        <Button onClick={handleSubmit}>Apply Filters</Button>
       </div>
     </div>
   );

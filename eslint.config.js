@@ -42,7 +42,13 @@ export default tseslint.config(
       'import-x/parsers': {
         '@typescript-eslint/parser': ['.ts', '.tsx'],
       },
-      'import-x/resolver': 'oxc',
+      'import-x/resolver': 'typescript',
+      'import-x/resolverOptions': {
+        // Enable project-aware resolution so TS path aliases (e.g. '@/...') work
+        project: true,
+        // Let the resolver pick up all tsconfigs in the workspace (tsconfig.json references app/node)
+        alwaysTryTypes: true,
+      },
     },
     rules: {
       ...reactHooksPlugin.configs.recommended.rules,

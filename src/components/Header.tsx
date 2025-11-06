@@ -1,9 +1,9 @@
-import { Bell, Settings } from 'lucide-react';
-import { Button } from './ui/button';
+import { Bell, Settings } from "lucide-react";
+import { Button } from "./ui/button";
 
 interface HeaderProps {
-  activeTab: 'arriving' | 'profiling';
-  onTabChange: (tab: 'arriving' | 'profiling') => void;
+  activeTab: "arriving" | "profiling";
+  onTabChange: (tab: "arriving" | "profiling") => void;
 }
 
 export function Header({ activeTab, onTabChange }: HeaderProps) {
@@ -16,7 +16,7 @@ export function Header({ activeTab, onTabChange }: HeaderProps) {
               src="/logo.png"
               alt="Singapore Maritime Crisis Centre"
               className="h-16"
-              style={{ objectFit: 'contain' }}
+              style={{ objectFit: "contain" }}
             />
           </div>
           <div className="flex items-center gap-4">
@@ -30,21 +30,21 @@ export function Header({ activeTab, onTabChange }: HeaderProps) {
         </div>
         <nav className="flex gap-6">
           <button
-            onClick={() => onTabChange('arriving')}
+            onClick={() => onTabChange("arriving")}
             className={`nav-title pb-2 border-b-2 transition-colors ${
-              activeTab === 'arriving'
-                ? 'border-primary text-primary'
-                : 'border-transparent text-muted-foreground hover:text-foreground'
+              activeTab === "arriving"
+                ? "border-primary text-primary"
+                : "border-transparent text-muted-foreground hover:text-foreground"
             }`}
           >
             Arriving Vessel Threat Scoring
           </button>
           <button
-            onClick={() => onTabChange('profiling')}
+            onClick={() => onTabChange("profiling")}
             className={`nav-title pb-2 border-b-2 transition-colors ${
-              activeTab === 'profiling'
-                ? 'border-primary text-primary'
-                : 'border-transparent text-muted-foreground hover:text-foreground'
+              activeTab === "profiling"
+                ? "border-primary text-primary"
+                : "border-transparent text-muted-foreground hover:text-foreground"
             }`}
           >
             Vessel Risk Profiling

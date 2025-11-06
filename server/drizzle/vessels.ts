@@ -1,7 +1,9 @@
-import { pgTable, numeric, text, integer, doublePrecision } from "drizzle-orm/pg-core"
-import { sql } from "drizzle-orm"
-
-
+import {
+  pgTable,
+  text,
+  integer,
+  doublePrecision,
+} from "drizzle-orm/pg-core";
 
 export const vessels = pgTable("vessels", {
 	ihslRorImoShipNo: text("IHSLRorIMOShipNo").notNull(),

@@ -1,12 +1,10 @@
-import { eq } from "drizzle-orm"
-import { vessels } from "server/drizzle/vessels"
-import { db } from "server/lib/db"
+import { vessels } from "server/drizzle/vessels";
 
 const SHIPCODES_OF_INTEREST = [
-    "A1", // tankers
-    "A22", // oil bulk carriers
-    "W11", // non-seagoing tanker
-]
+  "A1", // tankers
+  "A22", // oil bulk carriers
+  "W11", // non-seagoing tanker
+];
 
 // TODO: track tripped rules
 // TODO: make flexible (don't hardcode rules here)
@@ -36,8 +34,13 @@ export const scoreVessel = (vessel_info: (typeof vessels.$inferSelect)) => {
         }
     }
 
+    if (!vessel_info.registeredOwner) {
+      score += 10;
+      tripped_rules.push("The vessel has no registered owner.");
+    }
+  
     return {
         score,
-        tripped_rules
-    }
-}
+        tripped_rules,
+    };
+};

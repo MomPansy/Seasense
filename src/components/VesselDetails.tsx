@@ -1,9 +1,9 @@
-import { ArrowLeft, Download } from 'lucide-react';
-import { Button } from './ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
-import { ThreatBadge } from './ThreatBadge';
-import { VesselDetails as VesselDetailsType } from '../utils/mockData';
-import { toast } from 'sonner';
+import { ArrowLeft, Download } from "lucide-react";
+import { toast } from "sonner";
+import { VesselDetails as VesselDetailsType } from "../utils/mockData";
+import { Button } from "./ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
+import { ThreatBadge } from "./ThreatBadge";
 
 interface VesselDetailsProps {
   vessel: VesselDetailsType;
@@ -12,21 +12,21 @@ interface VesselDetailsProps {
 
 export function VesselDetails({ vessel, onBack }: VesselDetailsProps) {
   const formatDate = (date: Date) => {
-    const day = String(date.getDate()).padStart(2, '0');
-    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, "0");
+    const month = String(date.getMonth() + 1).padStart(2, "0");
     const year = date.getFullYear();
     return `${day}/${month}/${year}`;
   };
 
   const formatTime = (date: Date) => {
-    const hours = String(date.getHours()).padStart(2, '0');
-    const minutes = String(date.getMinutes()).padStart(2, '0');
+    const hours = String(date.getHours()).padStart(2, "0");
+    const minutes = String(date.getMinutes()).padStart(2, "0");
     return `${hours}:${minutes}`;
   };
 
   const handleExport = () => {
-    toast.success('Exporting vessel details to Excel');
-    console.log('Export vessel details:', vessel);
+    toast.success("Exporting vessel details to Excel");
+    console.log("Export vessel details:", vessel);
   };
 
   return (
@@ -53,18 +53,19 @@ export function VesselDetails({ vessel, onBack }: VesselDetailsProps) {
           </CardHeader>
           <CardContent>
             <p>
-              <strong>{vessel.name}</strong>, a {vessel.type} of {vessel.modelNumber}, and{' '}
-              <a 
-                href="https://maritime.ihs.com/" 
-                target="_blank" 
+              <strong>{vessel.name}</strong>, a {vessel.type} of{" "}
+              {vessel.modelNumber}, and{" "}
+              <a
+                href="https://maritime.ihs.com/"
+                target="_blank"
                 rel="noopener noreferrer"
                 className="text-primary hover:underline"
               >
                 {vessel.imo}
               </a>
-              , arrived in Singapore on {formatDate(vessel.arrivalTime)} at{' '}
-              {formatTime(vessel.arrivalTime)}. The last arrival to Singapore was on{' '}
-              {formatDate(vessel.lastArrivalTime)}.
+              , arrived in Singapore on {formatDate(vessel.arrivalTime)} at{" "}
+              {formatTime(vessel.arrivalTime)}. The last arrival to Singapore
+              was on {formatDate(vessel.lastArrivalTime)}.
             </p>
           </CardContent>
         </Card>
@@ -93,7 +94,8 @@ export function VesselDetails({ vessel, onBack }: VesselDetailsProps) {
           </CardHeader>
           <CardContent>
             <p>
-              The group owner is <strong>{vessel.groupOwner}</strong> and company was incorporated in{' '}
+              The group owner is <strong>{vessel.groupOwner}</strong> and
+              company was incorporated in{" "}
               <strong>{vessel.companyCountry}</strong>.
             </p>
           </CardContent>
@@ -109,16 +111,17 @@ export function VesselDetails({ vessel, onBack }: VesselDetailsProps) {
               <span>Threat evaluation score of</span>
               <ThreatBadge level={vessel.threatLevel} />
             </div>
-            
+
             <p>
-              Vessel has a high threat score of <strong>{vessel.threatPercentage}%</strong> and this
-              warrants further checks.
+              Vessel has a high threat score of{" "}
+              <strong>{vessel.threatPercentage}%</strong> and this warrants
+              further checks.
             </p>
 
             <div>
               <p className="mb-2">
-                The following parameters were tripped when the vessel arrived / is arriving in
-                Singapore:
+                The following parameters were tripped when the vessel arrived /
+                is arriving in Singapore:
               </p>
               <ul className="list-disc list-inside space-y-1 ml-4">
                 {vessel.parameters.map((param, index) => (
