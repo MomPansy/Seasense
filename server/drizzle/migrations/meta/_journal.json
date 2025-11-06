@@ -43,6 +43,13 @@
       "when": 1762409480467,
       "tag": "0005_special_true_believers",
       "breakpoints": false
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1762418445306,
+      "tag": "0006_futuristic_reaper",
+      "breakpoints": false
     }
   ]
 }
