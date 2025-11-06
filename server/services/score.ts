@@ -2,57 +2,10 @@ import { eq } from "drizzle-orm"
 import { vessels } from "server/drizzle/vessels"
 import { db } from "server/lib/db"
 
-const SHIPTYPES_OF_INTEREST = [
-    "Alcohol Tanker",
-    "Asphalt/Bitumen Tanker",
-    "Beer Tanker",
-    "Bitumen Tank Barge, non propelled",
-    "Bulk/Oil Carrier (OBO)",
-    "Bulk/Oil/Chemical Carrier (CLEANBU)",
-    "Bulk/Sulphuric Acid Carrier",
-    "Bunkering Tanker (LNG)",
-    "Bunkering Tanker (LNG), Inland Waterways",
-    "Bunkering Tanker (LNG/Oil)",
-    "Bunkering Tanker (Oil)",
-    "Bunkering Tanker (Oil), Inland Waterways",
-    "CNG Tanker",
-    "CO2 Tanker",
-    "Caprolactam Tanker",
-    "Chemical Tank Barge, non propelled",
-    "Chemical Tanker",
-    "Chemical Tanker, Inland Waterways",
-    "Chemical/Products Tank Barge, non propelled",
-    "Chemical/Products Tanker",
-    "Chemical/Products Tanker, Inland Waterways",
-    "Coal/Oil Mixture Tanker",
-    "Combination Gas Tanker (LNG/LPG)",
-    "Crude Oil Tank Barge, non propelled",
-    "Crude Oil Tanker",
-    "Crude/Oil Products Tanker",
-    "Edible Oil Tanker",
-    "Edible Oil Tanker, Inland Waterways",
-    "General Cargo/Tanker",
-    "Glue Tanker",
-    "LNG Tanker",
-    "LPG Tank Barge, non propelled",
-    "LPG Tanker",
-    "LPG Tanker, Inland Waterways",
-    "LPG/Chemical Tanker",
-    "Molasses Tanker",
-    "Molten Sulphur Tanker",
-    "Oil Tanker, Inland Waterways",
-    "Ore/Oil Carrier",
-    "Products Tank Barge, non propelled",
-    "Products Tanker",
-    "Replenishment Tanker",
-    "Shuttle Tanker",
-    "Tanker (unspecified)",
-    "Vegetable Oil Tanker",
-    "Vegetable Oil Tanker, Inland Waterways",
-    "Water Tank Barge, non propelled",
-    "Water Tanker",
-    "Water Tanker, Inland Waterways",
-    "Wine Tanker",
+const SHIPCODES_OF_INTEREST = [
+    "A1", // tankers
+    "A22", // oil bulk carriers
+    "W11", // non-seagoing tanker
 ]
 
 // TODO: track tripped rules
@@ -61,9 +14,13 @@ export const scoreVessel = async (imoNumber: string) => {
     const vessel_info = (await db.select().from(vessels).where(eq(vessels.ihslRorImoShipNo, imoNumber)))[0]
 
     let score = 0
+    const tripped_rules: string[] = []
     // door condition
-    if (SHIPTYPES_OF_INTEREST.includes(vessel_info.shiptypeLevel5 ?? '')) {
+    if (SHIPCODES_OF_INTEREST.some((codeprefix) => vessel_info.statCode5 && vessel_info.statCode5.startsWith(codeprefix))) {
         score += 30
+        tripped_rules.push(
+            `The vessel is of type ${vessel_info.shiptypeLevel5}.`
+        )
         if ([
             vessel_info.shiponEuSanctionList, 
             vessel_info.shiponOfacNonSdnSanctionList, 
@@ -72,10 +29,17 @@ export const scoreVessel = async (imoNumber: string) => {
             vessel_info.shiponUsTreasuryOfacAdvisoryList
         ].some((val) => val === 'True')) {
             score += 20
+            tripped_rules.push('The vessel is on one or more of the OFAC, EU and UN sanction lists.')
         }
 
-        if (!vessel_info.registeredOwner) score += 10
+        if (!vessel_info.registeredOwner) {
+            score += 10
+            tripped_rules.push('The vessel has no registered owner.')
+        }
     }
 
-    return score
+    return {
+        score,
+        tripped_rules
+    }
 }

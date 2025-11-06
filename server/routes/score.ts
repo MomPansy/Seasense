@@ -6,7 +6,7 @@ export const scoreRoute = factory
     .get(
         "/:vesselimo",
         async (c) => {
-            const score = await scoreVessel(c.req.param('vesselimo'))
-            return c.json({ score })
+            const score_info = await scoreVessel(c.req.param('vesselimo'))
+            return c.json(score_info)
         },
     )
