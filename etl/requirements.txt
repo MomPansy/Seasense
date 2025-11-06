@@ -1,0 +1,5 @@
+#python==3.14
+loguru==0.7.3
+psycopg2==2.9.11
+pytz==2025.2
+requests==2.32.5

@@ -87,6 +87,9 @@
     "start": "npm run envx:run -- node dist/index.js",
     "db:gen": "dotenvx run --env-file .env.production --env-file .env.development --overload -- drizzle-kit generate",
     "db:mig": "dotenvx run --env-file .env.production --env-file .env.development --overload -- drizzle-kit migrate",
-    "prepare": "husky install"
+    "prepare": "husky install",
+    "etl": "./scripts/run_etl.sh",
+    "etl:vessel_departures": "./scripts/run_etl.sh vessel_departures",
+    "etl:vessel_arrivals": "./scripts/run_etl.sh vessel_arrivals"
   }
 }
