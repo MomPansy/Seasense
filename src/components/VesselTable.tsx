@@ -1,4 +1,3 @@
-import { useState } from "react";
 import {
   ColumnFiltersState,
   SortingState,
@@ -6,9 +5,10 @@ import {
   RowSelectionState,
 } from "@tanstack/react-table";
 import { RefreshCw, Download } from "lucide-react";
+import { useState } from "react";
 import { toast } from "sonner";
-import { Button } from "./ui/button";
 import { DataTable } from "./data-table";
+import { Button } from "./ui/button";
 import { createColumns, Vessel } from "./vessel-columns";
 
 export type { Vessel } from "./vessel-columns";
@@ -88,14 +88,8 @@ export function VesselTable({
 
       {selectedCount > 0 && (
         <div className="flex items-center justify-between bg-primary/10 px-4 py-2 rounded-md">
-          <span className="text-sm">
-            {selectedCount} vessel(s) selected
-          </span>
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => setRowSelection({})}
-          >
+          <span className="text-sm">{selectedCount} vessel(s) selected</span>
+          <Button variant="ghost" size="sm" onClick={() => setRowSelection({})}>
             Clear Selection
           </Button>
         </div>

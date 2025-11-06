@@ -96,7 +96,7 @@ import { build } from "esbuild";
       path.join(process.cwd(), "dist", "drizzle", "migrations"),
       { recursive: true },
     );
-    console.log("SQL migration files copied successfully");
+    console.info("SQL migration files copied successfully");
   } catch (error) {
     console.error("Error copying SQL migration files:", error);
   }

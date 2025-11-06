@@ -3,3 +3,7 @@ export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
 
 npm run build:typecheck
+
+# Run ESLint and fail only on errors (ignore warnings)
+echo "Running ESLint..."
+npm run lint -- --max-warnings=-1 --quiet || exit 1

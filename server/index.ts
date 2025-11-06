@@ -1,9 +1,9 @@
-import { serveStatic } from "@hono/node-server/serve-static";
 import { serve } from "@hono/node-server";
+import { serveStatic } from "@hono/node-server/serve-static";
 import { factory } from "./factory.ts";
 import { route as exampleRoute } from "./routes/example.ts";
-import { route as vesselsRoute } from "./routes/vessels.ts";
 import { scoreRoute } from "./routes/score.ts";
+import { route as vesselsRoute } from "./routes/vessels.ts";
 
 const app = factory.createApp();
 
@@ -23,6 +23,7 @@ app
   .get("/*", serveStatic({ root: "./dist/static" }))
   .get("/*", serveStatic({ path: "./dist/static/index.html" }));
 
+// eslint-disable-next-line @typescript-eslint/require-await
 (async () => {
   const port = 3000;
   serve({ fetch: app.fetch, port }, () => {

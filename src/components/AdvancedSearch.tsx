@@ -1,7 +1,7 @@
 import { useState } from "react";
+import { Button } from "./ui/button";
 import { Input } from "./ui/input";
 import { Label } from "./ui/label";
-import { Button } from "./ui/button";
 import {
   Select,
   SelectContent,
@@ -10,8 +10,20 @@ import {
   SelectValue,
 } from "./ui/select";
 
+interface VesselFilters {
+  vesselName: string;
+  vesselType: string;
+  imoNumber: string;
+  threatScore: string;
+  arrivalDateFrom: string;
+  arrivalDateTo: string;
+  lastArrivalFrom: string;
+  lastArrivalTo: string;
+  lastPorts: string;
+}
+
 interface AdvancedSearchProps {
-  onSearch: (filters: any) => void;
+  onSearch: (filters: VesselFilters) => void;
   onClose: () => void;
 }
 

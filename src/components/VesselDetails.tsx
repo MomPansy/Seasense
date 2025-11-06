@@ -1,9 +1,9 @@
 import { ArrowLeft, Download } from "lucide-react";
 import { toast } from "sonner";
 import { VesselDetails as VesselDetailsType } from "../utils/mockData";
+import { ThreatBadge } from "./ThreatBadge";
 import { Button } from "./ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
-import { ThreatBadge } from "./ThreatBadge";
 
 interface VesselDetailsProps {
   vessel: VesselDetailsType;
@@ -26,7 +26,7 @@ export function VesselDetails({ vessel, onBack }: VesselDetailsProps) {
 
   const handleExport = () => {
     toast.success("Exporting vessel details to Excel");
-    console.log("Export vessel details:", vessel);
+    console.info("Export vessel details:", vessel);
   };
 
   return (

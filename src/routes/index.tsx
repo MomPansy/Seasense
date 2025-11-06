@@ -1,13 +1,25 @@
-import { useState, useEffect } from "react";
 import { createFileRoute } from "@tanstack/react-router";
+import { useState, useEffect } from "react";
 import { SearchBar } from "../components/SearchBar";
-import { VesselTable, Vessel } from "../components/VesselTable";
 import { VesselDetails } from "../components/VesselDetails";
+import { VesselTable, Vessel } from "../components/VesselTable";
 import {
   generateMockVessels,
   generateDetailedVessel,
   VesselDetails as VesselDetailsType,
 } from "../utils/mockData";
+
+interface VesselFilters {
+  vesselName: string;
+  vesselType: string;
+  imoNumber: string;
+  threatScore: string;
+  arrivalDateFrom: string;
+  arrivalDateTo: string;
+  lastArrivalFrom: string;
+  lastArrivalTo: string;
+  lastPorts: string;
+}
 
 export const Route = createFileRoute("/")({
   component: App,
@@ -41,7 +53,7 @@ function App() {
     setFilteredVessels(filtered);
   };
 
-  const handleAdvancedSearch = (filters: any) => {
+  const handleAdvancedSearch = (filters: VesselFilters) => {
     let filtered = [...vessels];
 
     if (filters.vesselName) {

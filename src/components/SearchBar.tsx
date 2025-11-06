@@ -1,9 +1,9 @@
-import { useState } from "react";
 import { Search, ChevronDown, X, Clock } from "lucide-react";
-import { Input } from "./ui/input";
-import { Button } from "./ui/button";
-import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
+import { useState } from "react";
 import { AdvancedSearch } from "./AdvancedSearch";
+import { Button } from "./ui/button";
+import { Input } from "./ui/input";
+import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
 
 interface RecentlyViewed {
   id: string;
@@ -23,9 +23,21 @@ const recentlyViewedShips: RecentlyViewed[] = [
   },
 ];
 
+interface VesselFilters {
+  vesselName: string;
+  vesselType: string;
+  imoNumber: string;
+  threatScore: string;
+  arrivalDateFrom: string;
+  arrivalDateTo: string;
+  lastArrivalFrom: string;
+  lastArrivalTo: string;
+  lastPorts: string;
+}
+
 interface SearchBarProps {
   onSearch: (query: string) => void;
-  onAdvancedSearch: (filters: any) => void;
+  onAdvancedSearch: (filters: VesselFilters) => void;
 }
 
 export function SearchBar({ onSearch, onAdvancedSearch }: SearchBarProps) {

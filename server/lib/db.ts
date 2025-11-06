@@ -1,9 +1,9 @@
-import { appEnvVariables } from "server/env.ts";
+import { neon, neonConfig } from "@neondatabase/serverless";
 import { drizzle as drizzleNeon } from "drizzle-orm/neon-http";
 import { drizzle as drizzlePg } from "drizzle-orm/node-postgres";
-import { neon, neonConfig } from "@neondatabase/serverless";
 import pg from "pg";
 import ws from "ws";
+import { appEnvVariables } from "server/env.ts";
 
 const connectionString = appEnvVariables.DB_URL;
 

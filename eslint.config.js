@@ -6,11 +6,10 @@ import eslintPluginPrettierRecommended from 'eslint-plugin-prettier/recommended'
 import reactHooksPlugin from 'eslint-plugin-react-hooks';
 import reactRefreshPlugin from 'eslint-plugin-react-refresh';
 import eslintPluginImportX from 'eslint-plugin-import-x';
-import tsParser from '@typescript-eslint/parser';
 import drizzlePlugin from 'eslint-plugin-drizzle';
 
 export default tseslint.config(
-  { ignores: ['dist'] },
+  { ignores: ['dist', '**/*.gen.ts'] },
   {
     files: ['**/*.{ts,tsx}'],
     ignores: ['node_modules', 'dist', '**/*.gen.ts'],
@@ -32,7 +31,6 @@ export default tseslint.config(
       ecmaVersion: 2020,
       globals: globals.browser,
       sourceType: 'module',
-      parser: tsParser,
       parserOptions: {
         projectService: true,
         tsconfigRootDir: import.meta.dirname,
@@ -42,12 +40,8 @@ export default tseslint.config(
       'import-x/parsers': {
         '@typescript-eslint/parser': ['.ts', '.tsx'],
       },
-      'import-x/resolver': 'typescript',
-      'import-x/resolverOptions': {
-        // Enable project-aware resolution so TS path aliases (e.g. '@/...') work
-        project: true,
-        // Let the resolver pick up all tsconfigs in the workspace (tsconfig.json references app/node)
-        alwaysTryTypes: true,
+      'import-x/resolver': {
+        typescript: true,
       },
     },
     rules: {
@@ -57,8 +51,32 @@ export default tseslint.config(
         { allowConstantExport: true },
       ],
       'no-console': ['error', { allow: ['info', 'warn', 'error'] }],
-      'import-x/extensions': ['error', 'ignorePackages'],
-      'import-x/order': ['error'],
+      'import-x/extensions': [
+        'error',
+        'ignorePackages',
+        {
+          ts: 'always',
+          tsx: 'never',
+        },
+      ],
+      'import-x/order': [
+        'error',
+        {
+          groups: [
+            'builtin',
+            'external',
+            'internal',
+            'parent',
+            'sibling',
+            'index',
+          ],
+          'newlines-between': 'never',
+          alphabetize: {
+            order: 'asc',
+            caseInsensitive: true,
+          },
+        },
+      ],
       'import-x/no-named-as-default-member': ['off'],
       'drizzle/enforce-delete-with-where': ['error'],
       'drizzle/enforce-update-with-where': ['error'],
@@ -75,7 +93,25 @@ export default tseslint.config(
           },
         },
       ],
-      "@typescript-eslint/no-floating-promises": ["off"],
+      '@typescript-eslint/no-floating-promises': ['off'],
+      '@typescript-eslint/restrict-template-expressions': ['off'],
+    },
+  },
+  // Override for frontend files - don't require .ts extensions
+  {
+    files: ['src/**/*.{ts,tsx}'],
+    plugins: {
+      'import-x': eslintPluginImportX,
+    },
+    rules: {
+      'import-x/extensions': [
+        'error',
+        'ignorePackages',
+        {
+          ts: 'never',
+          tsx: 'never',
+        },
+      ],
     },
   },
 );

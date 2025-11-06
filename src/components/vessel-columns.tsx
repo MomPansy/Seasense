@@ -1,8 +1,8 @@
 import { ColumnDef } from "@tanstack/react-table";
 import { ArrowUpDown } from "lucide-react";
-import { Checkbox } from "./ui/checkbox";
-import { Button } from "./ui/button";
 import { ThreatBadge } from "./ThreatBadge";
+import { Button } from "./ui/button";
+import { Checkbox } from "./ui/checkbox";
 
 export interface Vessel {
   id: string;

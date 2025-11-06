@@ -1,12 +1,11 @@
-import { StrictMode } from "react";
-import ReactDOM from "react-dom/client";
 import { RouterProvider, createRouter } from "@tanstack/react-router";
-
+import { StrictMode } from "react";
+// eslint-disable-next-line import-x/default
+import ReactDOM from "react-dom/client";
+import reportWebVitals from "./reportWebVitals";
 // Import the generated route tree
 import { routeTree } from "./routeTree.gen";
-
 import "./styles/globals.css";
-import reportWebVitals from "./reportWebVitals.ts";
 
 // Create a new router instance
 const router = createRouter({
