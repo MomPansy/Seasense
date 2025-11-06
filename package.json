@@ -93,6 +93,7 @@
     "prepare": "husky install",
     "etl": "./scripts/run_etl.sh",
     "etl:vessel_departures": "./scripts/run_etl.sh vessel_departures",
-    "etl:vessel_arrivals": "./scripts/run_etl.sh vessel_arrivals"
+    "etl:vessel_arrivals": "./scripts/run_etl.sh vessel_arrivals",
+    "etl:vessels_due_to_arrive": "./scripts/run_etl.sh vessels_due_to_arrive"
   }
 }

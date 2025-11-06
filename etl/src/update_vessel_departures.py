@@ -50,6 +50,7 @@ def main(data_for_past_n_hours=24):
         conn.commit()
     except Exception as e:
         logger.error(f"Error updating data for {data_name}: {e}")
+        conn.rollback()
         traceback.print_exc()
     finally:
         conn.close()

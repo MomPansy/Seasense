@@ -2,7 +2,7 @@
 set -e
 
 # All possible ETL tables (add more later)
-ALL_TABLES=("vessel_arrivals" "vessel_departures")
+ALL_TABLES=("vessel_arrivals" "vessel_departures" "vessels_due_to_arrive")
 
 # Read parameters (tables to run)
 if [ $# -eq 0 ]; then
