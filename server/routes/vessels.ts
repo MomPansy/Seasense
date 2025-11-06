@@ -2,9 +2,9 @@ import { factory } from "server/factory.ts";
 import { db } from "server/lib/db.ts";
 import { vessels } from "server/drizzle/vessels.ts";
 import { eq, ilike } from "drizzle-orm";
-import { vesselsDueToArrive } from "server/drizzle/vessels_due_to_arrive";
+import { vesselsDueToArrive } from "server/drizzle/vessels_due_to_arrive.ts";
 import { stringSimilarity } from 'string-similarity-js';
-import { scoreVessel } from "server/services/score";
+import { scoreVessel } from "server/services/score.ts";
 
 export const route = factory
   .createApp()

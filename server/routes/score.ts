@@ -1,8 +1,8 @@
 import { eq } from "drizzle-orm";
-import { vessels } from "server/drizzle/vessels";
+import { vessels } from "server/drizzle/vessels.ts";
 import { factory } from "server/factory.ts";
-import { db } from "server/lib/db";
-import { scoreVessel } from "server/services/score";
+import { db } from "server/lib/db.ts";
+import { scoreVessel } from "server/services/score.ts";
 
 export const scoreRoute = factory
     .createApp()
