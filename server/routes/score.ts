@@ -1,4 +1,7 @@
+import { eq } from "drizzle-orm";
+import { vessels } from "server/drizzle/vessels";
 import { factory } from "server/factory.ts";
+import { db } from "server/lib/db";
 import { scoreVessel } from "server/services/score";
 
 export const scoreRoute = factory
@@ -6,7 +9,8 @@ export const scoreRoute = factory
     .get(
         "/:vesselimo",
         async (c) => {
-            const score_info = await scoreVessel(c.req.param('vesselimo'))
+            const vessel_info = (await db.select().from(vessels).where(eq(vessels.ihslRorImoShipNo, c.req.param('vesselimo'))))[0]
+            const score_info = scoreVessel(vessel_info)
             return c.json(score_info)
         },
     )

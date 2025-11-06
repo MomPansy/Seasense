@@ -4,7 +4,7 @@ import { sql } from "drizzle-orm"
 
 
 export const vessels = pgTable("vessels", {
-	ihslRorImoShipNo: numeric("IHSLRorIMOShipNo").notNull(),
+	ihslRorImoShipNo: text("IHSLRorIMOShipNo").notNull(),
 	shipName: text("ShipName"),
 	exName: text("ExName"),
 	shipStatus: text("ShipStatus"),

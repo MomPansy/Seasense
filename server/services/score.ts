@@ -10,9 +10,7 @@ const SHIPCODES_OF_INTEREST = [
 
 // TODO: track tripped rules
 // TODO: make flexible (don't hardcode rules here)
-export const scoreVessel = async (imoNumber: string) => {
-    const vessel_info = (await db.select().from(vessels).where(eq(vessels.ihslRorImoShipNo, imoNumber)))[0]
-
+export const scoreVessel = (vessel_info: (typeof vessels.$inferSelect)) => {
     let score = 0
     const tripped_rules: string[] = []
     // door condition
