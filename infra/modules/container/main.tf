@@ -141,6 +141,11 @@ resource "aws_ecs_task_definition" "main" {
     }
   ])
 
+  lifecycle {
+    # Allow CI/CD to update the image tag in the task definition without Terraform drifting it back
+    ignore_changes = [container_definitions]
+  }
+
   tags = {
     Name = "${var.project_name}-task-definition"
   }

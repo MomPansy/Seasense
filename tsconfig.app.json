@@ -17,6 +17,7 @@
     "noEmit": true,
     "paths": {
       "@/*": ["./src/*"],
+      "src/*": ["./src/*"],
       "server/*": ["./server/*"]
     },
     "resolveJsonModule": true,

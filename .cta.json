@@ -1,5 +1,5 @@
 {
-  "projectName": "seasense-frontend",
+  "projectName": "seasense",
   "mode": "file-router",
   "typescript": true,
   "tailwind": true,
