@@ -1,7 +1,10 @@
 import { integer, pgTable, text, timestamp } from "drizzle-orm/pg-core";
 
 export const vesselsDueToArrive = pgTable("vessels_due_to_arrive", {
-  id: integer().primaryKey().notNull(),
+  id: integer()
+    .primaryKey()
+    .notNull()
+    .generatedAlwaysAsIdentity({ startWith: 1, increment: 1 }),
   vesselName: text("vessel_name"),
   callsign: text(),
   imo: text(),
