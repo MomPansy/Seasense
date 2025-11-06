@@ -1,4 +1,4 @@
-@import 'tailwindcss';
+@import "tailwindcss";
 
 @custom-variant dark (&:is(.dark *));
 
@@ -182,7 +182,7 @@
 
   body {
     @apply bg-background text-foreground;
-    font-family: 'Inter', sans-serif;
+    font-family: "Inter", sans-serif;
   }
 }
 
@@ -195,77 +195,77 @@
       font-size: var(--text-3xl);
       font-weight: var(--font-weight-semi-bold);
       line-height: 1.5;
-      font-family: 'Inter', sans-serif;
+      font-family: "Inter", sans-serif;
     }
 
     h2 {
       font-size: var(--text-2xl);
       font-weight: var(--font-weight-semi-bold);
       line-height: 1.5;
-      font-family: 'Inter', sans-serif;
+      font-family: "Inter", sans-serif;
     }
 
     h3 {
       font-size: var(--text-xl);
       font-weight: var(--font-weight-bold);
       line-height: 1.5;
-      font-family: 'Inter', sans-serif;
+      font-family: "Inter", sans-serif;
     }
 
     h4 {
       font-size: var(--text-lg);
       font-weight: var(--font-weight-semi-bold);
       line-height: 1.5;
-      font-family: 'Inter', sans-serif;
+      font-family: "Inter", sans-serif;
     }
 
     p {
       font-size: var(--text-md);
       font-weight: var(--font-weight-normal);
       line-height: 1.5;
-      font-family: 'Inter', sans-serif;
+      font-family: "Inter", sans-serif;
     }
 
     label {
       font-size: var(--text-md);
       font-weight: var(--font-weight-medium);
       line-height: 1.5;
-      font-family: 'Inter', sans-serif;
+      font-family: "Inter", sans-serif;
     }
 
     button {
       font-size: var(--text-md);
       font-weight: var(--font-weight-medium);
       line-height: 1.5;
-      font-family: 'Inter', sans-serif;
+      font-family: "Inter", sans-serif;
     }
 
     input {
       font-size: var(--text-md);
       font-weight: var(--font-weight-normal);
       line-height: 1.5;
-      font-family: 'Inter', sans-serif;
+      font-family: "Inter", sans-serif;
     }
 
     .caption {
       font-size: var(--text-sm);
       font-weight: var(--font-weight-medium);
       line-height: 1.5;
-      font-family: 'Inter', sans-serif;
+      font-family: "Inter", sans-serif;
     }
 
     .legal {
       font-size: var(--text-xs);
       font-weight: var(--font-weight-normal);
       line-height: 1.5;
-      font-family: 'Inter', sans-serif;
+      font-family: "Inter", sans-serif;
     }
 
     .nav-title {
       font-size: var(--text-base);
       font-weight: var(--font-weight-semi-bold);
       line-height: 1.5;
-      font-family: 'Inter', sans-serif;
+      font-family: "Inter", sans-serif;
       text-transform: uppercase;
       letter-spacing: 0.025em;
     }
@@ -274,7 +274,7 @@
       font-size: var(--text-base);
       font-weight: var(--font-weight-normal);
       line-height: 1.5;
-      font-family: 'Inter', sans-serif;
+      font-family: "Inter", sans-serif;
     }
   }
 }

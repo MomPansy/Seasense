@@ -1,18 +1,17 @@
-
-import tseslint from 'typescript-eslint';
-import eslint from '@eslint/js';
-import globals from 'globals';
-import eslintPluginPrettierRecommended from 'eslint-plugin-prettier/recommended';
-import reactHooksPlugin from 'eslint-plugin-react-hooks';
-import reactRefreshPlugin from 'eslint-plugin-react-refresh';
-import eslintPluginImportX from 'eslint-plugin-import-x';
-import drizzlePlugin from 'eslint-plugin-drizzle';
+import tseslint from "typescript-eslint";
+import eslint from "@eslint/js";
+import globals from "globals";
+import eslintPluginPrettierRecommended from "eslint-plugin-prettier/recommended";
+import reactHooksPlugin from "eslint-plugin-react-hooks";
+import reactRefreshPlugin from "eslint-plugin-react-refresh";
+import eslintPluginImportX from "eslint-plugin-import-x";
+import drizzlePlugin from "eslint-plugin-drizzle";
 
 export default tseslint.config(
-  { ignores: ['dist', '**/*.gen.ts'] },
+  { ignores: ["dist", "**/*.gen.ts"] },
   {
-    files: ['**/*.{ts,tsx}'],
-    ignores: ['node_modules', 'dist', '**/*.gen.ts'],
+    files: ["**/*.{ts,tsx}"],
+    ignores: ["node_modules", "dist", "**/*.gen.ts"],
     extends: [
       eslint.configs.recommended,
       ...tseslint.configs.recommendedTypeChecked,
@@ -23,69 +22,69 @@ export default tseslint.config(
       eslintPluginPrettierRecommended,
     ],
     plugins: {
-      'react-hooks': reactHooksPlugin,
-      'react-refresh': reactRefreshPlugin,
+      "react-hooks": reactHooksPlugin,
+      "react-refresh": reactRefreshPlugin,
       drizzle: drizzlePlugin,
     },
     languageOptions: {
       ecmaVersion: 2020,
       globals: globals.browser,
-      sourceType: 'module',
+      sourceType: "module",
       parserOptions: {
         projectService: true,
         tsconfigRootDir: import.meta.dirname,
       },
     },
     settings: {
-      'import-x/parsers': {
-        '@typescript-eslint/parser': ['.ts', '.tsx'],
+      "import-x/parsers": {
+        "@typescript-eslint/parser": [".ts", ".tsx"],
       },
-      'import-x/resolver': {
+      "import-x/resolver": {
         typescript: true,
       },
     },
     rules: {
       ...reactHooksPlugin.configs.recommended.rules,
-      'react-refresh/only-export-components': [
-        'warn',
+      "react-refresh/only-export-components": [
+        "warn",
         { allowConstantExport: true },
       ],
-      'no-console': ['error', { allow: ['info', 'warn', 'error'] }],
-      'import-x/extensions': [
-        'error',
-        'ignorePackages',
+      "no-console": ["error", { allow: ["info", "warn", "error"] }],
+      "import-x/extensions": [
+        "error",
+        "ignorePackages",
         {
-          ts: 'always',
-          tsx: 'never',
+          ts: "always",
+          tsx: "never",
         },
       ],
-      'import-x/order': [
-        'error',
+      "import-x/order": [
+        "error",
         {
           groups: [
-            'builtin',
-            'external',
-            'internal',
-            'parent',
-            'sibling',
-            'index',
+            "builtin",
+            "external",
+            "internal",
+            "parent",
+            "sibling",
+            "index",
           ],
-          'newlines-between': 'never',
+          "newlines-between": "never",
           alphabetize: {
-            order: 'asc',
+            order: "asc",
             caseInsensitive: true,
           },
         },
       ],
-      'import-x/no-named-as-default-member': ['off'],
-      'drizzle/enforce-delete-with-where': ['error'],
-      'drizzle/enforce-update-with-where': ['error'],
-      '@typescript-eslint/no-confusing-void-expression': [
-        'error',
+      "import-x/no-named-as-default-member": ["off"],
+      "drizzle/enforce-delete-with-where": ["error"],
+      "drizzle/enforce-update-with-where": ["error"],
+      "@typescript-eslint/no-confusing-void-expression": [
+        "error",
         { ignoreArrowShorthand: true },
       ],
-      '@typescript-eslint/no-misused-promises': [
-        'error',
+      "@typescript-eslint/no-misused-promises": [
+        "error",
         {
           checksVoidReturn: {
             arguments: false,
@@ -93,23 +92,23 @@ export default tseslint.config(
           },
         },
       ],
-      '@typescript-eslint/no-floating-promises': ['off'],
-      '@typescript-eslint/restrict-template-expressions': ['off'],
+      "@typescript-eslint/no-floating-promises": ["off"],
+      "@typescript-eslint/restrict-template-expressions": ["off"],
     },
   },
   // Override for frontend files - don't require .ts extensions
   {
-    files: ['src/**/*.{ts,tsx}'],
+    files: ["src/**/*.{ts,tsx}"],
     plugins: {
-      'import-x': eslintPluginImportX,
+      "import-x": eslintPluginImportX,
     },
     rules: {
-      'import-x/extensions': [
-        'error',
-        'ignorePackages',
+      "import-x/extensions": [
+        "error",
+        "ignorePackages",
         {
-          ts: 'never',
-          tsx: 'never',
+          ts: "never",
+          tsx: "never",
         },
       ],
     },
