@@ -55,12 +55,12 @@ export const route = factory
     },
   )
   .get("/arriving", async (c) => {
-    const vessel_info = await db
+    const vesselInfo = await db
       .select()
       .from(vesselsDueToArrive)
       .leftJoin(vessels, eq(vesselsDueToArrive.imo, vessels.ihslRorImoShipNo));
 
-    const vessel_info_with_scores = vessel_info.map((vessel) => {
+    const vesselInfoWithScores = vesselInfo.map((vessel) => {
       let score = {
         score: 0,
         tripped_rules: new Array<string>(),
@@ -89,11 +89,11 @@ export const route = factory
       }
 
       return {
-        vessels: vessel.vessels,
-        vessels_due_to_arrive: vessel.vessels_due_to_arrive,
+        vesselDetails: vessel.vessels,
+        vesselArrivalDetails: vessel.vessels_due_to_arrive,
         score,
       };
     });
 
-    return c.json(vessel_info_with_scores);
+    return c.json(vesselInfoWithScores);
   });
