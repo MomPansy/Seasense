@@ -1,0 +1,1120 @@
+{
+  "id": "020b328a-9a5c-4314-9b24-31177cbd6fc2",
+  "prevId": "948d1571-5db9-4696-9b8e-edcfcad2ab63",
+  "version": "7",
+  "dialect": "postgresql",
+  "tables": {
+    "public.vessel_arrivals": {
+      "name": "vessel_arrivals",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "vessel_name": {
+          "name": "vessel_name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "callsign": {
+          "name": "callsign",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "imo": {
+          "name": "imo",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "flag": {
+          "name": "flag",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "arrived_time": {
+          "name": "arrived_time",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "location_from": {
+          "name": "location_from",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "location_to": {
+          "name": "location_to",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.vessel_departures": {
+      "name": "vessel_departures",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "vessel_name": {
+          "name": "vessel_name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "callsign": {
+          "name": "callsign",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "imo": {
+          "name": "imo",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "flag": {
+          "name": "flag",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "departed_time": {
+          "name": "departed_time",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.vessels": {
+      "name": "vessels",
+      "schema": "",
+      "columns": {
+        "IHSLRorIMOShipNo": {
+          "name": "IHSLRorIMOShipNo",
+          "type": "numeric",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "ShipName": {
+          "name": "ShipName",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "ExName": {
+          "name": "ExName",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "ShipStatus": {
+          "name": "ShipStatus",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "ShipStatusCode": {
+          "name": "ShipStatusCode",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "ShipStatusEffectiveDate": {
+          "name": "ShipStatusEffectiveDate",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "CallSign": {
+          "name": "CallSign",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "FlagCode": {
+          "name": "FlagCode",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "FlagEffectiveDate": {
+          "name": "FlagEffectiveDate",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "FlagName": {
+          "name": "FlagName",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "InmarsatNumberSatCommID": {
+          "name": "InmarsatNumberSatCommID",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "MaritimeMobileServiceIdentityMMSINumber": {
+          "name": "MaritimeMobileServiceIdentityMMSINumber",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "HullTypeCode": {
+          "name": "HullTypeCode",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "FishingNumber": {
+          "name": "FishingNumber",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "BreadthExtreme": {
+          "name": "BreadthExtreme",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "BreadthMoulded": {
+          "name": "BreadthMoulded",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "Deadweight": {
+          "name": "Deadweight",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "DeliveryDate": {
+          "name": "DeliveryDate",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "Depth": {
+          "name": "Depth",
+          "type": "double precision",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "Draught": {
+          "name": "Draught",
+          "type": "double precision",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "GasCapacity": {
+          "name": "GasCapacity",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "GrossTonnage": {
+          "name": "GrossTonnage",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "LaunchDate": {
+          "name": "LaunchDate",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "LengthOverallLOA": {
+          "name": "LengthOverallLOA",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "LengthBetweenPerpendicularsLBP": {
+          "name": "LengthBetweenPerpendicularsLBP",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "LiquidCapacity": {
+          "name": "LiquidCapacity",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "MainEngineBuilder": {
+          "name": "MainEngineBuilder",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "NetTonnage": {
+          "name": "NetTonnage",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "NewbuildPrice": {
+          "name": "NewbuildPrice",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "NewbuildPriceUSD": {
+          "name": "NewbuildPriceUSD",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "NewconstructionEntryDate": {
+          "name": "NewconstructionEntryDate",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "NumberOfAllEngines": {
+          "name": "NumberOfAllEngines",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "NumberofHolds": {
+          "name": "NumberofHolds",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "NumberOfPropulsionUnits": {
+          "name": "NumberOfPropulsionUnits",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "NumberofTanks": {
+          "name": "NumberofTanks",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "NumberofThrusters": {
+          "name": "NumberofThrusters",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "PassengerCapacity": {
+          "name": "PassengerCapacity",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "PassengersBerthed": {
+          "name": "PassengersBerthed",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "PermanentBallastCapacity": {
+          "name": "PermanentBallastCapacity",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "PlaceofBreaking": {
+          "name": "PlaceofBreaking",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "ShiptypeGroup": {
+          "name": "ShiptypeGroup",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "ShiptypeLevel2": {
+          "name": "ShiptypeLevel2",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "ShiptypeLevel3": {
+          "name": "ShiptypeLevel3",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "ShiptypeLevel4": {
+          "name": "ShiptypeLevel4",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "ShiptypeLevel5": {
+          "name": "ShiptypeLevel5",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "StatCode5": {
+          "name": "StatCode5",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "SlopTankCapacity": {
+          "name": "SlopTankCapacity",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "SlopTankCoatings": {
+          "name": "SlopTankCoatings",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "Speedmax": {
+          "name": "Speedmax",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "Speedservice": {
+          "name": "Speedservice",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "TempMaximum": {
+          "name": "TempMaximum",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "TempMinimum": {
+          "name": "TempMinimum",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "YearOfBuild": {
+          "name": "YearOfBuild",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "AlterationsDescriptiveNarrative": {
+          "name": "AlterationsDescriptiveNarrative",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "CleanBallastCapacity": {
+          "name": "CleanBallastCapacity",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "ClearHeightofROROLanes": {
+          "name": "ClearHeightofROROLanes",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "HullMaterial": {
+          "name": "HullMaterial",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "HullType": {
+          "name": "HullType",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "IMOChemicalClassI": {
+          "name": "IMOChemicalClassI",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "IMOChemicalClassII": {
+          "name": "IMOChemicalClassII",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "IMOChemicalClassIII": {
+          "name": "IMOChemicalClassIII",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "InertGasSystemIGS": {
+          "name": "InertGasSystemIGS",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "ConstructionDescriptiveNarrative": {
+          "name": "ConstructionDescriptiveNarrative",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "YardNumber": {
+          "name": "YardNumber",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "FlashPointOver60c": {
+          "name": "FlashPointOver60c",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "FlashPointUnder60c": {
+          "name": "FlashPointUnder60c",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "SaleDate": {
+          "name": "SaleDate",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "SalePriceUSD": {
+          "name": "SalePriceUSD",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "PandIClub": {
+          "name": "PandIClub",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "DateofLastInspection": {
+          "name": "DateofLastInspection",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "LastUpdateDate": {
+          "name": "LastUpdateDate",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "PhotoPresent": {
+          "name": "PhotoPresent",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "PortofRegistry": {
+          "name": "PortofRegistry",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "Shipbuilder": {
+          "name": "Shipbuilder",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "CountryOfBreaking": {
+          "name": "CountryOfBreaking",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "DeathDate": {
+          "name": "DeathDate",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "ClassificationSocietyCode": {
+          "name": "ClassificationSocietyCode",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "ClassificationSociety": {
+          "name": "ClassificationSociety",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "ClassNarrative": {
+          "name": "ClassNarrative",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "ContractDate": {
+          "name": "ContractDate",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "CountryOfBuild": {
+          "name": "CountryOfBuild",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "DateBreakingCommenced": {
+          "name": "DateBreakingCommenced",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "DateOfBuild": {
+          "name": "DateOfBuild",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "SBTPLSBTProtectedLocation": {
+          "name": "SBTPLSBTProtectedLocation",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "ChartererLatestReported": {
+          "name": "ChartererLatestReported",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "BareboatCharterCompany": {
+          "name": "BareboatCharterCompany",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "ShiponOFACSanctionList": {
+          "name": "ShiponOFACSanctionList",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "ShiponOFACNonSDNSanctionList": {
+          "name": "ShiponOFACNonSDNSanctionList",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "ShiponUNSanctionList": {
+          "name": "ShiponUNSanctionList",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "ShiponEUSanctionList": {
+          "name": "ShiponEUSanctionList",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "OwneronOFACSanctionList": {
+          "name": "OwneronOFACSanctionList",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "OwneronUNSanctionList": {
+          "name": "OwneronUNSanctionList",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "OwneronEUSanctionList": {
+          "name": "OwneronEUSanctionList",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "OwneronBESSanctionList": {
+          "name": "OwneronBESSanctionList",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "HistoricalOwnerinOFACSanctionedCountry": {
+          "name": "HistoricalOwnerinOFACSanctionedCountry",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "ParentinFATFJurisdiction": {
+          "name": "ParentinFATFJurisdiction",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "ParentinOFACSanctionedCountry": {
+          "name": "ParentinOFACSanctionedCountry",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "OwnerinOFACSanctionedCountry": {
+          "name": "OwnerinOFACSanctionedCountry",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "OwnerinFATFJurisdiction": {
+          "name": "OwnerinFATFJurisdiction",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "FlagSanctionedCountry": {
+          "name": "FlagSanctionedCountry",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "HistoricalFlagSanctionedCountry": {
+          "name": "HistoricalFlagSanctionedCountry",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "FlagDisputed": {
+          "name": "FlagDisputed",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "SanctionedCountryPortCallLast3m": {
+          "name": "SanctionedCountryPortCallLast3m",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "SanctionedCountryPortCallLast6m": {
+          "name": "SanctionedCountryPortCallLast6m",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "SanctionedCountryPortCallLast12m": {
+          "name": "SanctionedCountryPortCallLast12m",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "OverallComplianceStatus": {
+          "name": "OverallComplianceStatus",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "ANNEX4SuspectedSTSTransferswithNorthKorea": {
+          "name": "ANNEX4SuspectedSTSTransferswithNorthKorea",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "ANNEX5SuspectedExportOfNorthKoreanCoal": {
+          "name": "ANNEX5SuspectedExportOfNorthKoreanCoal",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "DarkActivityIndicator": {
+          "name": "DarkActivityIndicator",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "ShiponUSTreasuryOFACAdvisoryList": {
+          "name": "ShiponUSTreasuryOFACAdvisoryList",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "GroupBeneficialOwner": {
+          "name": "GroupBeneficialOwner",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "GroupBeneficialOwnerCompanyCode": {
+          "name": "GroupBeneficialOwnerCompanyCode",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "GroupBeneficialOwnerCountryOfControl": {
+          "name": "GroupBeneficialOwnerCountryOfControl",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "GroupBeneficialOwnerCountryofDomicile": {
+          "name": "GroupBeneficialOwnerCountryofDomicile",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "GroupBeneficialOwnerCountryofDomicileCode": {
+          "name": "GroupBeneficialOwnerCountryofDomicileCode",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "GroupBeneficialOwnerCountryOfRegistration": {
+          "name": "GroupBeneficialOwnerCountryOfRegistration",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "Operator": {
+          "name": "Operator",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "OperatorCompanyCode": {
+          "name": "OperatorCompanyCode",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "OperatorCountryOfControl": {
+          "name": "OperatorCountryOfControl",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "OperatorCountryofDomicileName": {
+          "name": "OperatorCountryofDomicileName",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "OperatorCountryofDomicileCode": {
+          "name": "OperatorCountryofDomicileCode",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "OperatorCountryOfRegistration": {
+          "name": "OperatorCountryOfRegistration",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "RegisteredOwner": {
+          "name": "RegisteredOwner",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "RegisteredOwnerCode": {
+          "name": "RegisteredOwnerCode",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "RegisteredOwnerCountryOfControl": {
+          "name": "RegisteredOwnerCountryOfControl",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "RegisteredOwnerCountryofDomicile": {
+          "name": "RegisteredOwnerCountryofDomicile",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "RegisteredOwnerCountryofDomicileCode": {
+          "name": "RegisteredOwnerCountryofDomicileCode",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "RegisteredOwnerCountryOfRegistration": {
+          "name": "RegisteredOwnerCountryOfRegistration",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "ShipManager": {
+          "name": "ShipManager",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "ShipManagerCompanyCode": {
+          "name": "ShipManagerCompanyCode",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "ShipManagerCountryOfControl": {
+          "name": "ShipManagerCountryOfControl",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "ShipManagerCountryofDomicileName": {
+          "name": "ShipManagerCountryofDomicileName",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "ShipManagerCountryofDomicileCode": {
+          "name": "ShipManagerCountryofDomicileCode",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "ShipManagerCountryOfRegistration": {
+          "name": "ShipManagerCountryOfRegistration",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "TechnicalManager": {
+          "name": "TechnicalManager",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "TechnicalManagerCode": {
+          "name": "TechnicalManagerCode",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "TechnicalManagerCountryOfControl": {
+          "name": "TechnicalManagerCountryOfControl",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "TechnicalManagerCountryOfDomicile": {
+          "name": "TechnicalManagerCountryOfDomicile",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "TechnicalManagerCountryOfDomicileCode": {
+          "name": "TechnicalManagerCountryOfDomicileCode",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "TechnicalManagerCountryOfRegistration": {
+          "name": "TechnicalManagerCountryOfRegistration",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "DOCCompany": {
+          "name": "DOCCompany",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "DocumentofComplianceDOCCompanyCode": {
+          "name": "DocumentofComplianceDOCCompanyCode",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "DOCCountryOfControl": {
+          "name": "DOCCountryOfControl",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "DOCCompanyCountryofDomicile": {
+          "name": "DOCCompanyCountryofDomicile",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "DOCCompanyCountryofDomicilecode": {
+          "name": "DOCCompanyCountryofDomicilecode",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "DOCCountryOfRegistration": {
+          "name": "DOCCountryOfRegistration",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "CountryOfEconomicBenefit": {
+          "name": "CountryOfEconomicBenefit",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "SafetyManagementCertificateAuditor": {
+          "name": "SafetyManagementCertificateAuditor",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "SafetyManagementCertificateConventionorVol": {
+          "name": "SafetyManagementCertificateConventionorVol",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "SafetyManagementCertificateDateExpires": {
+          "name": "SafetyManagementCertificateDateExpires",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "SafetyManagementCertificateDateIssued": {
+          "name": "SafetyManagementCertificateDateIssued",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "SafetyManagementCertificateDOCCompany": {
+          "name": "SafetyManagementCertificateDOCCompany",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "SafetyManagementCertificateFlag": {
+          "name": "SafetyManagementCertificateFlag",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "SafetyManagementCertificateIssuer": {
+          "name": "SafetyManagementCertificateIssuer",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "SafetyManagementCertificateOtherDescription": {
+          "name": "SafetyManagementCertificateOtherDescription",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "SafetyManagementCertificateShipName": {
+          "name": "SafetyManagementCertificateShipName",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "SafetyManagementCertificateShipType": {
+          "name": "SafetyManagementCertificateShipType",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "SafetyManagementCertificateSource": {
+          "name": "SafetyManagementCertificateSource",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    }
+  },
+  "enums": {},
+  "schemas": {},
+  "sequences": {},
+  "roles": {},
+  "policies": {},
+  "views": {},
+  "_meta": {
+    "columns": {},
+    "schemas": {},
+    "tables": {}
+  }
+}
