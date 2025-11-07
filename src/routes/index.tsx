@@ -135,25 +135,20 @@ function App() {
         <VesselDetails vessel={selectedVessel} onBack={handleBackToList} />
       ) : (
         <>
-          <div className="mb-6">
-            <h1 className="mb-2">Pre-Arrival Notice</h1>
-            <p className="text-muted-foreground">
-              Vessels arriving within 24-72 hours to Singapore
-            </p>
+          <div className="flex items-center justify-between mb-6">
+            <h1>Pre-Arrival Notice</h1>
+            <div className="flex-1 max-w-2xl ml-8">
+              <SearchBar
+                onSearch={handleSearch}
+                onAdvancedSearch={handleAdvancedSearch}
+              />
+            </div>
           </div>
-
-          <div className="space-y-6">
-            <SearchBar
-              onSearch={handleSearch}
-              onAdvancedSearch={handleAdvancedSearch}
-            />
-
-            <VesselTable
-              vessels={filteredVessels}
-              onRefresh={handleRefresh}
-              onVesselClick={handleVesselClick}
-            />
-          </div>
+          <VesselTable
+            vessels={filteredVessels}
+            onRefresh={handleRefresh}
+            onVesselClick={handleVesselClick}
+          />
         </>
       )}
     </main>
