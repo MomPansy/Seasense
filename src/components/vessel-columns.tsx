@@ -56,7 +56,7 @@ export const createColumns = (
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
         >
           Vessel Name
-          <ArrowUpDown className="ml-2 h-4 w-4" />
+          <ArrowUpDown className="h-4 w-4" />
         </Button>
       );
     },
