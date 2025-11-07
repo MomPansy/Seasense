@@ -28,7 +28,7 @@ for TABLE in "${TABLES[@]}"; do
   fi
 
   echo "Running ETL for data: $TABLE"
-  dotenvx run \
+  npm run envx -- run \
     --env-file .env.production \
     --env-file .env.development \
     --overload \

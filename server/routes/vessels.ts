@@ -1,8 +1,8 @@
 import { zValidator } from "@hono/zod-validator";
+import { addHours, format } from "date-fns";
 import { and, eq, gte, ilike, lte } from "drizzle-orm";
 import { stringSimilarity } from "string-similarity-js";
 import { z } from "zod";
-import { addHours, format } from "date-fns";
 import { vessels } from "server/drizzle/vessels.ts";
 import { vesselsDueToArrive } from "server/drizzle/vessels_due_to_arrive.ts";
 import { factory } from "server/factory.ts";
@@ -56,16 +56,24 @@ export const route = factory
     },
   )
   .get("/arriving", async (c) => {
-    const hoursToPull = 72 // to change if necessary
-    const currDate = new Date()
+    const hoursToPull = 72; // to change if necessary
+    const currDate = new Date();
     const vesselInfo = await db
       .select()
       .from(vesselsDueToArrive)
       .leftJoin(vessels, eq(vesselsDueToArrive.imo, vessels.ihslRorImoShipNo))
-      .where(and(
-        lte(vesselsDueToArrive.dueToArriveTime, format(addHours(currDate, hoursToPull), "yyyy-MM-dd HH:mm:ss")),
-        gte(vesselsDueToArrive.dueToArriveTime, format(currDate, "yyyy-MM-dd HH:mm:ss"))
-      ));
+      .where(
+        and(
+          lte(
+            vesselsDueToArrive.dueToArriveTime,
+            format(addHours(currDate, hoursToPull), "yyyy-MM-dd HH:mm:ss"),
+          ),
+          gte(
+            vesselsDueToArrive.dueToArriveTime,
+            format(currDate, "yyyy-MM-dd HH:mm:ss"),
+          ),
+        ),
+      );
 
     const vesselInfoWithScores = vesselInfo.map((vessel) => {
       let score = {
