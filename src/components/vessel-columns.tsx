@@ -1,20 +1,19 @@
 import { ColumnDef } from "@tanstack/react-table";
+import { InferResponseType } from "hono/client";
 import { ArrowUpDown } from "lucide-react";
+import { api } from "src/lib/api";
 import { ThreatBadge } from "./ThreatBadge";
 import { Button } from "./ui/button";
 import { Checkbox } from "./ui/checkbox";
 
-export interface Vessel {
-  id: string;
-  name: string;
-  type: string;
-  imo: string;
-  threatLevel: number;
-  arrivalTime: Date;
-  lastArrivalTime: Date;
-}
+// This will give you the exact response type from the endpoint
+type ArrivingVesselsResponse = InferResponseType<
+  typeof api.vessels.arriving.$get
+>[number];
 
-const formatDateTime = (date: Date) => {
+const formatDateTime = (dateString: string | null) => {
+  if (!dateString) return "N/A";
+  const date = new Date(dateString);
   const day = String(date.getDate()).padStart(2, "0");
   const month = String(date.getMonth() + 1).padStart(2, "0");
   const year = String(date.getFullYear()).slice(-2);
@@ -25,7 +24,7 @@ const formatDateTime = (date: Date) => {
 
 export const createColumns = (
   onVesselClick: (vesselId: string) => void,
-): ColumnDef<Vessel>[] => [
+): ColumnDef<ArrivingVesselsResponse>[] => [
   {
     id: "select",
     header: ({ table }) => (
@@ -49,7 +48,7 @@ export const createColumns = (
     enableHiding: false,
   },
   {
-    accessorKey: "name",
+    accessorKey: "vesselArrivalDetails.vesselName",
     header: ({ column }) => {
       return (
         <Button
@@ -57,7 +56,7 @@ export const createColumns = (
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
         >
           Vessel Name
-          <ArrowUpDown className="ml-2 h-4 w-4" />
+          <ArrowUpDown className="h-4 w-4" />
         </Button>
       );
     },
@@ -65,14 +64,16 @@ export const createColumns = (
       <Button
         variant="link"
         className="p-0 h-auto font-normal"
-        onClick={() => onVesselClick(row.original.id)}
+        onClick={() =>
+          onVesselClick(row.original.vesselArrivalDetails.id.toString())
+        }
       >
-        {row.getValue("name")}
+        {row.original.vesselArrivalDetails.vesselName ?? "N/A"}
       </Button>
     ),
   },
   {
-    accessorKey: "type",
+    accessorKey: "vesselDetails.shiptypeLevel5",
     header: ({ column }) => {
       return (
         <Button
@@ -84,9 +85,10 @@ export const createColumns = (
         </Button>
       );
     },
+    cell: ({ row }) => row.original.vesselDetails?.shiptypeLevel5 ?? "N/A",
   },
   {
-    accessorKey: "imo",
+    accessorKey: "vesselArrivalDetails.imo",
     header: ({ column }) => {
       return (
         <Button
@@ -105,12 +107,12 @@ export const createColumns = (
         rel="noopener noreferrer"
         className="text-primary hover:underline"
       >
-        {row.getValue("imo")}
+        {row.original.vesselArrivalDetails.imo ?? "N/A"}
       </a>
     ),
   },
   {
-    accessorKey: "threatLevel",
+    accessorKey: "score.score",
     header: ({ column }) => {
       return (
         <Button
@@ -122,46 +124,59 @@ export const createColumns = (
         </Button>
       );
     },
-    cell: ({ row }) => <ThreatBadge level={row.getValue("threatLevel")} />,
+    cell: ({ row }) => <ThreatBadge level={row.original.score.score} />,
   },
   {
-    accessorKey: "arrivalTime",
+    accessorKey: "vesselArrivalDetails.dueToArriveTime",
     header: ({ column }) => {
       return (
         <Button
           variant="ghost"
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
         >
-          Arrival Time
+          Due to Arrive
           <ArrowUpDown className="ml-2 h-4 w-4" />
         </Button>
       );
     },
-    cell: ({ row }) => formatDateTime(row.getValue("arrivalTime")),
+    cell: ({ row }) =>
+      formatDateTime(row.original.vesselArrivalDetails.dueToArriveTime),
     sortingFn: (rowA, rowB) => {
-      const dateA = rowA.original.arrivalTime.getTime();
-      const dateB = rowB.original.arrivalTime.getTime();
+      const dateA = rowA.original.vesselArrivalDetails.dueToArriveTime
+        ? new Date(rowA.original.vesselArrivalDetails.dueToArriveTime).getTime()
+        : 0;
+      const dateB = rowB.original.vesselArrivalDetails.dueToArriveTime
+        ? new Date(rowB.original.vesselArrivalDetails.dueToArriveTime).getTime()
+        : 0;
       return dateA - dateB;
     },
   },
   {
-    accessorKey: "lastArrivalTime",
+    accessorKey: "vesselArrivalDetails.locationFrom",
     header: ({ column }) => {
       return (
         <Button
           variant="ghost"
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
         >
-          Last Arrival
+          From
           <ArrowUpDown className="ml-2 h-4 w-4" />
         </Button>
       );
     },
-    cell: ({ row }) => formatDateTime(row.getValue("lastArrivalTime")),
-    sortingFn: (rowA, rowB) => {
-      const dateA = rowA.original.lastArrivalTime.getTime();
-      const dateB = rowB.original.lastArrivalTime.getTime();
-      return dateA - dateB;
+  },
+  {
+    accessorKey: "vesselArrivalDetails.locationTo",
+    header: ({ column }) => {
+      return (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        >
+          To
+          <ArrowUpDown className="ml-2 h-4 w-4" />
+        </Button>
+      );
     },
   },
 ];

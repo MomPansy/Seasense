@@ -1,133 +1,72 @@
+import { useQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
-import { useState, useEffect } from "react";
-import { SearchBar } from "../components/SearchBar";
+import { useState } from "react";
+import { api } from "@/lib/api";
 import { VesselDetails } from "../components/VesselDetails";
-import { VesselTable, Vessel } from "../components/VesselTable";
+import { VesselTable } from "../components/VesselTable";
 import {
-  generateMockVessels,
   generateDetailedVessel,
   VesselDetails as VesselDetailsType,
 } from "../utils/mockData";
-
-interface VesselFilters {
-  vesselName: string;
-  vesselType: string;
-  imoNumber: string;
-  threatScore: string;
-  arrivalDateFrom: string;
-  arrivalDateTo: string;
-  lastArrivalFrom: string;
-  lastArrivalTo: string;
-  lastPorts: string;
-}
 
 export const Route = createFileRoute("/")({
   component: App,
 });
 
 function App() {
-  const [vessels, setVessels] = useState<Vessel[]>([]);
-  const [filteredVessels, setFilteredVessels] = useState<Vessel[]>([]);
+  const {
+    data: vessels = [],
+    isLoading,
+    error,
+  } = useQuery({
+    queryKey: ["vessels", "arriving"],
+    queryFn: async () => {
+      const response = await api.vessels.arriving.$get();
+      if (!response.ok) {
+        throw new Error("Failed to fetch vessels");
+      }
+      return await response.json();
+    },
+  });
   const [selectedVessel, setSelectedVessel] =
     useState<VesselDetailsType | null>(null);
 
-  useEffect(() => {
-    const mockVessels = generateMockVessels(30);
-    setVessels(mockVessels);
-    setFilteredVessels(mockVessels);
-  }, []);
-
-  const handleSearch = (query: string) => {
-    if (!query.trim()) {
-      setFilteredVessels(vessels);
-      return;
-    }
-
-    const lowerQuery = query.toLowerCase();
-    const filtered = vessels.filter(
-      (vessel) =>
-        vessel.name.toLowerCase().includes(lowerQuery) ||
-        vessel.type.toLowerCase().includes(lowerQuery) ||
-        vessel.imo.toLowerCase().includes(lowerQuery),
-    );
-    setFilteredVessels(filtered);
-  };
-
-  const handleAdvancedSearch = (filters: VesselFilters) => {
-    let filtered = [...vessels];
-
-    if (filters.vesselName) {
-      filtered = filtered.filter((v) =>
-        v.name.toLowerCase().includes(filters.vesselName.toLowerCase()),
-      );
-    }
-
-    if (filters.vesselType && filters.vesselType !== "all") {
-      const typeMap: Record<string, string> = {
-        container: "Container Ship",
-        tanker: "Tanker",
-        bulk: "Bulk Carrier",
-        cargo: "Cargo Ship",
-        passenger: "Passenger Ship",
-      };
-      const mappedType = typeMap[filters.vesselType] || filters.vesselType;
-      filtered = filtered.filter((v) => v.type.includes(mappedType));
-    }
-
-    if (filters.imoNumber) {
-      filtered = filtered.filter((v) =>
-        v.imo.toLowerCase().includes(filters.imoNumber.toLowerCase()),
-      );
-    }
-
-    if (filters.threatScore && filters.threatScore !== "all") {
-      filtered = filtered.filter(
-        (v) => v.threatLevel === parseInt(filters.threatScore),
-      );
-    }
-
-    if (filters.arrivalDateFrom) {
-      const fromDate = new Date(filters.arrivalDateFrom);
-      filtered = filtered.filter((v) => v.arrivalTime >= fromDate);
-    }
-
-    if (filters.arrivalDateTo) {
-      const toDate = new Date(filters.arrivalDateTo);
-      toDate.setHours(23, 59, 59, 999);
-      filtered = filtered.filter((v) => v.arrivalTime <= toDate);
-    }
-
-    if (filters.lastArrivalFrom) {
-      const fromDate = new Date(filters.lastArrivalFrom);
-      filtered = filtered.filter((v) => v.lastArrivalTime >= fromDate);
-    }
-
-    if (filters.lastArrivalTo) {
-      const toDate = new Date(filters.lastArrivalTo);
-      toDate.setHours(23, 59, 59, 999);
-      filtered = filtered.filter((v) => v.lastArrivalTime <= toDate);
-    }
-
-    setFilteredVessels(filtered);
-  };
-
-  const handleRefresh = () => {
-    const mockVessels = generateMockVessels(30);
-    setVessels(mockVessels);
-    setFilteredVessels(mockVessels);
-  };
-
   const handleVesselClick = (vesselId: string) => {
-    const vessel = vessels.find((v) => v.id === vesselId);
-    if (vessel) {
-      const detailedVessel = generateDetailedVessel(vessel);
-      setSelectedVessel(detailedVessel);
-    }
+    // TODO: Fetch actual vessel details by ID from API
+    // For now, using mock data
+    const mockVessel = {
+      id: vesselId,
+      name: "Mock Vessel",
+      type: "Container Ship",
+      imo: vesselId,
+      flag: "Singapore",
+      threatLevel: 1,
+      arrivalTime: new Date(),
+      lastArrivalTime: new Date(),
+    };
+    const detailedVessel = generateDetailedVessel(mockVessel);
+    setSelectedVessel(detailedVessel);
   };
 
   const handleBackToList = () => {
     setSelectedVessel(null);
   };
+
+  if (isLoading) {
+    return (
+      <main className="px-8 py-6">
+        <div>Loading vessels...</div>
+      </main>
+    );
+  }
+
+  if (error) {
+    return (
+      <main className="px-8 py-6">
+        <div>Error loading vessels: {error.message}</div>
+      </main>
+    );
+  }
 
   return (
     <main className="px-8 py-6">
@@ -135,20 +74,16 @@ function App() {
         <VesselDetails vessel={selectedVessel} onBack={handleBackToList} />
       ) : (
         <>
-          <div className="flex items-center justify-between mb-6">
-            <h1>Pre-Arrival Notice</h1>
-            <div className="flex-1 max-w-2xl ml-8">
-              <SearchBar
-                onSearch={handleSearch}
-                onAdvancedSearch={handleAdvancedSearch}
-              />
-            </div>
+          <div className="mb-6">
+            <h1 className="mb-2">Pre-Arrival Notice</h1>
+            <p className="text-muted-foreground">
+              Vessels arriving within 24-72 hours to Singapore
+            </p>
           </div>
-          <VesselTable
-            vessels={filteredVessels}
-            onRefresh={handleRefresh}
-            onVesselClick={handleVesselClick}
-          />
+
+          <div className="space-y-6">
+            <VesselTable vessels={vessels} onVesselClick={handleVesselClick} />
+          </div>
         </>
       )}
     </main>

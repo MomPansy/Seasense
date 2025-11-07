@@ -1,46 +1,32 @@
-import { Vessel } from "../components/VesselTable";
+export interface Vessel {
+  id: string;
+  name: string;
+  type: string;
+  imo: string;
+  threatLevel: number;
+  arrivalTime: Date;
+  lastArrivalTime: Date;
+}
 
 export interface VesselDetails extends Vessel {
   modelNumber: string;
   lastPorts: { port: string; country: string }[];
   groupOwner: string;
   companyCountry: string;
-  registeredOwner: string;
-  operator: string;
-  complianceCountries: string[];
   threatPercentage: number;
   parameters: string[];
 }
 
 const vesselTypes = [
-  "Chemical Tankers",
-  "LNG Tankers",
-  "LPG Tankers",
-  "Other Tankers",
-  "Bulk Carriers",
-  "Container",
-  "General Cargo",
-  "Other Dry Cargo",
-  "Passenger",
-  "Refrigerated Cargo",
-  "Ro-Ro Cargo",
-  "Other Non-Merchant Ships",
+  "Container Ship",
+  "Tanker",
+  "Bulk Carrier",
+  "Cargo Ship",
+  "Passenger Ship",
+  "Oil Tanker",
+  "Chemical Tanker",
+  "LNG Carrier",
 ];
-
-const vesselTypeThreatLevels: Record<string, number> = {
-  "Chemical Tankers": 3,
-  "LNG Tankers": 4,
-  "LPG Tankers": 4,
-  "Other Tankers": 2, // default
-  "Bulk Carriers": 2,
-  Container: 3,
-  "General Cargo": 3,
-  "Other Dry Cargo": 3,
-  Passenger: 3,
-  "Refrigerated Cargo": 3,
-  "Ro-Ro Cargo": 3,
-  "Other Non-Merchant Ships": 3,
-};
 
 const vesselNames = [
   "MAERSK ESSEX",
@@ -100,67 +86,6 @@ const countries = [
   "Liberia",
   "Marshall Islands",
 ];
-
-const locationCodes = [
-  "PBG01",
-  "PBG02",
-  "PBG03",
-  "PBG04",
-  "PBG05",
-  "ANC-A",
-  "ANC-B",
-  "ANC-C",
-  "ANC-D",
-  "ANC-E",
-  "PBG-NORTH",
-  "PBG-SOUTH",
-  "ANC-EAST",
-  "ANC-WEST",
-];
-
-const registeredOwners = [
-  "Seaborne Ventures Ltd",
-  "Oceanic Holdings Inc",
-  "Maritime Assets Corp",
-  "Global Shipping Partners",
-  "Pacific Fleet Management",
-  "Atlantic Vessel Co",
-  "Eastern Maritime Group",
-  "Western Shipping LLC",
-  "Nordic Marine Holdings",
-  "Southern Ocean Enterprises",
-];
-
-const operators = [
-  "Maersk Line",
-  "Ocean Network Express",
-  "Mediterranean Shipping Company",
-  "CMA CGM Group",
-  "Hapag-Lloyd",
-  "Evergreen Marine",
-  "COSCO Shipping",
-  "Yang Ming Marine",
-  "Hyundai Merchant Marine",
-  "Pacific International Lines",
-];
-
-function generateCallSign(): string {
-  const letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-  let callSign = "";
-  for (let i = 0; i < 5; i++) {
-    callSign += letters.charAt(Math.floor(Math.random() * letters.length));
-  }
-  return callSign;
-}
-
-function getRandomLocation(): string {
-  return locationCodes[Math.floor(Math.random() * locationCodes.length)];
-}
-
-function getRandomCountries(count: number): string[] {
-  const shuffled = [...countries].sort(() => 0.5 - Math.random());
-  return shuffled.slice(0, count);
-}
 
 const ports = [
   { port: "Port Klang", country: "Malaysia" },
@@ -223,17 +148,6 @@ export function generateMockVessels(count = 30): Vessel[] {
   const vessels: Vessel[] = [];
 
   for (let i = 0; i < count; i++) {
-    const vesselType =
-      vesselTypes[Math.floor(Math.random() * vesselTypes.length)];
-    // Use predefined threat level for vessel type, with some randomness
-    const baseThreatLevel = vesselTypeThreatLevels[vesselType] || 2;
-    const threatLevel = Math.max(
-      2,
-      Math.min(5, baseThreatLevel + Math.floor(Math.random() * 2) - 1),
-    );
-    const threatPercentage =
-      10 + threatLevel * 15 + Math.floor(Math.random() * 10);
-
     vessels.push({
       id: `vessel-${i + 1}`,
       name:
@@ -241,13 +155,9 @@ export function generateMockVessels(count = 30): Vessel[] {
         (i >= vesselNames.length
           ? ` ${Math.floor(i / vesselNames.length) + 1}`
           : ""),
-      type: vesselType,
-      imo: `${9000000 + Math.floor(Math.random() * 999999)}`,
-      callSign: generateCallSign(),
-      locationFrom: getRandomLocation(),
-      locationTo: getRandomLocation(),
-      threatLevel,
-      threatPercentage,
+      type: vesselTypes[Math.floor(Math.random() * vesselTypes.length)],
+      imo: `IMO${9000000 + Math.floor(Math.random() * 999999)}`,
+      threatLevel: Math.floor(Math.random() * 5) + 1,
       arrivalTime: generateRandomDate(24, 48), // 24-72 hours from now
       lastArrivalTime: generatePastDate(30, 180), // 1-6 months ago
     });
@@ -257,16 +167,16 @@ export function generateMockVessels(count = 30): Vessel[] {
 }
 
 export function generateDetailedVessel(vessel: Vessel): VesselDetails {
+  const threatPercentage =
+    10 + vessel.threatLevel * 15 + Math.floor(Math.random() * 10);
+
   return {
     ...vessel,
     modelNumber: `MK-${Math.floor(Math.random() * 9000) + 1000}`,
     lastPorts: getRandomPorts(5),
     groupOwner: groupOwners[Math.floor(Math.random() * groupOwners.length)],
     companyCountry: countries[Math.floor(Math.random() * countries.length)],
-    registeredOwner:
-      registeredOwners[Math.floor(Math.random() * registeredOwners.length)],
-    operator: operators[Math.floor(Math.random() * operators.length)],
-    complianceCountries: getRandomCountries(2 + Math.floor(Math.random() * 3)),
+    threatPercentage,
     parameters: generateThreatParameters(vessel.type, vessel.threatLevel),
   };
 }
