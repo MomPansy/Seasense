@@ -3,13 +3,13 @@ import json
 from datetime import datetime
 from loguru import logger
 
-class Ingestor:
+class DataFetcher:
     def __init__(self, data_name, endpoint, api_key):
         self.data_name = data_name
         self.endpoint = endpoint
         self.api_key = api_key
 
-    def fetch_data(self, api, api_key):
+    def call_api(self, api, api_key):
         try:
             r = requests.get(api, headers={"apikey": api_key}, timeout=10)
             r.raise_for_status()
@@ -33,8 +33,8 @@ class Ingestor:
                 (self.endpoint, status_code, json.dumps(response_json) if response_json is not None else None, details)
             )
         
-    def ingest(self, conn):
-        status, data, err = self.fetch_data(self.endpoint, self.api_key)
+    def fetch(self, conn):
+        status, data, err = self.call_api(self.endpoint, self.api_key)
         with conn:
             self.save_raw(conn, status if status else 0, data, err)      
         if status >= 300:

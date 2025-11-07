@@ -19,19 +19,4 @@ source .venv/bin/activate
 pip install -r etl/requirements.txt -q
 
 # Run Python ETL scripts
-for TABLE in "${TABLES[@]}"; do
-  SCRIPT_PATH="etl/src/update_${TABLE}.py"
-
-  if [ ! -f "$SCRIPT_PATH" ]; then
-    echo "ERROR: ETL script not found for data '$TABLE'. Expected file: $SCRIPT_PATH"
-    exit 1  # stop the whole run immediately
-  fi
-
-  echo "Running ETL for data: $TABLE"
-  npm run envx -- run \
-    --env-file .env.production \
-    --env-file .env.development \
-    --overload \
-    -- python "$SCRIPT_PATH"
-  
-done
+npm run envx -- run --env-file .env.production --env-file .env.development --overload -- python etl/src/main.py "$@"

@@ -1,4 +1,4 @@
-class DbInitializer:
+class EtlDbInitializer:
     def __init__(self, conn, data_name):
         self.conn = conn
         self.data_name = data_name
