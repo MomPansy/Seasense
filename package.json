@@ -89,7 +89,7 @@
     "lint": "eslint .",
     "lint:fix": "eslint . --fix && prettier . --write",
     "preview": "vite preview",
-    "start": "npm run envx:run -- node dist/index.js",
+    "start": "dotenvx run --env-file .env.production -- node dist/index.js",
     "db:gen": "dotenvx run --env-file .env.production --env-file .env.development --overload -- drizzle-kit generate",
     "db:mig": "dotenvx run --env-file .env.production --env-file .env.development --overload -- drizzle-kit migrate",
     "prepare": "husky install",

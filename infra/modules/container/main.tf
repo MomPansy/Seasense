@@ -127,28 +127,16 @@ resource "aws_ecs_task_definition" "main" {
           valueFrom = aws_secretsmanager_secret.dotenv_private_key.arn
         }
       ]
-
-      healthCheck = {
-        command = [
-          "CMD-SHELL",
-          "curl -f http://localhost:${var.container_port}/api/health || exit 1"
-        ]
-        interval    = 30
-        timeout     = 5
-        retries     = 3
-        startPeriod = 60
-      }
     }
   ])
-
   lifecycle {
-    # Allow CI/CD to update the image tag in the task definition without Terraform drifting it back
-    ignore_changes = [container_definitions]
+    ignore_changes = [ container_definitions ]
   }
 
   tags = {
     Name = "${var.project_name}-task-definition"
   }
+
 }
 
 # ------------------------------------------------------------------------------
