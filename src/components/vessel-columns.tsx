@@ -1,3 +1,4 @@
+import { useNavigate } from "@tanstack/react-router";
 import { ColumnDef } from "@tanstack/react-table";
 import { InferResponseType } from "hono/client";
 import { ArrowUpDown } from "lucide-react";
@@ -23,7 +24,7 @@ const formatDateTime = (dateString: string | null) => {
 };
 
 export const createColumns = (
-  onVesselClick: (vesselId: string) => void,
+  navigate: ReturnType<typeof useNavigate>,
 ): ColumnDef<ArrivingVesselsResponse>[] => [
   {
     id: "select",
@@ -95,9 +96,14 @@ export const createColumns = (
       <Button
         variant="link"
         className="p-0 h-auto font-normal"
-        onClick={() =>
-          onVesselClick(row.original.vesselArrivalDetails.id.toString())
-        }
+        onClick={() => {
+          if (!row.original.vesselArrivalDetails.imo) return;
+          navigate({
+            to: `/vessel/$imo`,
+            params: { imo: row.original.vesselArrivalDetails.imo },
+          });
+        }}
+        disabled={!row.original.vesselArrivalDetails.imo}
       >
         {row.original.vesselArrivalDetails.vesselName ?? "N/A"}
       </Button>

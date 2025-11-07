@@ -27,12 +27,8 @@ export function VesselTable({ vessels }: VesselTableProps) {
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = useState<RowSelectionState>({});
-  const onVesselClick = (vesselId: string) => {
-    // Handle vessel row click, e.g., navigate to vessel details page
-    navigate({ to: `/vessel/$id`, params: { id: vesselId } });
-  };
 
-  const columns = createColumns(onVesselClick);
+  const columns = createColumns(navigate);
 
   return (
     <Stack direction="column" gap="4">

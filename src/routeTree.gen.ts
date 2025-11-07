@@ -10,43 +10,43 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as VesselIdRouteImport } from './routes/vessel.$id'
+import { Route as VesselImoRouteImport } from './routes/vessel.$imo'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const VesselIdRoute = VesselIdRouteImport.update({
-  id: '/vessel/$id',
-  path: '/vessel/$id',
+const VesselImoRoute = VesselImoRouteImport.update({
+  id: '/vessel/$imo',
+  path: '/vessel/$imo',
   getParentRoute: () => rootRouteImport,
 } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/vessel/$id': typeof VesselIdRoute
+  '/vessel/$imo': typeof VesselImoRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/vessel/$id': typeof VesselIdRoute
+  '/vessel/$imo': typeof VesselImoRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
-  '/vessel/$id': typeof VesselIdRoute
+  '/vessel/$imo': typeof VesselImoRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/vessel/$id'
+  fullPaths: '/' | '/vessel/$imo'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/vessel/$id'
-  id: '__root__' | '/' | '/vessel/$id'
+  to: '/' | '/vessel/$imo'
+  id: '__root__' | '/' | '/vessel/$imo'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  VesselIdRoute: typeof VesselIdRoute
+  VesselImoRoute: typeof VesselImoRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -58,11 +58,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/vessel/$id': {
-      id: '/vessel/$id'
-      path: '/vessel/$id'
-      fullPath: '/vessel/$id'
-      preLoaderRoute: typeof VesselIdRouteImport
+    '/vessel/$imo': {
+      id: '/vessel/$imo'
+      path: '/vessel/$imo'
+      fullPath: '/vessel/$imo'
+      preLoaderRoute: typeof VesselImoRouteImport
       parentRoute: typeof rootRouteImport
     }
   }
@@ -70,7 +70,7 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  VesselIdRoute: VesselIdRoute,
+  VesselImoRoute: VesselImoRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
