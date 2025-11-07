@@ -4,6 +4,13 @@ export NVM_DIR="$HOME/.nvm"
 
 npm run build:typecheck
 
-# Run ESLint and fail only on errors (ignore warnings)
-echo "Running ESLint..."
-npm run lint -- --max-warnings=-1 --quiet || exit 1
+# Run ESLint on staged files only
+echo "Running ESLint on staged files..."
+STAGED_FILES=$(git diff --cached --name-only --diff-filter=ACM | grep -E '\.(js|jsx|ts|tsx)$' || true)
+
+if [ -n "$STAGED_FILES" ]; then
+  echo "Linting: $STAGED_FILES"
+  npx eslint $STAGED_FILES --max-warnings=-1 --quiet || exit 1
+else
+  echo "No JavaScript/TypeScript files to lint."
+fi
