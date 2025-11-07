@@ -36,18 +36,15 @@ export const scoreVessel = (vessel_info: typeof vessels.$inferSelect) => {
       );
     }
 
+    const registeredOwner = vessel_info.registeredOwner?.trim().toLowerCase();
     if (
-      !vessel_info.registeredOwner ||
-      /Unknown/.exec(vessel_info.registeredOwner)
+      !registeredOwner ||
+      registeredOwner === "." ||
+      registeredOwner.includes("unknown")
     ) {
       score += 10;
       tripped_rules.push("The vessel has no registered owner.");
     }
-  }
-
-  if (!vessel_info.registeredOwner) {
-    score += 10;
-    tripped_rules.push("The vessel has no registered owner.");
   }
 
   return {
