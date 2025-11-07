@@ -202,3 +202,5 @@ export const vessels = pgTable("vessels", {
   ),
   safetyManagementCertificateSource: text("SafetyManagementCertificateSource"),
 });
+
+export type VesselDetails = typeof vessels.$inferSelect;

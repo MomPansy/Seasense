@@ -3,11 +3,12 @@ import { addHours, format } from "date-fns";
 import { and, eq, gte, ilike, lte } from "drizzle-orm";
 import { stringSimilarity } from "string-similarity-js";
 import { z } from "zod";
+import { arrivalRuleset } from "server/constants/rules.ts";
 import { vessels } from "server/drizzle/vessels.ts";
 import { vesselsDueToArrive } from "server/drizzle/vessels_due_to_arrive.ts";
 import { factory } from "server/factory.ts";
 import { db } from "server/lib/db.ts";
-import { scoreVessel } from "server/services/score.ts";
+import { scoreVessel, checkedRule } from "server/services/score.ts";
 
 export const route = factory
   .createApp()
@@ -77,14 +78,19 @@ export const route = factory
 
     const vesselInfoWithScores = vesselInfo.map((vessel) => {
       let score = {
-        score: 0,
-        tripped_rules: new Array<string>(),
+        score: 100,
+        level: -1,
+        checkedRules: new Array<checkedRule>(),
+        manualRules: arrivalRuleset.rules.concat(arrivalRuleset.manualRules),
       };
       if (!vessel.vessels) {
-        score.score = -1;
-        score.tripped_rules.push(
-          "This vessel could not be found in the IHS database.",
-        );
+        score.checkedRules.push({
+          name: "Invalid IMO",
+          weight: 100,
+          description:
+            "This vessel either did not provide an IMO number or provided an invalid one.",
+          tripped: true,
+        });
       } else if (
         stringSimilarity(
           vessel.vessels.shipName ?? "",
@@ -95,12 +101,15 @@ export const route = factory
           vessel.vessels_due_to_arrive.vesselName ?? "",
         ) < 0.5
       ) {
-        score.score = -1;
-        score.tripped_rules.push(
-          "This IMO number refers to different vessels within the MDH and IHS databases.",
-        );
+        score.checkedRules.push({
+          name: "Incorrect IMO",
+          weight: 100,
+          description:
+            "This IMO number refers to different vessels within the MDH and IHS databases.",
+          tripped: true,
+        });
       } else {
-        score = scoreVessel(vessel.vessels);
+        score = scoreVessel(vessel.vessels, arrivalRuleset);
       }
 
       return {

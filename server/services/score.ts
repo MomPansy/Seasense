@@ -1,54 +1,41 @@
-import { vessels } from "server/drizzle/vessels.ts";
+import { Rule, Ruleset } from "server/constants/rules.ts";
+import { VesselDetails } from "server/drizzle/vessels.ts";
 
-const SHIPCODES_OF_INTEREST = [
-  "A11", // LNG/LPG tankers
-  "A12", // chem tankers
-  "A13", // oil tankers
-  "A22", // oil bulk carriers
-  "W11", // non-seagoing tanker
-];
+export interface checkedRule extends Rule {
+  tripped: boolean;
+}
 
-// TODO: track tripped rules
-// TODO: make flexible (don't hardcode rules here)
-export const scoreVessel = (vessel_info: typeof vessels.$inferSelect) => {
+export const scoreVessel = (vesselInfo: VesselDetails, ruleset: Ruleset) => {
   let score = 0;
-  const tripped_rules: string[] = [];
-  // door condition
-  if (
-    SHIPCODES_OF_INTEREST.some((codeprefix) =>
-      vessel_info.statCode5?.startsWith(codeprefix),
-    )
-  ) {
-    score += 30;
-    tripped_rules.push(`The vessel is of type ${vessel_info.shiptypeLevel5}.`);
-    if (
-      [
-        vessel_info.shiponEuSanctionList,
-        vessel_info.shiponOfacNonSdnSanctionList,
-        vessel_info.shiponOfacSanctionList,
-        vessel_info.shiponUnSanctionList,
-        vessel_info.shiponUsTreasuryOfacAdvisoryList,
-      ].some((val) => val === "True")
-    ) {
-      score += 20;
-      tripped_rules.push(
-        "The vessel is on one or more of the OFAC, EU and UN sanction lists.",
-      );
-    }
+  let level = 0;
+  const checkedRules: checkedRule[] = [];
+  const manualRules = ruleset.manualRules;
 
-    const registeredOwner = vessel_info.registeredOwner?.trim().toLowerCase();
-    if (
-      !registeredOwner ||
-      registeredOwner === "." ||
-      registeredOwner.includes("unknown")
-    ) {
-      score += 10;
-      tripped_rules.push("The vessel has no registered owner.");
-    }
+  if (ruleset.door.ruleFn?.(vesselInfo)) {
+    score += ruleset.door.weight;
+    checkedRules.push({ ...ruleset.door, tripped: true });
+    ruleset.rules.forEach((rule) => {
+      if (rule.ruleFn?.(vesselInfo)) {
+        checkedRules.push({ ...rule, tripped: true });
+        score += rule.weight;
+      } else {
+        checkedRules.push({ ...rule, tripped: false });
+      }
+    });
+    ruleset.levels.forEach((levelThreshold) => {
+      if (score >= levelThreshold.threshold) level = levelThreshold.level;
+    });
+  } else {
+    checkedRules.push({ ...ruleset.door, tripped: false });
+    ruleset.rules.forEach((rule) => {
+      checkedRules.push({ ...rule, tripped: false });
+    });
   }
 
   return {
     score,
-    tripped_rules,
+    level,
+    checkedRules,
+    manualRules,
   };
 };

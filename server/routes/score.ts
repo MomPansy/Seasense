@@ -1,6 +1,7 @@
 import { zValidator } from "@hono/zod-validator";
 import { eq } from "drizzle-orm";
 import { z } from "zod";
+import { arrivalRuleset } from "server/constants/rules.ts";
 import { vessels } from "server/drizzle/vessels.ts";
 import { factory } from "server/factory.ts";
 import { db } from "server/lib/db.ts";
@@ -16,13 +17,13 @@ export const scoreRoute = factory.createApp().get(
   ),
   async (c) => {
     const vesselimo = c.req.param("vesselimo");
-    const vessel_info = (
+    const vesselInfo = (
       await db
         .select()
         .from(vessels)
         .where(eq(vessels.ihslRorImoShipNo, vesselimo))
     )[0];
-    const score_info = scoreVessel(vessel_info);
-    return c.json(score_info);
+    const scoreInfo = scoreVessel(vesselInfo, arrivalRuleset);
+    return c.json(scoreInfo);
   },
 );
