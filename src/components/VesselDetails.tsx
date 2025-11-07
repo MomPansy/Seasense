@@ -56,7 +56,7 @@ export function VesselDetails({ vessel, onBack }: VesselDetailsProps) {
               <strong>{vessel.name}</strong>, a {vessel.type} of{" "}
               {vessel.modelNumber}, and{" "}
               <a
-                href="https://maritime.ihs.com/"
+                href={`https://www.marinetraffic.com/en/ais/details/ships/imo:${vessel.imo}`}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-primary hover:underline"

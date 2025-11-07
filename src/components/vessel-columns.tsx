@@ -60,16 +60,23 @@ export const createColumns = (
         </Button>
       );
     },
-    cell: ({ row }) => (
-      <a
-        href="https://maritime.ihs.com/"
-        target="_blank"
-        rel="noopener noreferrer"
-        className="text-primary hover:underline"
-      >
-        {row.original.vesselArrivalDetails.imo ?? "N/A"}
-      </a>
-    ),
+    cell: ({ row }) => {
+      const imo = row.original.vesselArrivalDetails.imo;
+      const href = imo
+        ? `https://www.marinetraffic.com/en/ais/details/ships/imo:${imo}`
+        : "https://www.marinetraffic.com/";
+
+      return (
+        <a
+          href={href}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-primary hover:underline"
+        >
+          {imo ?? "N/A"}
+        </a>
+      );
+    },
   },
   {
     accessorKey: "vesselArrivalDetails.vesselName",
