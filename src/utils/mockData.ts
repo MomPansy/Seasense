@@ -1,4 +1,12 @@
-import { Vessel } from "../components/VesselTable";
+export interface Vessel {
+  id: string;
+  name: string;
+  type: string;
+  imo: string;
+  threatLevel: number;
+  arrivalTime: Date;
+  lastArrivalTime: Date;
+}
 
 export interface VesselDetails extends Vessel {
   modelNumber: string;

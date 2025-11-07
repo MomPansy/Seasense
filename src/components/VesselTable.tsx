@@ -4,96 +4,57 @@ import {
   VisibilityState,
   RowSelectionState,
 } from "@tanstack/react-table";
-import { RefreshCw, Download } from "lucide-react";
+import { InferResponseType } from "hono/client";
 import { useState } from "react";
-import { toast } from "sonner";
+import { api } from "@/lib/api";
 import { DataTable } from "./data-table";
-import { Button } from "./ui/button";
-import { createColumns, Vessel } from "./vessel-columns";
+import { Stack } from "./ui/stack";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "./ui/tabs";
+import { createColumns } from "./vessel-columns";
 
-export type { Vessel } from "./vessel-columns";
+type ArrivingVesselsResponse = InferResponseType<
+  typeof api.vessels.arriving.$get
+>;
 
 interface VesselTableProps {
-  vessels: Vessel[];
-  onRefresh: () => void;
+  vessels: ArrivingVesselsResponse;
   onVesselClick: (vesselId: string) => void;
 }
 
-export function VesselTable({
-  vessels,
-  onRefresh,
-  onVesselClick,
-}: VesselTableProps) {
+export function VesselTable({ vessels, onVesselClick }: VesselTableProps) {
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = useState<RowSelectionState>({});
-  const [currentView, setCurrentView] = useState<"all" | "watchlist">("all");
 
   const columns = createColumns(onVesselClick);
 
-  const handleExport = () => {
-    const selectedCount = Object.keys(rowSelection).length;
-    const dataToExport = selectedCount > 0 ? selectedCount : vessels.length;
-
-    toast.success(`Exporting ${dataToExport} vessel(s) to Excel`);
-  };
-
-  const selectedCount = Object.keys(rowSelection).length;
-
   return (
-    <div className="space-y-4">
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-4">
-          <div className="flex gap-2">
-            <Button
-              variant={currentView === "all" ? "default" : "outline"}
-              onClick={() => setCurrentView("all")}
-            >
-              All Ships ({vessels.length})
-            </Button>
-            <Button
-              variant={currentView === "watchlist" ? "default" : "outline"}
-              onClick={() => setCurrentView("watchlist")}
-            >
-              Preset Watchlists
-            </Button>
-          </div>
-        </div>
-
-        <div className="flex items-center gap-2">
-          <Button variant="outline" size="sm" onClick={onRefresh}>
-            <RefreshCw className="h-4 w-4 mr-2" />
-            Refresh
-          </Button>
-          <Button variant="outline" size="sm" onClick={handleExport}>
-            <Download className="h-4 w-4 mr-2" />
-            Export Report
-          </Button>
-        </div>
-      </div>
-
-      <DataTable
-        columns={columns}
-        data={vessels}
-        sorting={sorting}
-        setSorting={setSorting}
-        columnFilters={columnFilters}
-        setColumnFilters={setColumnFilters}
-        columnVisibility={columnVisibility}
-        setColumnVisibility={setColumnVisibility}
-        rowSelection={rowSelection}
-        setRowSelection={setRowSelection}
-      />
-
-      {selectedCount > 0 && (
-        <div className="flex items-center justify-between bg-primary/10 px-4 py-2 rounded-md">
-          <span className="text-sm">{selectedCount} vessel(s) selected</span>
-          <Button variant="ghost" size="sm" onClick={() => setRowSelection({})}>
-            Clear Selection
-          </Button>
-        </div>
-      )}
-    </div>
+    <Stack direction="column" gap="4">
+      <Tabs defaultValue="Vessel Scoring & Threat Evaluation">
+        <TabsList>
+          <TabsTrigger value="Vessel Scoring & Threat Evaluation">
+            Vessel Scoring & Threat Evaluation
+          </TabsTrigger>
+          <TabsTrigger value="Vessel Risk Profiling">
+            Vessel Risk Profiling
+          </TabsTrigger>
+        </TabsList>
+        <TabsContent value="Vessel Scoring & Threat Evaluation">
+          <DataTable
+            columns={columns}
+            data={vessels}
+            sorting={sorting}
+            setSorting={setSorting}
+            columnFilters={columnFilters}
+            setColumnFilters={setColumnFilters}
+            columnVisibility={columnVisibility}
+            setColumnVisibility={setColumnVisibility}
+            rowSelection={rowSelection}
+            setRowSelection={setRowSelection}
+          />
+        </TabsContent>
+      </Tabs>
+    </Stack>
   );
 }
