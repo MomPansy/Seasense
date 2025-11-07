@@ -1,3 +1,4 @@
+import { useNavigate } from "@tanstack/react-router";
 import {
   ColumnFiltersState,
   SortingState,
@@ -18,14 +19,18 @@ type ArrivingVesselsResponse = InferResponseType<
 
 interface VesselTableProps {
   vessels: ArrivingVesselsResponse;
-  onVesselClick: (vesselId: string) => void;
 }
 
-export function VesselTable({ vessels, onVesselClick }: VesselTableProps) {
+export function VesselTable({ vessels }: VesselTableProps) {
+  const navigate = useNavigate();
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = useState<RowSelectionState>({});
+  const onVesselClick = (vesselId: string) => {
+    // Handle vessel row click, e.g., navigate to vessel details page
+    navigate({ to: `/vessel/$id`, params: { id: vesselId } });
+  };
 
   const columns = createColumns(onVesselClick);
 

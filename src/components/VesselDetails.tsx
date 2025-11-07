@@ -1,3 +1,4 @@
+import { useNavigate } from "@tanstack/react-router";
 import { ArrowLeft, Download } from "lucide-react";
 import { toast } from "sonner";
 import { VesselDetails as VesselDetailsType } from "../utils/mockData";
@@ -7,10 +8,10 @@ import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
 
 interface VesselDetailsProps {
   vessel: VesselDetailsType;
-  onBack: () => void;
 }
 
-export function VesselDetails({ vessel, onBack }: VesselDetailsProps) {
+export function VesselDetails({ vessel }: VesselDetailsProps) {
+  const navigate = useNavigate();
   const formatDate = (date: Date) => {
     const day = String(date.getDate()).padStart(2, "0");
     const month = String(date.getMonth() + 1).padStart(2, "0");
@@ -33,7 +34,11 @@ export function VesselDetails({ vessel, onBack }: VesselDetailsProps) {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-4">
-          <Button variant="outline" size="sm" onClick={onBack}>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => navigate({ to: "/" })}
+          >
             <ArrowLeft className="h-4 w-4 mr-2" />
             Back to List
           </Button>
