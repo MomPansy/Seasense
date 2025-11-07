@@ -48,6 +48,30 @@ export const createColumns = (
     enableHiding: false,
   },
   {
+    accessorKey: "vesselArrivalDetails.imo",
+    header: ({ column }) => {
+      return (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        >
+          IMO Number
+          <ArrowUpDown className="ml-2 h-4 w-4" />
+        </Button>
+      );
+    },
+    cell: ({ row }) => (
+      <a
+        href="https://maritime.ihs.com/"
+        target="_blank"
+        rel="noopener noreferrer"
+        className="text-primary hover:underline"
+      >
+        {row.original.vesselArrivalDetails.imo ?? "N/A"}
+      </a>
+    ),
+  },
+  {
     accessorKey: "vesselArrivalDetails.vesselName",
     header: ({ column }) => {
       return (
@@ -73,6 +97,20 @@ export const createColumns = (
     ),
   },
   {
+    accessorKey: "vesselArrivalDetails.callsign",
+    header: ({ column }) => {
+      return (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        >
+          Call Sign
+          <ArrowUpDown className="ml-2 h-4 w-4" />
+        </Button>
+      );
+    },
+  },
+  {
     accessorKey: "vesselDetails.shiptypeLevel5",
     header: ({ column }) => {
       return (
@@ -88,28 +126,18 @@ export const createColumns = (
     cell: ({ row }) => row.original.vesselDetails?.shiptypeLevel5 ?? "N/A",
   },
   {
-    accessorKey: "vesselArrivalDetails.imo",
+    accessorKey: "vesselArrivalDetails.flag",
     header: ({ column }) => {
       return (
         <Button
           variant="ghost"
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
         >
-          IMO Number
+          Flag
           <ArrowUpDown className="ml-2 h-4 w-4" />
         </Button>
       );
     },
-    cell: ({ row }) => (
-      <a
-        href="https://maritime.ihs.com/"
-        target="_blank"
-        rel="noopener noreferrer"
-        className="text-primary hover:underline"
-      >
-        {row.original.vesselArrivalDetails.imo ?? "N/A"}
-      </a>
-    ),
   },
   {
     accessorKey: "score.score",
@@ -119,37 +147,12 @@ export const createColumns = (
           variant="ghost"
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
         >
-          Preliminary Threat Score
+          Initial Threat Score
           <ArrowUpDown className="ml-2 h-4 w-4" />
         </Button>
       );
     },
     cell: ({ row }) => <ThreatBadge level={row.original.score.score} />,
-  },
-  {
-    accessorKey: "vesselArrivalDetails.dueToArriveTime",
-    header: ({ column }) => {
-      return (
-        <Button
-          variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-        >
-          Due to Arrive
-          <ArrowUpDown className="ml-2 h-4 w-4" />
-        </Button>
-      );
-    },
-    cell: ({ row }) =>
-      formatDateTime(row.original.vesselArrivalDetails.dueToArriveTime),
-    sortingFn: (rowA, rowB) => {
-      const dateA = rowA.original.vesselArrivalDetails.dueToArriveTime
-        ? new Date(rowA.original.vesselArrivalDetails.dueToArriveTime).getTime()
-        : 0;
-      const dateB = rowB.original.vesselArrivalDetails.dueToArriveTime
-        ? new Date(rowB.original.vesselArrivalDetails.dueToArriveTime).getTime()
-        : 0;
-      return dateA - dateB;
-    },
   },
   {
     accessorKey: "vesselArrivalDetails.locationFrom",
@@ -177,6 +180,31 @@ export const createColumns = (
           <ArrowUpDown className="ml-2 h-4 w-4" />
         </Button>
       );
+    },
+  },
+  {
+    accessorKey: "vesselArrivalDetails.dueToArriveTime",
+    header: ({ column }) => {
+      return (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        >
+          Arrival Time
+          <ArrowUpDown className="ml-2 h-4 w-4" />
+        </Button>
+      );
+    },
+    cell: ({ row }) =>
+      formatDateTime(row.original.vesselArrivalDetails.dueToArriveTime),
+    sortingFn: (rowA, rowB) => {
+      const dateA = rowA.original.vesselArrivalDetails.dueToArriveTime
+        ? new Date(rowA.original.vesselArrivalDetails.dueToArriveTime).getTime()
+        : 0;
+      const dateB = rowB.original.vesselArrivalDetails.dueToArriveTime
+        ? new Date(rowB.original.vesselArrivalDetails.dueToArriveTime).getTime()
+        : 0;
+      return dateA - dateB;
     },
   },
 ];
