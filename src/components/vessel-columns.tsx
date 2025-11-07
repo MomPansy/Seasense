@@ -9,7 +9,7 @@ import { Checkbox } from "./ui/checkbox";
 
 // This will give you the exact response type from the endpoint
 type ArrivingVesselsResponse = InferResponseType<
-  typeof api.vessels.arriving.$get
+  typeof api.vessels.arriving.$post
 >[number];
 
 const formatDateTime = (dateString: string | null) => {

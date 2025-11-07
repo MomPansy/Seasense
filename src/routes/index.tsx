@@ -15,7 +15,7 @@ function App() {
   } = useQuery({
     queryKey: ["vessels", "arriving"],
     queryFn: async () => {
-      const response = await api.vessels.arriving.$get({ json: {} });
+      const response = await api.vessels.arriving.$post({ json: {} });
       if (!response.ok) {
         throw new Error("Failed to fetch vessels");
       }

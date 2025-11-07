@@ -15,7 +15,7 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from "./ui/tabs";
 import { createColumns } from "./vessel-columns";
 
 type ArrivingVesselsResponse = InferResponseType<
-  typeof api.vessels.arriving.$get
+  typeof api.vessels.arriving.$post
 >;
 
 interface VesselTableProps {

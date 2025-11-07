@@ -56,7 +56,7 @@ export const route = factory
       return c.json(vessel[0]);
     },
   )
-  .get(
+  .post(
     "/arriving",
     zValidator(
       "json",
