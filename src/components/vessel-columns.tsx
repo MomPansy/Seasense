@@ -3,6 +3,7 @@ import { ColumnDef } from "@tanstack/react-table";
 import { InferResponseType } from "hono/client";
 import { ArrowUpDown } from "lucide-react";
 import { api } from "src/lib/api";
+import { DataTableColumnFilter } from "./data-table-column-filter";
 import { ThreatBadge } from "./ThreatBadge";
 import { Button } from "./ui/button";
 import { Checkbox } from "./ui/checkbox";
@@ -130,13 +131,20 @@ export const createColumns = (
         <Button
           variant="ghost"
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+          className="gap-1"
         >
           Vessel Type
           <ArrowUpDown className="h-4 w-4" />
+          <DataTableColumnFilter column={column} title="Vessel Type" />
         </Button>
       );
     },
     cell: ({ row }) => row.original.vesselDetails?.shiptypeLevel5 ?? "N/A",
+    filterFn: (row, columnId, filterValue: string[]) => {
+      if (filterValue.length === 0) return true;
+      const cellValue = String(row.getValue(columnId) ?? "N/A");
+      return filterValue.includes(cellValue);
+    },
   },
   {
     accessorKey: "vesselArrivalDetails.flag",
@@ -145,11 +153,18 @@ export const createColumns = (
         <Button
           variant="ghost"
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+          className="gap-1"
         >
           Flag
           <ArrowUpDown className="h-4 w-4" />
+          <DataTableColumnFilter column={column} title="Flag" />
         </Button>
       );
+    },
+    filterFn: (row, columnId, filterValue: string[]) => {
+      if (filterValue.length === 0) return true;
+      const cellValue = String(row.getValue(columnId));
+      return filterValue.includes(cellValue);
     },
   },
   {
@@ -159,13 +174,20 @@ export const createColumns = (
         <Button
           variant="ghost"
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+          className="gap-1"
         >
           Initial Threat Score
           <ArrowUpDown className="h-4 w-4" />
+          <DataTableColumnFilter column={column} title="Initial Threat Score" />
         </Button>
       );
     },
     cell: ({ row }) => <ThreatBadge level={row.original.score.score} />,
+    filterFn: (row, columnId, filterValue: string[]) => {
+      if (filterValue.length === 0) return true;
+      const cellValue = String(row.getValue(columnId));
+      return filterValue.includes(cellValue);
+    },
   },
   {
     accessorKey: "vesselArrivalDetails.locationFrom",
@@ -174,11 +196,18 @@ export const createColumns = (
         <Button
           variant="ghost"
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+          className="gap-1"
         >
           From
           <ArrowUpDown className="h-4 w-4" />
+          <DataTableColumnFilter column={column} title="From" />
         </Button>
       );
+    },
+    filterFn: (row, columnId, filterValue: string[]) => {
+      if (filterValue.length === 0) return true;
+      const cellValue = String(row.getValue(columnId));
+      return filterValue.includes(cellValue);
     },
   },
   {
@@ -188,11 +217,18 @@ export const createColumns = (
         <Button
           variant="ghost"
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+          className="gap-1"
         >
           To
           <ArrowUpDown className="h-4 w-4" />
+          <DataTableColumnFilter column={column} title="To" />
         </Button>
       );
+    },
+    filterFn: (row, columnId, filterValue: string[]) => {
+      if (filterValue.length === 0) return true;
+      const cellValue = String(row.getValue(columnId));
+      return filterValue.includes(cellValue);
     },
   },
   {
