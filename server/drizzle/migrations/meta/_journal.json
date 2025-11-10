@@ -57,6 +57,13 @@
       "when": 1762420857843,
       "tag": "0007_overjoyed_warstar",
       "breakpoints": false
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1762744813584,
+      "tag": "0008_huge_yellowjacket",
+      "breakpoints": false
     }
   ]
 }
