@@ -17,6 +17,7 @@ import { api } from "@/lib/api";
 import { mapStatCode } from "@/lib/utils";
 import { ColumnVisibilityDropdown } from "./ColumnVisibilityDropdown";
 import { DataTable } from "./data-table";
+import { ExportTableButton } from "./ExportTableButton";
 import { SearchBar } from "./SearchBar";
 import { Stack } from "./ui/stack";
 import { createColumns } from "./vessel-columns";
@@ -124,8 +125,9 @@ export function VesselTable({ vessels }: VesselTableProps) {
           <SearchBar onSearch={setSearchQuery} />
         </div>
       </div>
-      <div className="flex justify-end">
+      <div className="flex justify-end gap-2">
         <ColumnVisibilityDropdown table={table} columnLabels={columnLabels} />
+        <ExportTableButton table={table} columnLabels={columnLabels} />
       </div>
       <DataTable
         columns={columns}
