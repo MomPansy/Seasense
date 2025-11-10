@@ -185,7 +185,12 @@ export const createColumns = (
         </Button>
       );
     },
-    cell: ({ row }) => <ThreatBadge level={row.original.score.score} />,
+    cell: ({ row }) => (
+      <ThreatBadge
+        level={row.original.score.level}
+        percentage={row.original.score.score}
+      />
+    ),
     filterFn: (row, columnId, filterValue: string[]) => {
       if (filterValue.length === 0) return true;
       const cellValue = String(row.getValue(columnId));
