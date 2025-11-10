@@ -13,10 +13,24 @@ export const scoreVessel = (vesselInfo: VesselDetails, ruleset: Ruleset) => {
 
   if (ruleset.door.ruleFn?.(vesselInfo)) {
     score += ruleset.door.weight;
-    checkedRules.push({ ...ruleset.door, tripped: true });
+    checkedRules.push({
+      ...ruleset.door,
+      description:
+        typeof ruleset.door.description === "string"
+          ? ruleset.door.description
+          : ruleset.door.description(vesselInfo),
+      tripped: true,
+    });
     ruleset.rules.forEach((rule) => {
       if (rule.ruleFn?.(vesselInfo)) {
-        checkedRules.push({ ...rule, tripped: true });
+        checkedRules.push({
+          ...rule,
+          description:
+            typeof rule.description === "string"
+              ? rule.description
+              : rule.description(vesselInfo),
+          tripped: true,
+        });
         score += rule.weight;
       } else {
         checkedRules.push({ ...rule, tripped: false });
