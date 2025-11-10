@@ -4,11 +4,18 @@ import {
   SortingState,
   VisibilityState,
   RowSelectionState,
+  getCoreRowModel,
+  getSortedRowModel,
+  getFilteredRowModel,
+  getFacetedRowModel,
+  getFacetedUniqueValues,
+  useReactTable,
 } from "@tanstack/react-table";
 import { InferResponseType } from "hono/client";
 import { useState, useMemo, useDeferredValue } from "react";
 import { api } from "@/lib/api";
 import { mapStatCode } from "@/lib/utils";
+import { ColumnVisibilityDropdown } from "./ColumnVisibilityDropdown";
 import { DataTable } from "./data-table";
 import { SearchBar } from "./SearchBar";
 import { Stack } from "./ui/stack";
@@ -75,7 +82,40 @@ export function VesselTable({ vessels }: VesselTableProps) {
     });
   }, [vessels, deferredSearchQuery]);
 
-  const columns = createColumns(navigate);
+  const columns = useMemo(() => createColumns(navigate), [navigate]);
+
+  const table = useReactTable({
+    data: filteredVessels,
+    columns,
+    getCoreRowModel: getCoreRowModel(),
+    getSortedRowModel: getSortedRowModel(),
+    getFilteredRowModel: getFilteredRowModel(),
+    getFacetedRowModel: getFacetedRowModel(),
+    getFacetedUniqueValues: getFacetedUniqueValues(),
+    onSortingChange: setSorting,
+    onColumnFiltersChange: setColumnFilters,
+    onColumnVisibilityChange: setColumnVisibility,
+    onRowSelectionChange: setRowSelection,
+    state: {
+      sorting,
+      columnFilters,
+      columnVisibility,
+      rowSelection,
+    },
+  });
+
+  // Column labels for the visibility dropdown - match table headers
+  const columnLabels: Record<string, string> = {
+    vesselArrivalDetails_imo: "IMO Number",
+    vesselArrivalDetails_vesselName: "Vessel Name",
+    vesselArrivalDetails_callsign: "Call Sign",
+    vesselDetails_statCode5: "Vessel Type",
+    vesselDetails_flagName: "Flag",
+    score_score: "Initial Threat Score",
+    vesselArrivalDetails_locationFrom: "From",
+    vesselArrivalDetails_locationTo: "To",
+    vesselArrivalDetails_dueToArriveTime: "Arrival Time",
+  };
 
   return (
     <Stack direction="column" gap="4">
@@ -83,6 +123,9 @@ export function VesselTable({ vessels }: VesselTableProps) {
         <div className="w-full max-w-md">
           <SearchBar onSearch={setSearchQuery} />
         </div>
+      </div>
+      <div className="flex justify-end">
+        <ColumnVisibilityDropdown table={table} columnLabels={columnLabels} />
       </div>
       <DataTable
         columns={columns}
