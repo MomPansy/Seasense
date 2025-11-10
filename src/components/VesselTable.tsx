@@ -12,6 +12,7 @@ import {
   useReactTable,
 } from "@tanstack/react-table";
 import { InferResponseType } from "hono/client";
+import { Download } from "lucide-react";
 import { useState, useMemo, useDeferredValue } from "react";
 import { api } from "@/lib/api";
 import { mapStatCode } from "@/lib/utils";
@@ -19,6 +20,7 @@ import { ColumnVisibilityDropdown } from "./ColumnVisibilityDropdown";
 import { DataTable } from "./data-table";
 import { ExportTableButton } from "./ExportTableButton";
 import { SearchBar } from "./SearchBar";
+import { Button } from "./ui/button";
 import { Stack } from "./ui/stack";
 import { createColumns } from "./vessel-columns";
 
@@ -127,6 +129,10 @@ export function VesselTable({ vessels }: VesselTableProps) {
       </div>
       <div className="flex justify-end gap-2">
         <ColumnVisibilityDropdown table={table} columnLabels={columnLabels} />
+        <Button variant="outline" className="gap-2">
+          <Download className="h-4 w-4" />
+          Download Vessel Scoring
+        </Button>
         <ExportTableButton table={table} columnLabels={columnLabels} />
       </div>
       <DataTable
