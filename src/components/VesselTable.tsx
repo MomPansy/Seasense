@@ -11,7 +11,6 @@ import { api } from "@/lib/api";
 import { DataTable } from "./data-table";
 import { SearchBar } from "./SearchBar";
 import { Stack } from "./ui/stack";
-import { Tabs, TabsList, TabsTrigger, TabsContent } from "./ui/tabs";
 import { createColumns } from "./vessel-columns";
 
 type ArrivingVesselsResponse = InferResponseType<
@@ -62,30 +61,18 @@ export function VesselTable({ vessels }: VesselTableProps) {
           <SearchBar onSearch={setSearchQuery} />
         </div>
       </div>
-      <Tabs defaultValue="Vessel Scoring & Threat Evaluation">
-        <TabsList>
-          <TabsTrigger value="Vessel Scoring & Threat Evaluation">
-            Vessel Scoring & Threat Evaluation
-          </TabsTrigger>
-          <TabsTrigger value="Vessel Risk Profiling">
-            Vessel Risk Profiling
-          </TabsTrigger>
-        </TabsList>
-        <TabsContent value="Vessel Scoring & Threat Evaluation">
-          <DataTable
-            columns={columns}
-            data={filteredVessels}
-            sorting={sorting}
-            setSorting={setSorting}
-            columnFilters={columnFilters}
-            setColumnFilters={setColumnFilters}
-            columnVisibility={columnVisibility}
-            setColumnVisibility={setColumnVisibility}
-            rowSelection={rowSelection}
-            setRowSelection={setRowSelection}
-          />
-        </TabsContent>
-      </Tabs>
+      <DataTable
+        columns={columns}
+        data={filteredVessels}
+        sorting={sorting}
+        setSorting={setSorting}
+        columnFilters={columnFilters}
+        setColumnFilters={setColumnFilters}
+        columnVisibility={columnVisibility}
+        setColumnVisibility={setColumnVisibility}
+        rowSelection={rowSelection}
+        setRowSelection={setRowSelection}
+      />
     </Stack>
   );
 }

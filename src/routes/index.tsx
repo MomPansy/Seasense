@@ -42,10 +42,9 @@ function App() {
   return (
     <main className="px-8 py-6">
       <div className="mb-6">
-        <h1 className="mb-2">Pre-Arrival Notice</h1>
-        <p className="text-muted-foreground">
-          Vessels arriving within 24-72 hours to Singapore
-        </p>
+        <h1 className="mb-2">
+          Vessels arriving to Singapore within 24-72 hours
+        </h1>
       </div>
 
       <div className="space-y-6">
