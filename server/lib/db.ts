@@ -1,33 +1,17 @@
-import { neon, neonConfig } from "@neondatabase/serverless";
-import { drizzle as drizzleNeon } from "drizzle-orm/neon-http";
-import { drizzle as drizzlePg } from "drizzle-orm/node-postgres";
-import pg from "pg";
-import ws from "ws";
+import { drizzle, type PostgresJsDatabase } from "drizzle-orm/postgres-js";
+import postgres from "postgres";
+import * as drizzleSchema from "server/drizzle/_index.ts";
 import { appEnvVariables } from "server/env.ts";
 
 const connectionString = appEnvVariables.DB_URL;
+export const client = postgres(connectionString, { prepare: false });
 
-// Use pg for development, neon-http for production
-const isDevelopment = process.env.NODE_ENV === "development";
+export const db = drizzle(client, { schema: drizzleSchema });
 
-// Configuring Neon for local development
-if (isDevelopment) {
-  // Configure neonConfig for local proxy
-  neonConfig.fetchEndpoint = (host) => {
-    const [protocol, port] =
-      host === "db.localtest.me" ? ["http", 4444] : ["https", 443];
-    return `${protocol}://${host}:${port}/sql`;
-  };
+export type PostgresOptions = postgres.Options<
+  Record<string, postgres.PostgresType>
+>;
 
-  const connectionStringUrl = new URL(connectionString);
-  neonConfig.useSecureWebSocket =
-    connectionStringUrl.hostname !== "db.localtest.me";
-  neonConfig.wsProxy = (host) =>
-    host === "db.localtest.me" ? `${host}:4444/v2` : `${host}/v2`;
-}
-
-neonConfig.webSocketConstructor = ws;
-
-export const db = isDevelopment
-  ? drizzlePg(new pg.Pool({ connectionString }))
-  : drizzleNeon({ client: neon(connectionString) });
+export type Tx = Parameters<
+  Parameters<PostgresJsDatabase<typeof drizzleSchema>["transaction"]>[0]
+>[0];

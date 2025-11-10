@@ -1,11 +1,32 @@
 import { serve } from "@hono/node-server";
 import { serveStatic } from "@hono/node-server/serve-static";
+import { cors } from "hono/cors";
 import { factory } from "./factory.ts";
+import { route as chatRoute } from "./routes/chat.ts";
 import { route as exampleRoute } from "./routes/example.ts";
 import { scoreRoute } from "./routes/score.ts";
 import { route as vesselsRoute } from "./routes/vessels.ts";
 
 const app = factory.createApp();
+
+// Add CORS middleware for local development
+app.use(
+  "/api/*",
+  cors({
+    origin: (origin) => {
+      // Allow requests from Vite dev server or same origin
+      if (
+        !origin ||
+        origin.startsWith("http://127.0.0.1") ||
+        origin.startsWith("http://localhost")
+      ) {
+        return origin;
+      }
+      return "http://127.0.0.1:5173";
+    },
+    credentials: true,
+  }),
+);
 
 app.get("/healthz", (c) => {
   return c.json({ message: "Ok" });
@@ -15,7 +36,8 @@ export const apiRoutes = app
   .basePath("/api")
   .route("/example", exampleRoute)
   .route("/vessels", vesselsRoute)
-  .route("/score", scoreRoute);
+  .route("/score", scoreRoute)
+  .route("/chat", chatRoute);
 
 export type ApiRoutes = typeof apiRoutes;
 

@@ -1,6 +1,8 @@
 import { Outlet, createRootRoute } from "@tanstack/react-router";
 import { useState } from "react";
+import { ChatSidebar } from "../components/ChatSidebar";
 import { Header } from "../components/Header";
+import { SidebarProvider } from "../components/ui/sidebar";
 import { Toaster } from "../components/ui/sonner";
 
 export const Route = createRootRoute({
@@ -13,24 +15,27 @@ function RootComponent() {
   );
 
   return (
-    <>
-      <Header activeTab={activeTab} onTabChange={setActiveTab} />
-      {activeTab === "arriving" ? (
-        <Outlet />
-      ) : (
-        <main className="px-8 py-6">
-          <div className="flex items-center justify-center h-[60vh]">
-            <div className="text-center space-y-4">
-              <h2>Vessel Risk Profiling</h2>
-              <p className="text-muted-foreground">
-                This feature is coming soon. Stay tuned for comprehensive vessel
-                risk analysis.
-              </p>
+    <SidebarProvider defaultOpen={false}>
+      <ChatSidebar />
+      <div className="flex flex-col w-full min-h-screen">
+        <Header activeTab={activeTab} onTabChange={setActiveTab} />
+        {activeTab === "arriving" ? (
+          <Outlet />
+        ) : (
+          <main className="px-8 py-6">
+            <div className="flex items-center justify-center h-[60vh]">
+              <div className="text-center space-y-4">
+                <h2>Vessel Risk Profiling</h2>
+                <p className="text-muted-foreground">
+                  This feature is coming soon. Stay tuned for comprehensive
+                  vessel risk analysis.
+                </p>
+              </div>
             </div>
-          </div>
-        </main>
-      )}
-      <Toaster />
-    </>
+          </main>
+        )}
+        <Toaster />
+      </div>
+    </SidebarProvider>
   );
 }
