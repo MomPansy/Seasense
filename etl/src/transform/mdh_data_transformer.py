@@ -1,5 +1,5 @@
 import pytz
-from loguru import logger
+from etl.src.util.logger import logger
 
 class MdhDataTransformer:
     def __init__(self, conn, data_name):

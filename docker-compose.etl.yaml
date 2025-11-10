@@ -1,0 +1,33 @@
+networks:
+  seasense-shared-net:
+    external: true
+
+services:
+  seasense-etl-api:
+    build:
+      context: .
+      dockerfile: etl/Dockerfile
+    container_name: seasense-etl-api
+    ports:
+      - "8080:8080"
+    extra_hosts:
+      - "db.localtest.me:host-gateway"
+    environment:
+      - DB_URL=${DB_URL}
+      - MDH_API_KEY=${MDH_API_KEY}
+      - ETL_SERVICE_API_KEY=${ETL_SERVICE_API_KEY}
+    entrypoint: >
+      sh -c "uvicorn etl.src.server:app --host 0.0.0.0 --port 8080 --workers 4"
+  
+  seasense-etl-cron:
+    build:
+      context: .
+      dockerfile: etl/Dockerfile
+    container_name: seasense-etl-cron
+    extra_hosts:
+      - "db.localtest.me:host-gateway"
+    environment:
+      - DB_URL=${DB_URL}
+      - MDH_API_KEY=${MDH_API_KEY}
+    entrypoint: >
+      sh -c "python -m etl.src.main && supercronic /app/cronjob"

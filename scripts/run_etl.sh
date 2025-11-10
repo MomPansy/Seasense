@@ -19,4 +19,4 @@ source .venv/bin/activate
 pip install -r etl/requirements.txt -q
 
 # Run Python ETL scripts
-npm run envx -- run --env-file .env.production --env-file .env.development --overload -- python etl/src/main.py "$@"
+npm run envx -- run --env-file .env.production --env-file .env.development --overload -- python -m etl.src.main "$@"

@@ -1,4 +1,4 @@
-from load import MdhDataLoader
+from etl.src.load import MdhDataLoader
 
 class MdhVesselArrivalsLoader(MdhDataLoader):
     def __init__(self, conn, data_name):

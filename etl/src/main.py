@@ -1,13 +1,17 @@
 import argparse
+import etl.src.util.env as env
 
-from ingest.mdh_api_ingestor import MdhApiIngestor
+from etl.src.ingest.mdh_api_ingestor import MdhApiIngestor
 
 
-def main(datasets):
+def main(DB_URL, MDH_API_KEY, datasets):
     for data_name, data_window_hours in datasets.items():
-        MdhApiIngestor.ingest(data_name, data_window_hours)
+        MdhApiIngestor.ingest(DB_URL, MDH_API_KEY, data_name, data_window_hours)
 
 if __name__ == "__main__":
+    DB_URL = env.require_env("DB_URL")
+    MDH_API_KEY = env.require_env("MDH_API_KEY")
+    
     DEFAULTS = {
         "vessel_arrivals": 24,
         "vessel_departures": 24,
@@ -36,4 +40,4 @@ if __name__ == "__main__":
                 raise Exception(f'Invalid dataset name: "{arg}".')
             datasets[arg] = DEFAULTS.get(arg, 1)
 
-    main(datasets)
+    main(DB_URL, MDH_API_KEY, datasets)

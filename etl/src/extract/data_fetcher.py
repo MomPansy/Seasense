@@ -1,7 +1,7 @@
 import requests
 import json
 from datetime import datetime
-from loguru import logger
+from etl.src.util.logger import logger
 
 class DataFetcher:
     def __init__(self, data_name, endpoint, api_key):
@@ -16,9 +16,9 @@ class DataFetcher:
             data = r.json()
             return r.status_code, data, None
         except Exception as e:
-            # record failure for visibility
-            logger.error(f"Error trying to fetch '{api}': {e}")
-            return getattr(e, "status_code", None), None, str(e)
+            err_details = r.json() if r.json() else e
+            # logger.error(f"Error trying to fetch '{api}': {err_details}")
+            return getattr(e, "status_code", None), None, str(err_details)
 
     def save_raw(self, conn, status_code, response_json, details=None):
         with conn.cursor() as cur:
@@ -37,5 +37,6 @@ class DataFetcher:
         status, data, err = self.call_api(self.endpoint, self.api_key)
         with conn:
             self.save_raw(conn, status if status else 0, data, err)      
-        if status >= 300:
-            raise Exception(f"Data fetch failed with status code {status} for {self.data_name}")
+        if not status or status >= 300:
+            raise Exception(f'Data fetch for {self.data_name} failed: "{err}".')
+        

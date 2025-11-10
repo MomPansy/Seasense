@@ -2,16 +2,17 @@ import os
 import psycopg2
 import pytz
 import traceback
+import etl.src.util.env as env
 
 from datetime import datetime
-from init_db import EtlDbInitializer
-from extract import DataFetcher
-from transform import VesselArrivalsTransformer, VesselDeparturesTransformer, VesselsDueToArriveTransformer
-from load import MdhVesselArrivalsLoader, MdhVesselDeparturesLoader, MdhVesselsDueToArriveLoader
-from loguru import logger
+from etl.src.init_db import EtlDbInitializer
+from etl.src.extract import DataFetcher
+from etl.src.transform import VesselArrivalsTransformer, VesselDeparturesTransformer, VesselsDueToArriveTransformer
+from etl.src.load import MdhVesselArrivalsLoader, MdhVesselDeparturesLoader, MdhVesselsDueToArriveLoader
+from etl.src.util.logger import logger
 
 class MdhApiIngestor:
-    def ingest(data_name, data_window_hours):
+    def ingest(DB_URL, MDH_API_KEY, data_name, data_window_hours):
         now = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
         apis = {
             "vessel_arrivals": f"https://sg-mdh-api.mpa.gov.sg/v1/vessel/arrivals/date/{now}/hours/{data_window_hours}",
@@ -20,9 +21,6 @@ class MdhApiIngestor:
         }
 
         try:
-            DB_URL = os.getenv("DB_URL")
-            MDH_API_KEY = os.getenv("MDH_API_KEY")
-
             conn = psycopg2.connect(DB_URL)
 
             # Init db for etl
@@ -61,12 +59,15 @@ class MdhApiIngestor:
             loader_class = LOADERS[data_name]
             loader = loader_class(conn, data_name)
             num_rows_inserted = loader.load()
-            logger.info(f"{num_rows_inserted} rows of new data loaded into final table for {data_name}.")
+            logger.info(f"{num_rows_inserted} row(s) of new data loaded into final table for {data_name}.")
 
             conn.commit()
+            return num_rows_inserted
         except Exception as e:
-            logger.error(f"Error updating data for {data_name}: {e}")
+            msg = f"Error updating data for {data_name}: {e}"
+            logger.error(msg)
             conn.rollback()
             traceback.print_exc()
+            raise Exception(msg)
         finally:
             conn.close()
