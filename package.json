@@ -89,7 +89,7 @@
     "envx:encrypt": "dotenvx encrypt -f .env.production",
     "dev:db": "docker compose up -d",
     "dev:db:wait": "npm run dev:db && wait-on tcp:5432",
-    "dev:server": "dotenvx run --env-file .env.development -- tsx watch --tsconfig tsconfig.node.json server/index.ts",
+    "dev:server": "dotenvx run --env-file .env.development .env.local --overload -- tsx watch --tsconfig tsconfig.node.json server/index.ts",
     "dev:app": "cross-env NODE_ENV=development vite",
     "dev:app:wait": "wait-on http://127.0.0.1:3000/healthz && vite",
     "dev": "npm run dev:db:wait && npm-run-all --parallel dev:server dev:app:wait",

@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useMemo } from "react";
+import { Suspense, useMemo } from "react";
 import { ChatMain } from "@/components/chat/ChatMain";
 import { useChatStore } from "@/components/ui/chatStore";
 
@@ -26,7 +26,20 @@ function ChatPage() {
 
   return (
     <div className="flex flex-col h-full">
-      <ChatMain chatId={chatId} />
+      <Suspense
+        fallback={
+          <div className="flex flex-col h-full">
+            <div className="flex-1 flex items-center justify-center">
+              <div className="text-center">
+                <p className="text-muted-foreground">Loading messages...</p>
+              </div>
+            </div>
+          </div>
+        }
+      >
+        {/* Use key to force remount when chatId changes */}
+        <ChatMain key={chatId} chatId={chatId} />
+      </Suspense>
     </div>
   );
 }

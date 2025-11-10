@@ -1,7 +1,8 @@
 import { useChat } from "@ai-sdk/react";
-import { useQueryClient } from "@tanstack/react-query";
+import { useQueryClient, useSuspenseQuery } from "@tanstack/react-query";
 import { DefaultChatTransport } from "ai";
 import { useChatStore } from "@/components/ui/chatStore";
+import { fetchChatMessages } from "@/lib/api";
 import type { ChatUIMessage } from "@/types/chat";
 import { ChatFooter } from "./ChatFooter";
 import { MessageAssistant } from "./MessageAssistant";
@@ -21,10 +22,16 @@ export function ChatMain({ chatId }: ChatMainProps) {
   const setStreaming = useChatStore((state) => state.setStreaming);
   const removeChat = useChatStore((state) => state.removeChat);
 
-  // Fetch existing messages for this chat
+  // Fetch existing messages for this chat using Suspense
+  const { data: initialMessages } = useSuspenseQuery<ChatUIMessage[]>({
+    queryKey: ["chat", chatId, "messages"],
+    queryFn: async () => await fetchChatMessages(chatId),
+    staleTime: Infinity, // Messages don't change unless we update them
+  });
 
   const { messages, sendMessage, status, error } = useChat<ChatUIMessage>({
     id: chatId,
+    messages: initialMessages,
     // Pass the fetched messages to initialize the chat
     transport: new DefaultChatTransport({
       api: chatUrl,

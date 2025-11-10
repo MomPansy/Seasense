@@ -18,7 +18,7 @@ services:
       - ETL_SERVICE_API_KEY=${ETL_SERVICE_API_KEY}
     entrypoint: >
       sh -c "uvicorn etl.src.server:app --host 0.0.0.0 --port 8080 --workers 4"
-  
+
   seasense-etl-cron:
     build:
       context: .

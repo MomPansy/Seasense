@@ -5,6 +5,8 @@ import {
   generateObject,
   type UserModelMessage,
   type AssistantModelMessage,
+  type AssistantContent,
+  type UserContent,
   convertToModelMessages,
 } from "ai";
 import { eq, sql } from "drizzle-orm";
@@ -43,11 +45,25 @@ async function insertUserMessage({
   message: UserModelMessage;
   position: number;
 }) {
-  // Just insert the user message - title generation will happen during streaming
+  // Extract plain text content for the content column
+  let textContent: string | undefined;
+  if (typeof message.content === "string") {
+    textContent = message.content;
+  } else {
+    // Extract text from array of parts
+    textContent = message.content
+      .filter((part) => part.type === "text")
+      .map((part) => (part as { type: "text"; text: string }).text)
+      .join(" ");
+  }
+
+  // Insert the user message with both plain text and structured content
   await tx.insert(messagesTable).values({
     chatId: chatId,
     role: message.role,
-    content: typeof message.content === "string" ? message.content : undefined,
+    content: textContent || undefined,
+    userContent:
+      typeof message.content === "string" ? undefined : message.content,
     position: position,
   });
 }
@@ -68,12 +84,11 @@ async function insertAssistantMessage({
   await tx.insert(messagesTable).values({
     chatId: chatId,
     role: "assistant",
-    content:
-      text ||
-      (message && typeof message.content === "string"
+    content: text,
+    assistantContent:
+      message?.content && typeof message.content !== "string"
         ? message.content
-        : undefined),
-    assistantContent: message?.content,
+        : undefined,
     position: position,
   });
 }
@@ -95,6 +110,66 @@ export const route = factory
       .orderBy(sql`updated_at desc`);
 
     return c.json(allChats);
+  })
+  .get("/:id/messages", drizzle(), async (c) => {
+    const chatId = c.req.param("id");
+    const tx = c.var.tx;
+
+    // Fetch all messages for this chat
+    const chatMessages = await tx
+      .select()
+      .from(messagesTable)
+      .where(eq(messagesTable.chatId, chatId))
+      .orderBy(messagesTable.position);
+
+    // Convert database messages to ChatUIMessage format
+    const uiMessages: ChatUIMessage[] = chatMessages.map((msg) => {
+      // Extract the array element types from UserContent and AssistantContent
+      // UserContent = string | Array<TextPart | ImagePart | FilePart>
+      // AssistantContent = string | Array<TextPart | FilePart | ReasoningPart | ToolCallPart | ToolResultPart>
+      type UserPart =
+        Exclude<UserContent, string> extends (infer P)[] ? P : never;
+      type AssistantPart =
+        Exclude<AssistantContent, string> extends (infer P)[] ? P : never;
+      type MessagePart = UserPart | AssistantPart;
+
+      const parts: MessagePart[] = [];
+
+      if (msg.role === "user") {
+        if (msg.userContent) {
+          if (Array.isArray(msg.userContent)) {
+            parts.push(...msg.userContent);
+          } else if (typeof msg.userContent === "string") {
+            parts.push({ type: "text", text: msg.userContent });
+          } else {
+            parts.push(msg.userContent);
+          }
+        } else if (msg.content) {
+          parts.push({ type: "text", text: msg.content });
+        }
+      } else if (msg.role === "assistant") {
+        if (msg.assistantContent) {
+          if (Array.isArray(msg.assistantContent)) {
+            parts.push(...msg.assistantContent);
+          } else if (typeof msg.assistantContent === "string") {
+            parts.push({ type: "text", text: msg.assistantContent });
+          } else {
+            parts.push(msg.assistantContent);
+          }
+        } else if (msg.content) {
+          parts.push({ type: "text", text: msg.content });
+        }
+      }
+
+      return {
+        id: msg.id,
+        role: msg.role as "user" | "assistant" | "system",
+        parts,
+        createdAt: msg.createdAt,
+      } as ChatUIMessage;
+    });
+
+    return c.json(uiMessages);
   })
   .post(
     "/",
@@ -207,53 +282,5 @@ export const route = factory
           }
         },
       });
-    },
-  )
-  .get(
-    "/:chatId",
-    zValidator(
-      "param",
-      z.object({
-        chatId: z.string(),
-      }),
-    ),
-    drizzle(),
-    async (c) => {
-      const { chatId } = c.req.valid("param");
-      const tx = c.var.tx;
-
-      // Fetch messages from the database
-      const messages = await tx
-        .select({
-          id: messagesTable.id,
-          createdAt: messagesTable.createdAt,
-          role: messagesTable.role,
-          content: messagesTable.content,
-          userContent: messagesTable.userContent,
-          assistantContent: messagesTable.assistantContent,
-          toolContent: messagesTable.toolContent,
-        })
-        .from(messagesTable)
-        .where(eq(messagesTable.chatId, chatId))
-        .orderBy(sql`position asc`);
-
-      // convert to ChatUIMessage
-      const uimessage: ChatUIMessage[] = messages.map((message) => {
-        const { id, role, content } = message;
-        const convertedMessage: ChatUIMessage = {
-          id: id,
-          role: role === "data" ? "assistant" : role,
-          parts: [
-            {
-              type: "text",
-              text: content ?? "",
-            },
-          ],
-          metadata: {},
-        };
-        return convertedMessage;
-      });
-
-      return c.json(uimessage);
     },
   );
