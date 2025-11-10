@@ -3,7 +3,7 @@ import { ColumnDef } from "@tanstack/react-table";
 import { InferResponseType } from "hono/client";
 import { ArrowUpDown } from "lucide-react";
 import { api } from "src/lib/api";
-import { statcodeToShiptypeMap } from "../constants/codes";
+import { mapStatCode } from "src/lib/utils";
 import { DataTableColumnFilter } from "./data-table-column-filter";
 import { ThreatBadge } from "./ThreatBadge";
 import { Button } from "./ui/button";
@@ -24,15 +24,6 @@ const formatDateTime = (dateString: string | null) => {
   const minutes = String(date.getMinutes()).padStart(2, "0");
   return `${day}/${month}/${year} ${hours}:${minutes}`;
 };
-
-// Function to map stat codes to vessel types
-function mapStatCode(code: string | null | undefined) {
-  if (!code) return "N/A";
-  for (const [key, value] of statcodeToShiptypeMap) {
-    if (code.startsWith(key)) return value;
-  }
-  return "N/A";
-}
 
 export const createColumns = (
   navigate: ReturnType<typeof useNavigate>,
