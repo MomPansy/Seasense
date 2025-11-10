@@ -8,6 +8,7 @@ import {
 import { InferResponseType } from "hono/client";
 import { useState, useMemo, useDeferredValue } from "react";
 import { api } from "@/lib/api";
+import { mapStatCode } from "@/lib/utils";
 import { DataTable } from "./data-table";
 import { SearchBar } from "./SearchBar";
 import { Stack } from "./ui/stack";
@@ -39,15 +40,37 @@ export function VesselTable({ vessels }: VesselTableProps) {
       const vesselName = (
         vessel.vesselArrivalDetails.vesselName ?? ""
       ).toLowerCase();
-      const vesselType = (
-        vessel.vesselDetails?.shiptypeLevel5 ?? ""
+      const vesselType = mapStatCode(
+        vessel.vesselDetails?.statCode5,
       ).toLowerCase();
       const imo = (vessel.vesselArrivalDetails.imo ?? "").toLowerCase();
+      const groupBeneficialOwner = (
+        vessel.vesselDetails?.groupBeneficialOwner ?? ""
+      ).toLowerCase();
+      const groupBeneficialOwnerCountry = (
+        vessel.vesselDetails?.groupBeneficialOwnerCountryOfRegistration ?? ""
+      ).toLowerCase();
+      const registeredOwner = (
+        vessel.vesselDetails?.registeredOwner ?? ""
+      ).toLowerCase();
+      const registeredOwnerCountry = (
+        vessel.vesselDetails?.registeredOwnerCountryOfRegistration ?? ""
+      ).toLowerCase();
+      const operator = (vessel.vesselDetails?.operator ?? "").toLowerCase();
+      const operatorCountry = (
+        vessel.vesselDetails?.operatorCountryOfRegistration ?? ""
+      ).toLowerCase();
 
       return (
         vesselName.includes(query) ||
         vesselType.includes(query) ||
-        imo.includes(query)
+        imo.includes(query) ||
+        groupBeneficialOwner.includes(query) ||
+        groupBeneficialOwnerCountry.includes(query) ||
+        registeredOwner.includes(query) ||
+        registeredOwnerCountry.includes(query) ||
+        operator.includes(query) ||
+        operatorCountry.includes(query)
       );
     });
   }, [vessels, deferredSearchQuery]);
