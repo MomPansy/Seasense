@@ -191,6 +191,13 @@ export const createColumns = (
         percentage={row.original.score.score}
       />
     ),
+    meta: {
+      exportFormatter: (row: ArrivingVesselsResponse) => {
+        const level = row.score.level;
+        const percentage = row.score.score;
+        return `Level ${level} - ${percentage}%`;
+      },
+    },
     filterFn: (row, columnId, filterValue: string[]) => {
       if (filterValue.length === 0) return true;
       const cellValue = String(row.getValue(columnId));

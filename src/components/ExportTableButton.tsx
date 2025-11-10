@@ -39,6 +39,16 @@ export function ExportTableButton<TData>({
           const cell = row.getAllCells().find((c) => c.column.id === col.id);
           if (!cell) return '""';
 
+          // Check if column has a custom export formatter
+          const meta = col.columnDef.meta as
+            | { exportFormatter?: (row: TData) => string }
+            | undefined;
+          if (meta?.exportFormatter) {
+            const formattedValue = meta.exportFormatter(row.original);
+            const cellStr = formattedValue.replace(/"/g, '""');
+            return `"${cellStr}"`;
+          }
+
           const value = cell.getValue();
 
           // Handle different cell value types
