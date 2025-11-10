@@ -5,6 +5,7 @@ import { ArrowUpDown } from "lucide-react";
 import { api } from "src/lib/api";
 import { mapStatCode } from "src/lib/utils";
 import { DataTableColumnFilter } from "./data-table-column-filter";
+import { DataTableDateFilter } from "./data-table-date-filter";
 import { ThreatBadge } from "./ThreatBadge";
 import { Button } from "./ui/button";
 import { Checkbox } from "./ui/checkbox";
@@ -235,14 +236,20 @@ export const createColumns = (
   },
   {
     accessorKey: "vesselArrivalDetails.dueToArriveTime",
-    header: ({ column }) => {
+    header: ({ column, table }) => {
       return (
         <Button
           variant="ghost"
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+          className="gap-1"
         >
           Arrival Time
           <ArrowUpDown className="h-4 w-4" />
+          <DataTableDateFilter
+            column={column}
+            table={table}
+            title="Arrival Time"
+          />
         </Button>
       );
     },
@@ -256,6 +263,13 @@ export const createColumns = (
         ? new Date(rowB.original.vesselArrivalDetails.dueToArriveTime).getTime()
         : 0;
       return dateA - dateB;
+    },
+    filterFn: (row, _columnId, filterValue: { start: number; end: number }) => {
+      const dateStr = row.original.vesselArrivalDetails.dueToArriveTime;
+      if (!dateStr) return false;
+
+      const date = new Date(dateStr).getTime();
+      return date >= filterValue.start && date <= filterValue.end;
     },
   },
 ];
