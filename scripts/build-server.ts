@@ -28,14 +28,20 @@ import { build } from "esbuild";
           build.onLoad({ filter: /\.ts$/ }, async (args) => {
             const source = await readFile(args.path, "utf8");
 
-            // Regular expression to match import statements
+            // Regular expression to match import and export statements
             const importRegex =
-              /import\s+([\s\S]*?)\s+from\s+(['"])([^'"]+?)\2/g;
+              /(import\s+([\s\S]*?)\s+from\s+|export\s+\*\s+from\s+)(['"])([^'"]+?)\3/g;
 
-            // Replace matched import statements
+            // Replace matched import/export statements
             const updatedSource = source.replace(
               importRegex,
-              (match, imports: string, quote: string, importPath: string) => {
+              (
+                match,
+                prefix: string,
+                imports: string | undefined,
+                quote: string,
+                importPath: string,
+              ) => {
                 let newImportPath = importPath;
                 const importingFileDir = path.dirname(args.path);
 
@@ -58,8 +64,9 @@ import { build } from "esbuild";
                     targetModulePath,
                   );
 
-                  // Replace extension with '.js'
+                  // Replace extension with '.js' (including .json files)
                   relativePath = relativePath.replace(/\.[jt]sx?$/, ".js");
+                  relativePath = relativePath.replace(/\.json$/, ".js");
 
                   // Convert to POSIX-style path (replacing backslashes with slashes)
                   newImportPath = relativePath.split(path.sep).join("/");
@@ -74,10 +81,11 @@ import { build } from "esbuild";
                 ) {
                   // Handle relative imports by replacing '.ts' or '.tsx' with '.js'
                   newImportPath = importPath.replace(/\.[tj]sx?$/, ".js");
+                  newImportPath = newImportPath.replace(/\.json$/, ".js");
                 }
                 // else: Leave other imports (e.g., node_modules) unchanged
-                // Return the updated import statement
-                return `import ${imports} from ${quote}${newImportPath}${quote}`;
+                // Return the updated import/export statement
+                return `${prefix}${quote}${newImportPath}${quote}`;
               },
             );
 

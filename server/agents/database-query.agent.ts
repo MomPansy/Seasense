@@ -14,10 +14,10 @@ import {
   type ToolInteraction,
 } from "server/drizzle/messages.ts";
 import { db, type Tx } from "server/lib/db.ts";
-import vessel_arrivals_schema from "../vessel_arrivals.description.json" assert { type: "json" };
-import vessel_departures_schema from "../vessel_departures.description.json" assert { type: "json" };
-import vessels_schema from "../vessels.description.json" assert { type: "json" };
-import vessels_due_to_arrive_schema from "../vessels_due_to_arrive.description.json" assert { type: "json" };
+import vessel_arrivals_schema from "server/vessel_arrivals.description.json";
+import vessel_departures_schema from "server/vessel_departures.description.json";
+import vessels_schema from "server/vessels.description.json";
+import vessels_due_to_arrive_schema from "server/vessels_due_to_arrive.description.json";
 
 const databaseQueryAgent = new Agent({
   model: wrapLanguageModel({
