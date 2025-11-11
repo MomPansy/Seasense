@@ -1,6 +1,6 @@
 import { zValidator } from "@hono/zod-validator";
 import { addHours, format } from "date-fns";
-import { and, eq, gte, ilike, lte } from "drizzle-orm";
+import { and, desc, eq, gte, ilike, lte } from "drizzle-orm";
 import { stringSimilarity } from "string-similarity-js";
 import { z } from "zod";
 import { arrivalRuleset } from "server/constants/rules.ts";
@@ -68,8 +68,9 @@ export const route = factory
       const hoursToPull = 72; // to change if necessary
       const currDate = new Date();
       const vesselInfo = await db
-        .select()
+        .selectDistinctOn([vesselsDueToArrive.imo])
         .from(vesselsDueToArrive)
+        .orderBy(vesselsDueToArrive.imo, desc(vesselsDueToArrive.fetchedAt))
         .leftJoin(vessels, eq(vesselsDueToArrive.imo, vessels.ihslRorImoShipNo))
         .where(
           and(
@@ -128,7 +129,39 @@ export const route = factory
         }
 
         return {
-          vesselDetails: vessel.vessels,
+          vesselDetails: vessel.vessels
+            ? {
+                ihslRorImoShipNo: vessel.vessels.ihslRorImoShipNo,
+                shipName: vessel.vessels.shipName,
+                exName: vessel.vessels.exName,
+                shipStatus: vessel.vessels.shipStatus,
+                callSign: vessel.vessels.callSign,
+                flagCode: vessel.vessels.flagCode,
+                flagName: vessel.vessels.flagName,
+                maritimeMobileServiceIdentityMmsiNumber:
+                  vessel.vessels.maritimeMobileServiceIdentityMmsiNumber,
+                grossTonnage: vessel.vessels.grossTonnage,
+                lengthOverallLoa: vessel.vessels.lengthOverallLoa,
+                shiptypeLevel5: vessel.vessels.shiptypeLevel5,
+                statCode5: vessel.vessels.statCode5,
+                shiponOfacSanctionList: vessel.vessels.shiponOfacSanctionList,
+                shiponOfacNonSdnSanctionList:
+                  vessel.vessels.shiponOfacNonSdnSanctionList,
+                shiponUsTreasuryOfacAdvisoryList:
+                  vessel.vessels.shiponUsTreasuryOfacAdvisoryList,
+                shiponEuSanctionList: vessel.vessels.shiponEuSanctionList,
+                shiponUnSanctionList: vessel.vessels.shiponUnSanctionList,
+                groupBeneficialOwner: vessel.vessels.groupBeneficialOwner,
+                groupBeneficialOwnerCountryOfRegistration:
+                  vessel.vessels.groupBeneficialOwnerCountryOfRegistration,
+                operator: vessel.vessels.operator,
+                operatorCountryOfRegistration:
+                  vessel.vessels.operatorCountryOfRegistration,
+                registeredOwner: vessel.vessels.registeredOwner,
+                registeredOwnerCountryOfRegistration:
+                  vessel.vessels.registeredOwnerCountryOfRegistration,
+              }
+            : null,
           vesselArrivalDetails: vessel.vessels_due_to_arrive,
           score,
         };
