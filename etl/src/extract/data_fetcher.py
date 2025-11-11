@@ -16,7 +16,7 @@ class DataFetcher:
             data = r.json()
             return r.status_code, data, None
         except Exception as e:
-            err_details = r.json() if r.json() else e
+            err_details = r.json() if r else e
             # logger.error(f"Error trying to fetch '{api}': {err_details}")
             return getattr(e, "status_code", None), None, str(err_details)
 
