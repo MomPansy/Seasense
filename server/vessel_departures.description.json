@@ -1,0 +1,37 @@
+[
+  {
+    "columnName": "vessel_name",
+    "type": "text",
+    "description": "The vessel's name, as returned from the MDH API response."
+  },
+  {
+    "columnName": "callsign",
+    "type": "text",
+    "description": "The vessel's callsign, as returned from the MDH API response."
+  },
+  {
+    "columnName": "imo",
+    "type": "text",
+    "description": "The vessel's IMO number, as returned from the MDH API response."
+  },
+  {
+    "columnName": "flag",
+    "type": "text",
+    "description": "The vessel's country flag (2-letter country code), as returned from the MDH API response."
+  },
+  {
+    "columnName": "departed_time",
+    "type": "text",
+    "description": "The vessel's actual time of departure out of Singapore waters, as returned from the MDH API response."
+  },
+  {
+    "columnName": "created_at",
+    "type": "text",
+    "description": "The datetime that the data was first fetched from the MDH API."
+  },
+  {
+    "columnName": "updated_at",
+    "type": "text",
+    "description": "The datetime that the data was last updated in the database."
+  }
+]
