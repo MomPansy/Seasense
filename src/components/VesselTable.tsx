@@ -45,6 +45,7 @@ export function VesselTable({ vessels }: VesselTableProps) {
   const [searchQuery, setSearchQuery] = useState("");
   const deferredSearchQuery = useDeferredValue(searchQuery);
   const [excludeScore100, setExcludeScore100] = useState(true);
+  const [includeOnlyTankers, setIncludeOnlyTankers] = useState(false);
   const [activePreset, setActivePreset] = useState<
     "all" | "tankers" | "imo_issues" | null
   >("all");
@@ -56,6 +57,19 @@ export function VesselTable({ vessels }: VesselTableProps) {
     // Apply exclude score 100 filter if active
     if (excludeScore100) {
       filtered = filtered.filter((vessel) => vessel.score.score !== 100);
+    }
+
+    // Apply tanker-only filter if active
+    if (includeOnlyTankers) {
+      filtered = filtered.filter((vessel) => {
+        const vesselType = mapStatCode(vessel.vesselDetails?.statCode5);
+        return [
+          "Chemical Tanker",
+          "LNG Tanker",
+          "LPG Tanker",
+          "Tanker",
+        ].includes(vesselType);
+      });
     }
 
     // Apply search query filter
@@ -103,7 +117,7 @@ export function VesselTable({ vessels }: VesselTableProps) {
         operatorCountry.includes(query)
       );
     });
-  }, [vessels, deferredSearchQuery, excludeScore100]);
+  }, [vessels, deferredSearchQuery, excludeScore100, includeOnlyTankers]);
 
   const columns = useMemo(() => createColumns(navigate), [navigate]);
 
@@ -160,11 +174,13 @@ export function VesselTable({ vessels }: VesselTableProps) {
     setColumnFilters([]);
     setColumnVisibility((prev) => ({ ...prev, score_score: false }));
     setExcludeScore100(true);
+    setIncludeOnlyTankers(false);
     setActivePreset("all");
   };
 
   const applyTankersPreset = () => {
     setExcludeScore100(false);
+    setIncludeOnlyTankers(true);
     setColumnFilters([
       {
         id: "vesselDetails_statCode5",
@@ -179,6 +195,7 @@ export function VesselTable({ vessels }: VesselTableProps) {
     setColumnFilters([{ id: "score_score", value: ["100"] }]);
     setColumnVisibility((prev) => ({ ...prev, score_score: false }));
     setExcludeScore100(false);
+    setIncludeOnlyTankers(false);
     setActivePreset("imo_issues");
   };
 
