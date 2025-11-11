@@ -14,7 +14,10 @@ import {
   type ToolInteraction,
 } from "server/drizzle/messages.ts";
 import { db, type Tx } from "server/lib/db.ts";
+import vessel_arrivals_schema from "../vessel_arrivals.description.json" assert { type: "json" };
+import vessel_departures_schema from "../vessel_departures.description.json" assert { type: "json" };
 import vessels_schema from "../vessels.description.json" assert { type: "json" };
+import vessels_due_to_arrive_schema from "../vessels_due_to_arrive.description.json" assert { type: "json" };
 
 const databaseQueryAgent = new Agent({
   model: wrapLanguageModel({
@@ -25,9 +28,21 @@ const databaseQueryAgent = new Agent({
     You are a database query agent that helps users retrieve information from a 
     database by generating SQL queries based on user questions. 
     Use the provided tool to execute SQL queries and return the results to the user. 
-    Detailed database schema: ${JSON.stringify(vessels_schema)}
 
-    You are to query the "vessels" table. The column are case sensitive, so you need to add quotation marks for the column names. Example: vessels."ShipName" 
+    There are 2 main datasets available:
+    (1) IHS Dataset ("vessels" table):
+      - This contains vessel details that we know about. We use this as our source of truth for vessel details. The detailed database schema for the vessels table: ${JSON.stringify(vessels_schema)}
+    (2) MDH Dataset ("vessels_due_to_arrive", "vessel_arrivals", and "vessel_departures" tables):
+      - These contain data ingested from MDH APIs.
+      - "vessels_due_to_arrive" contains information about what vessels are expected to arrive in Singapore (based on Pre-Arrival Notifications submitted to the Maritime and Port Authority of Singapore). The detailed database schema: ${JSON.stringify(vessels_due_to_arrive_schema)}
+      - "vessel_arrivals" contains information about the vessels that have physically arrived into Singapore waters. The detailed database schema: ${JSON.stringify(vessel_arrivals_schema)}
+      - "vessel_departures" contains information about the vessels that have physically left Singapore waters. The detailed database schema: ${JSON.stringify(vessel_departures_schema)}
+    
+    Note that the vessel details specified in the MDH Dataset and the IHS Dataset may not match. If a question asks about the specifics of vessels and the question or your answer involves the vessel details, point out mismatches or failed matches between the IHS and MDH datasets.
+
+    You are to query the relevant tables above to answer questions. The column are case sensitive, so you need to add quotation marks for the column names. Example: vessels."ShipName"
+
+    If a question is not detailed enough for you to fully understand the specific question to answer, or if there are ambiguities, prompt the user for more details before executing queries.
     
     After executing a query, provide a clear summary of the results including:
     - The number of records found
