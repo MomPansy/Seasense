@@ -70,6 +70,8 @@ export function VesselTable({ vessels }: VesselTableProps) {
         vessel.vesselDetails?.statCode5,
       ).toLowerCase();
       const imo = (vessel.vesselArrivalDetails.imo ?? "").toLowerCase();
+      const callSign = (vessel.vesselDetails?.callSign ?? "").toLowerCase();
+      const flagName = (vessel.vesselDetails?.flagName ?? "").toLowerCase();
       const groupBeneficialOwner = (
         vessel.vesselDetails?.groupBeneficialOwner ?? ""
       ).toLowerCase();
@@ -91,6 +93,8 @@ export function VesselTable({ vessels }: VesselTableProps) {
         vesselName.includes(query) ||
         vesselType.includes(query) ||
         imo.includes(query) ||
+        callSign.includes(query) ||
+        flagName.includes(query) ||
         groupBeneficialOwner.includes(query) ||
         groupBeneficialOwnerCountry.includes(query) ||
         registeredOwner.includes(query) ||
