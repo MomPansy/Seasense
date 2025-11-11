@@ -48,7 +48,7 @@ const ownerRule = (vesselInfo: VesselDetails) => {
 
 export const arrivalRuleset: Ruleset = {
   door: {
-    name: "Hazardous Liquid Tanker",
+    name: "Tanker",
     description: (vesselInfo) =>
       `The vessel is of type ${vesselInfo.shiptypeLevel5}.`,
     weight: 30,
@@ -86,7 +86,7 @@ export const arrivalRuleset: Ruleset = {
       weight: 10,
     },
     {
-      name: "COI Port Calls",
+      name: "Last 5 Port Calls COI",
       description:
         "The vessel's last 5 port calls include countries of interest.",
       weight: 10,

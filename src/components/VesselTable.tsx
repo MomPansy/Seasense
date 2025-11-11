@@ -186,7 +186,7 @@ export function VesselTable({ vessels }: VesselTableProps) {
 
   const handleExport = async () => {
     toast.success("Exporting vessel details to Excel");
-    const buffer = await exportVesselScores(filteredVessels);
+    const buffer = await exportVesselScores(table);
     downloadFile({
       data: buffer,
       dataType:

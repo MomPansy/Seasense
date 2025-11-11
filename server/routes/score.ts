@@ -30,15 +30,17 @@ export const scoreRoute = factory
     },
   )
   .get("/headers", (c) => {
-    const doorRuleHeader = arrivalRuleset.door.name;
-    const autoRuleHeaders = arrivalRuleset.rules.map((rule) => rule.name);
+    const doorRuleHeader = `${arrivalRuleset.door.name} ${arrivalRuleset.door.weight}`;
+    const autoRuleHeaders = arrivalRuleset.rules.map(
+      (rule) => `${rule.name} (${rule.weight})`,
+    );
     const manualRuleHeaders = arrivalRuleset.manualRules.map(
-      (rule) => `${rule.name} [MANUAL]`,
+      (rule) => `${rule.name} (${rule.weight}) [MANUAL]`,
     );
     const otherHeaders = ["Score", "Threat level"];
 
     return c.json(
-      ["Vessel Name", doorRuleHeader]
+      ["IMO", "Vessel Name", doorRuleHeader]
         .concat(autoRuleHeaders)
         .concat(manualRuleHeaders)
         .concat(otherHeaders),

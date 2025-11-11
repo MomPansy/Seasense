@@ -20,7 +20,10 @@ export function ExportTableButton<TData>({
       .filter((col) => col.getIsVisible() && col.id !== "select");
 
     // Get filtered and sorted rows (respects current sorting and filtering)
-    const rows = table.getSortedRowModel().rows;
+    const rows =
+      table.getSelectedRowModel().rows.length > 0
+        ? table.getSelectedRowModel().rows
+        : table.getSortedRowModel().rows;
 
     // Create CSV header using user-friendly labels
     const headers = visibleColumns
