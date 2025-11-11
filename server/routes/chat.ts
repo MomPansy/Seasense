@@ -8,6 +8,8 @@ import {
   type AssistantContent,
   type UserContent,
   convertToModelMessages,
+  wrapLanguageModel,
+  extractReasoningMiddleware,
 } from "ai";
 import { eq, sql } from "drizzle-orm";
 import { z } from "zod";
@@ -221,7 +223,10 @@ export const route = factory
 
       const result = streamText({
         messages: modelMessages,
-        model: anthropic("claude-3-5-haiku-20241022"),
+        model: wrapLanguageModel({
+          model: anthropic("claude-3-5-haiku-20241022"),
+          middleware: extractReasoningMiddleware({ tagName: "think" }),
+        }),
         onFinish: async (result) => {
           // Insert assistant message into the database
           await insertAssistantMessage({
