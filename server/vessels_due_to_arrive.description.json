@@ -1,0 +1,42 @@
+[
+  {
+    "columnName": "vessel_name",
+    "type": "text",
+    "description": "The vessel's name (based on what it declared in its pre-arrival notification submission), as returned from the MDH API response."
+  },
+  {
+    "columnName": "callsign",
+    "type": "text",
+    "description": "The vessel's callsign (based on what it declared in its pre-arrival notification submission), as returned from the MDH API response."
+  },
+  {
+    "columnName": "imo",
+    "type": "text",
+    "description": "The vessel's IMO number (based on what it declared in its pre-arrival notification submission), as returned from the MDH API response."
+  },
+  {
+    "columnName": "flag",
+    "type": "text",
+    "description": "The vessel's country flag (2-letter country code, based on what it declared in its pre-arrival notification submission), as returned from the MDH API response."
+  },
+  {
+    "columnName": "due_to_arrive_time",
+    "type": "text",
+    "description": "The vessel's due to arrive time (based on what it declared in its pre-arrival notification submission), as returned from the MDH API response."
+  },
+  {
+    "columnName": "location_from",
+    "type": "text",
+    "description": "The location within Singapore waters from where the vessel is expected to arrive into, as returned from the MDH API response."
+  },
+  {
+    "columnName": "location_to",
+    "type": "text",
+    "description": "The location that the vessel is expected to head to after arriving within Singapore waters, as returned from the MDH API response."
+  },
+  {
+    "columnName": "fetched_at",
+    "type": "text",
+    "description": "The datetime that the data was first fetched from the MDH API."
+  }
+]
