@@ -31,6 +31,7 @@ export const createColumns = (
 ): ColumnDef<ArrivingVesselsResponse>[] => [
   {
     id: "select",
+    size: 40,
     header: ({ table }) => (
       <Checkbox
         checked={
