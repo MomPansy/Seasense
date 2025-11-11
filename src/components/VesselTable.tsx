@@ -17,8 +17,8 @@ import { useState, useMemo, useDeferredValue } from "react";
 import { toast } from "sonner";
 import { api } from "@/lib/api";
 import { mapStatCode } from "@/lib/utils";
-import { ColumnVisibilityDropdown } from "./ColumnVisibilityDropdown";
 import { downloadFile, exportVesselScores } from "@/utils/exportData";
+import { ColumnVisibilityDropdown } from "./ColumnVisibilityDropdown";
 import { DataTable } from "./data-table";
 import { ExportTableButton } from "./ExportTableButton";
 import { SearchBar } from "./SearchBar";
@@ -46,7 +46,7 @@ export function VesselTable({ vessels }: VesselTableProps) {
   const deferredSearchQuery = useDeferredValue(searchQuery);
   const [excludeScore100, setExcludeScore100] = useState(true);
   const [activePreset, setActivePreset] = useState<
-    "all" | "interest" | "suspicious" | null
+    "all" | "tankers" | "imo_issues" | null
   >("all");
 
   // Filter vessels based on search query and preset exclusions
@@ -144,7 +144,7 @@ export function VesselTable({ vessels }: VesselTableProps) {
     setActivePreset("all");
   };
 
-  const applyVesselsOfInterestPreset = () => {
+  const applyTankersPreset = () => {
     setExcludeScore100(false);
     setColumnFilters([
       {
@@ -153,14 +153,14 @@ export function VesselTable({ vessels }: VesselTableProps) {
       },
     ]);
     setColumnVisibility((prev) => ({ ...prev, score_score: true }));
-    setActivePreset("interest");
+    setActivePreset("tankers");
   };
 
-  const applySuspiciousPreset = () => {
+  const applyIMOIssuesPreset = () => {
     setColumnFilters([{ id: "score_score", value: ["100"] }]);
     setColumnVisibility((prev) => ({ ...prev, score_score: false }));
     setExcludeScore100(false);
-    setActivePreset("suspicious");
+    setActivePreset("imo_issues");
   };
 
   const getPresetButtonClassName = (preset: typeof activePreset) => {
@@ -193,21 +193,21 @@ export function VesselTable({ vessels }: VesselTableProps) {
             onClick={applyAllVesselsPreset}
             className={getPresetButtonClassName("all")}
           >
-            All Vessels
+            All Ships
           </Button>
           <Button
-            variant={activePreset === "interest" ? "default" : "outline"}
-            onClick={applyVesselsOfInterestPreset}
-            className={getPresetButtonClassName("interest")}
+            variant={activePreset === "tankers" ? "default" : "outline"}
+            onClick={applyTankersPreset}
+            className={getPresetButtonClassName("tankers")}
           >
-            Vessels of Interest
+            Tankers
           </Button>
           <Button
-            variant={activePreset === "suspicious" ? "default" : "outline"}
-            onClick={applySuspiciousPreset}
-            className={getPresetButtonClassName("suspicious")}
+            variant={activePreset === "imo_issues" ? "default" : "outline"}
+            onClick={applyIMOIssuesPreset}
+            className={getPresetButtonClassName("imo_issues")}
           >
-            Suspicious
+            IMO Issues
           </Button>
         </div>
         <div className="flex gap-2">
