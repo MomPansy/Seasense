@@ -15,9 +15,16 @@ type ArrivingVesselsResponse = InferResponseType<
   typeof api.vessels.arriving.$post
 >[number];
 
+// Timezone adjustment: subtract 8 hours
+const TIMEZONE_OFFSET_MS = 8 * 60 * 60 * 1000;
+
+const adjustTimezone = (dateString: string): number => {
+  return new Date(dateString).getTime() - TIMEZONE_OFFSET_MS;
+};
+
 const formatDateTime = (dateString: string | null) => {
   if (!dateString) return "N/A";
-  const date = new Date(dateString);
+  const date = new Date(adjustTimezone(dateString));
   const day = String(date.getDate()).padStart(2, "0");
   const month = String(date.getMonth() + 1).padStart(2, "0");
   const year = String(date.getFullYear()).slice(-2);
@@ -270,10 +277,10 @@ export const createColumns = (
       formatDateTime(row.original.vesselArrivalDetails.dueToArriveTime),
     sortingFn: (rowA, rowB) => {
       const dateA = rowA.original.vesselArrivalDetails.dueToArriveTime
-        ? new Date(rowA.original.vesselArrivalDetails.dueToArriveTime).getTime()
+        ? adjustTimezone(rowA.original.vesselArrivalDetails.dueToArriveTime)
         : 0;
       const dateB = rowB.original.vesselArrivalDetails.dueToArriveTime
-        ? new Date(rowB.original.vesselArrivalDetails.dueToArriveTime).getTime()
+        ? adjustTimezone(rowB.original.vesselArrivalDetails.dueToArriveTime)
         : 0;
       return dateA - dateB;
     },
@@ -281,7 +288,7 @@ export const createColumns = (
       const dateStr = row.original.vesselArrivalDetails.dueToArriveTime;
       if (!dateStr) return false;
 
-      const date = new Date(dateStr).getTime();
+      const date = adjustTimezone(dateStr);
       return date >= filterValue.start && date <= filterValue.end;
     },
   },

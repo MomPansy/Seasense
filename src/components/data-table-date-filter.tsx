@@ -17,6 +17,9 @@ export function DataTableDateFilter<TData, TValue>({
 }: DataTableDateFilterProps<TData, TValue>) {
   const [isOpen, setIsOpen] = React.useState(false);
 
+  // Timezone adjustment: subtract 8 hours
+  const TIMEZONE_OFFSET_MS = 8 * 60 * 60 * 1000;
+
   // Get all date values from the table to determine min/max
   const { minDate, maxDate } = React.useMemo(() => {
     if (!table) return { minDate: 0, maxDate: 0 };
@@ -26,7 +29,7 @@ export function DataTableDateFilter<TData, TValue>({
       .rows.map((row) => {
         const value = row.getValue(column?.id ?? "");
         if (typeof value === "string") {
-          const timestamp = new Date(value).getTime();
+          const timestamp = new Date(value).getTime() - TIMEZONE_OFFSET_MS;
           return isNaN(timestamp) ? null : timestamp;
         }
         return null;
