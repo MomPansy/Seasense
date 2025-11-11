@@ -14,9 +14,11 @@ import {
 import { InferResponseType } from "hono/client";
 import { Download } from "lucide-react";
 import { useState, useMemo, useDeferredValue } from "react";
+import { toast } from "sonner";
 import { api } from "@/lib/api";
 import { mapStatCode } from "@/lib/utils";
 import { ColumnVisibilityDropdown } from "./ColumnVisibilityDropdown";
+import { downloadFile, exportVesselScores } from "@/utils/exportData";
 import { DataTable } from "./data-table";
 import { ExportTableButton } from "./ExportTableButton";
 import { SearchBar } from "./SearchBar";
@@ -24,7 +26,7 @@ import { Button } from "./ui/button";
 import { Stack } from "./ui/stack";
 import { createColumns } from "./vessel-columns";
 
-type ArrivingVesselsResponse = InferResponseType<
+export type ArrivingVesselsResponse = InferResponseType<
   typeof api.vessels.arriving.$post
 >;
 
@@ -166,10 +168,20 @@ export function VesselTable({ vessels }: VesselTableProps) {
       ? "bg-[#0f796f] hover:bg-[#0f796f]/90 text-white"
       : "";
   };
+  const handleExport = async () => {
+    toast.success("Exporting vessel details to Excel");
+    const buffer = await exportVesselScores(filteredVessels);
+    downloadFile({
+      data: buffer,
+      dataType:
+        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+      filename: "scores.xlsx",
+    });
+  };
 
   return (
     <Stack direction="column" gap="4">
-      <div className="flex justify-end">
+      <div className="flex items-center justify-end">
         <div className="w-full max-w-md">
           <SearchBar onSearch={setSearchQuery} />
         </div>
@@ -200,7 +212,7 @@ export function VesselTable({ vessels }: VesselTableProps) {
         </div>
         <div className="flex gap-2">
           <ColumnVisibilityDropdown table={table} columnLabels={columnLabels} />
-          <Button variant="outline" className="gap-2">
+          <Button variant="outline" className="gap-2" onClick={handleExport}>
             <Download className="h-4 w-4" />
             Download Vessel Scoring
           </Button>
