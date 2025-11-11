@@ -36,17 +36,31 @@ export function VesselTable({ vessels }: VesselTableProps) {
   const navigate = useNavigate();
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
-  const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
+  const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({
+    score_score: false,
+  });
   const [rowSelection, setRowSelection] = useState<RowSelectionState>({});
   const [searchQuery, setSearchQuery] = useState("");
   const deferredSearchQuery = useDeferredValue(searchQuery);
+  const [excludeScore100, setExcludeScore100] = useState(true);
+  const [activePreset, setActivePreset] = useState<
+    "all" | "interest" | "suspicious" | null
+  >("all");
 
-  // Filter vessels based on search query
+  // Filter vessels based on search query and preset exclusions
   const filteredVessels = useMemo(() => {
-    if (!deferredSearchQuery) return vessels;
+    let filtered = vessels;
+
+    // Apply exclude score 100 filter if active
+    if (excludeScore100) {
+      filtered = filtered.filter((vessel) => vessel.score.score !== 100);
+    }
+
+    // Apply search query filter
+    if (!deferredSearchQuery) return filtered;
 
     const query = deferredSearchQuery.toLowerCase();
-    return vessels.filter((vessel) => {
+    return filtered.filter((vessel) => {
       const vesselName = (
         vessel.vesselArrivalDetails.vesselName ?? ""
       ).toLowerCase();
@@ -83,7 +97,7 @@ export function VesselTable({ vessels }: VesselTableProps) {
         operatorCountry.includes(query)
       );
     });
-  }, [vessels, deferredSearchQuery]);
+  }, [vessels, deferredSearchQuery, excludeScore100]);
 
   const columns = useMemo(() => createColumns(navigate), [navigate]);
 
@@ -120,6 +134,39 @@ export function VesselTable({ vessels }: VesselTableProps) {
     vesselArrivalDetails_dueToArriveTime: "Arrival Time",
   };
 
+  // Preset filter handlers
+  const applyAllVesselsPreset = () => {
+    setColumnFilters([]);
+    setColumnVisibility((prev) => ({ ...prev, score_score: false }));
+    setExcludeScore100(true);
+    setActivePreset("all");
+  };
+
+  const applyVesselsOfInterestPreset = () => {
+    setExcludeScore100(false);
+    setColumnFilters([
+      {
+        id: "vesselDetails_statCode5",
+        value: ["Chemical Tanker", "LNG Tanker", "LPG Tanker", "Tanker"],
+      },
+    ]);
+    setColumnVisibility((prev) => ({ ...prev, score_score: true }));
+    setActivePreset("interest");
+  };
+
+  const applySuspiciousPreset = () => {
+    setColumnFilters([{ id: "score_score", value: ["100"] }]);
+    setColumnVisibility((prev) => ({ ...prev, score_score: false }));
+    setExcludeScore100(false);
+    setActivePreset("suspicious");
+  };
+
+  const getPresetButtonClassName = (preset: typeof activePreset) => {
+    return activePreset === preset
+      ? "bg-[#0f796f] hover:bg-[#0f796f]/90 text-white"
+      : "";
+  };
+
   return (
     <Stack direction="column" gap="4">
       <div className="flex justify-end">
@@ -127,13 +174,38 @@ export function VesselTable({ vessels }: VesselTableProps) {
           <SearchBar onSearch={setSearchQuery} />
         </div>
       </div>
-      <div className="flex justify-end gap-2">
-        <ColumnVisibilityDropdown table={table} columnLabels={columnLabels} />
-        <Button variant="outline" className="gap-2">
-          <Download className="h-4 w-4" />
-          Download Vessel Scoring
-        </Button>
-        <ExportTableButton table={table} columnLabels={columnLabels} />
+      <div className="flex justify-between items-center">
+        <div className="flex gap-2">
+          <Button
+            variant={activePreset === "all" ? "default" : "outline"}
+            onClick={applyAllVesselsPreset}
+            className={getPresetButtonClassName("all")}
+          >
+            All Vessels
+          </Button>
+          <Button
+            variant={activePreset === "interest" ? "default" : "outline"}
+            onClick={applyVesselsOfInterestPreset}
+            className={getPresetButtonClassName("interest")}
+          >
+            Vessels of Interest
+          </Button>
+          <Button
+            variant={activePreset === "suspicious" ? "default" : "outline"}
+            onClick={applySuspiciousPreset}
+            className={getPresetButtonClassName("suspicious")}
+          >
+            Suspicious
+          </Button>
+        </div>
+        <div className="flex gap-2">
+          <ColumnVisibilityDropdown table={table} columnLabels={columnLabels} />
+          <Button variant="outline" className="gap-2">
+            <Download className="h-4 w-4" />
+            Download Vessel Scoring
+          </Button>
+          <ExportTableButton table={table} columnLabels={columnLabels} />
+        </div>
       </div>
       <DataTable
         columns={columns}
