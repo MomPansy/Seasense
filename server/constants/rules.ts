@@ -19,7 +19,7 @@ export interface Ruleset {
 
 const tankerRule = (vesselInfo: VesselDetails) => {
   const shipcodesOfInterest = [
-    "A1" // all (seagoing) tankers
+    "A1", // all (seagoing) tankers
   ];
 
   return shipcodesOfInterest.some((codeprefix) =>
