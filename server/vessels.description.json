@@ -27,7 +27,7 @@
   {
     "columnName": "ShipStatusEffectiveDate",
     "type": "text",
-    "description": "The date from which the above status took effect."
+    "description": "The date from which the above status took effect, formatted in YYYYMMDD (MM and/or DD can be 00 if it is unknown)."
   },
   {
     "columnName": "CallSign",
@@ -42,7 +42,7 @@
   {
     "columnName": "FlagEffectiveDate",
     "type": "text",
-    "description": "The date from which the ship began to be associated with its current flag."
+    "description": "The date from which the ship began to be associated with its current flag, formatted in YYYYMM (MM can be 00 if it is unknown)."
   },
   {
     "columnName": "FlagName",
