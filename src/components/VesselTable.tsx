@@ -124,7 +124,7 @@ export function VesselTable({ vessels }: VesselTableProps) {
   });
 
   // Column labels for the visibility dropdown - match table headers
-  const columnLabels: Record<string, string> = {
+  const baseColumnLabels: Record<string, string> = {
     vesselArrivalDetails_imo: "IMO Number",
     vesselArrivalDetails_vesselName: "Vessel Name",
     vesselArrivalDetails_callsign: "Call Sign",
@@ -135,6 +135,21 @@ export function VesselTable({ vessels }: VesselTableProps) {
     vesselArrivalDetails_locationTo: "To",
     vesselArrivalDetails_dueToArriveTime: "Arrival Time",
   };
+
+  // Conditionally set columns to display in the visibility dropdown based on the view
+  const columnLabels = useMemo(() => {
+    switch (activePreset) {
+      case "all":
+      case "imo_issues":
+        return Object.fromEntries(
+          Object.entries(baseColumnLabels).filter(
+            ([key]) => key !== "score_score",
+          ),
+        );
+      default:
+        return { ...baseColumnLabels };
+    }
+  }, [activePreset]);
 
   // Preset filter handlers
   const applyAllVesselsPreset = () => {

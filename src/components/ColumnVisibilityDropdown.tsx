@@ -51,7 +51,9 @@ export function ColumnVisibilityDropdown<TData>({
         <div className="max-h-64 overflow-y-auto px-1">
           {table
             .getAllLeafColumns()
-            .filter((column) => column.id !== "select")
+            .filter(
+              (column) => column.id !== "select" && column.id in columnLabels,
+            )
             .map((column) => {
               return (
                 <DropdownMenuCheckboxItem
