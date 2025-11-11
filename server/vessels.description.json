@@ -1,0 +1,207 @@
+[
+  {
+    "columnName": "IHSLRorIMOShipNo",
+    "type": "text",
+    "description": "The vessel's IMO number, a unique immutable identifier required for all ships in this database."
+  },
+  {
+    "columnName": "ShipName",
+    "type": "text",
+    "description": "The vessel's name."
+  },
+  {
+    "columnName": "ExName",
+    "type": "text",
+    "description": "The vessel's previous name, if any."
+  },
+  {
+    "columnName": "ShipStatus",
+    "type": "text",
+    "description": "The status of the ship, primarily used to determine if it is currently in service."
+  },
+  {
+    "columnName": "ShipStatusCode",
+    "type": "text",
+    "description": "A code directly corresponding to the status of the ship."
+  },
+  {
+    "columnName": "ShipStatusEffectiveDate",
+    "type": "text",
+    "description": "The date from which the above status took effect."
+  },
+  {
+    "columnName": "CallSign",
+    "type": "text",
+    "description": "The ship's callsign. May be empty."
+  },
+  {
+    "columnName": "FlagCode",
+    "type": "text",
+    "description": "The country code of the ship's registered flag."
+  },
+  {
+    "columnName": "FlagEffectiveDate",
+    "type": "text",
+    "description": "The date from which the ship began to be associated with its current flag."
+  },
+  {
+    "columnName": "FlagName",
+    "type": "text",
+    "description": "The name of the country the ship is registered with."
+  },
+  {
+    "columnName": "MaritimeMobileServiceIdentityMMSINumber",
+    "type": "text",
+    "description": "The ship's MMSI number, a unique ID used for communication. May be empty, and may also be reassigned from ship to ship."
+  },
+  {
+    "columnName": "GrossTonnage",
+    "type": "integer",
+    "description": "The gross tonnage of the ship, which refers to its overall total internal volume."
+  },
+  {
+    "columnName": "LengthOverallLOA",
+    "type": "text",
+    "description": "The length overall of the ship, which is the maximum length of its hull measured parallel to the waterline."
+  },
+  {
+    "columnName": "ShiptypeLevel2",
+    "type": "text",
+    "description": "The level 2 shiptype of the ship, as defined by the StatCode 5 shiptype coding system (https://cdn.ihs.com/www/pdf/Statcode-Shiptype-Coding-System.pdf). May be empty depending on the lower levels."
+  },
+  {
+    "columnName": "ShiptypeLevel3",
+    "type": "text",
+    "description": "The level 3 shiptype of the ship, as defined by the StatCode 5 shiptype coding system (https://cdn.ihs.com/www/pdf/Statcode-Shiptype-Coding-System.pdf). May be empty depending on the lower levels."
+  },
+  {
+    "columnName": "ShiptypeLevel4",
+    "type": "text",
+    "description": "The level 4 shiptype of the ship, as defined by the StatCode 5 shiptype coding system (https://cdn.ihs.com/www/pdf/Statcode-Shiptype-Coding-System.pdf). May be empty depending on the lower levels."
+  },
+  {
+    "columnName": "ShiptypeLevel5",
+    "type": "text",
+    "description": "The level 5 shiptype of the ship, as defined by the StatCode 5 shiptype coding system (https://cdn.ihs.com/www/pdf/Statcode-Shiptype-Coding-System.pdf). Will not be empty unless the ship's type is unknown."
+  },
+  {
+    "columnName": "StatCode5",
+    "type": "text",
+    "description": "The StatCode of the ship corresponding to the ship's type, as defined by the StatCode 5 shiptype coding system (https://cdn.ihs.com/www/pdf/Statcode-Shiptype-Coding-System.pdf)."
+  },
+  {
+    "columnName": "ShiponOFACSanctionList",
+    "type": "text",
+    "description": "Whether or not the ship is on the US OFAC sanction list. May be True, False or empty; assume false if empty."
+  },
+  {
+    "columnName": "ShiponOFACNonSDNSanctionList",
+    "type": "text",
+    "description": "Whether or not the ship is on the US OFAC non-SDN sanction list. May be True, False or empty; assume false if empty."
+  },
+  {
+    "columnName": "ShiponUNSanctionList",
+    "type": "text",
+    "description": "Whether or not the ship is on the UN sanction list. May be True, False or empty; assume false if empty."
+  },
+  {
+    "columnName": "ShiponEUSanctionList",
+    "type": "text",
+    "description": "Whether or not the ship is on the EU sanction list. May be True, False or empty; assume false if empty."
+  },
+  {
+    "columnName": "ShiponUSTreasuryOFACAdvisoryList",
+    "type": "text",
+    "description": "Whether or not the ship is on the US treasury OFAC advisory list. May be 1, 0 or empty, indicating true, false and false respectively."
+  },
+  {
+    "columnName": "GroupBeneficialOwner",
+    "type": "text",
+    "description": "The name of the ship's group owner company."
+  },
+  {
+    "columnName": "GroupBeneficialOwnerCompanyCode",
+    "type": "text",
+    "description": "The unique identifying company code of the group owner company."
+  },
+  {
+    "columnName": "GroupBeneficialOwnerCountryOfControl",
+    "type": "text",
+    "description": "The country in which the group owner company's controlling owners reside."
+  },
+  {
+    "columnName": "GroupBeneficialOwnerCountryofDomicile",
+    "type": "text",
+    "description": "The country in which the group owner company is located."
+  },
+  {
+    "columnName": "GroupBeneficialOwnerCountryofDomicileCode",
+    "type": "text",
+    "description": "The country code of the country in which the group owner company is located."
+  },
+  {
+    "columnName": "GroupBeneficialOwnerCountryOfRegistration",
+    "type": "text",
+    "description": "The country in which the group owner company is registered."
+  },
+  {
+    "columnName": "Operator",
+    "type": "text",
+    "description": "The name of the ship's operator company."
+  },
+  {
+    "columnName": "OperatorCompanyCode",
+    "type": "text",
+    "description": "The unique identifying company code of the operator company."
+  },
+  {
+    "columnName": "OperatorCountryOfControl",
+    "type": "text",
+    "description": "The country in which the operator company's controlling owners reside."
+  },
+  {
+    "columnName": "OperatorCountryofDomicileName",
+    "type": "text",
+    "description": "The country in which the operator company is located."
+  },
+  {
+    "columnName": "OperatorCountryofDomicileCode",
+    "type": "text",
+    "description": "The country code of the country in which the operator company is located."
+  },
+  {
+    "columnName": "OperatorCountryOfRegistration",
+    "type": "text",
+    "description": "The country in which the operator company is registered."
+  },
+  {
+    "columnName": "RegisteredOwner",
+    "type": "text",
+    "description": "The name of the ship's owner company."
+  },
+  {
+    "columnName": "RegisteredOwnerCode",
+    "type": "text",
+    "description": "The unique identifying company code of the owner company."
+  },
+  {
+    "columnName": "RegisteredOwnerCountryOfControl",
+    "type": "text",
+    "description": "The country in which the owner company's controlling owners reside."
+  },
+  {
+    "columnName": "RegisteredOwnerCountryofDomicile",
+    "type": "text",
+    "description": "The country in which the owner company is located."
+  },
+  {
+    "columnName": "RegisteredOwnerCountryofDomicileCode",
+    "type": "text",
+    "description": "The country code of the country in which the owner company is located."
+  },
+  {
+    "columnName": "RegisteredOwnerCountryOfRegistration",
+    "type": "text",
+    "description": "The country in which the owner company is registered."
+  }
+]

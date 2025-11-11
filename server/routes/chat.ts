@@ -13,6 +13,7 @@ import {
 } from "ai";
 import { eq, sql } from "drizzle-orm";
 import { z } from "zod";
+import { databaseQueryAgent } from "server/agents/database-query.agent.ts";
 import { chats } from "server/drizzle/chats.ts";
 import { messages as messagesTable } from "server/drizzle/messages.ts";
 import { factory } from "server/factory.ts";
@@ -32,7 +33,7 @@ const uiMessageSchema = z.object({
       })
       .catchall(z.unknown()),
   ),
-  createdAt: z.date().optional(),
+  createdAt: z.coerce.date().optional(),
   metadata: z.unknown().optional(),
 });
 
@@ -184,36 +185,35 @@ export const route = factory
     ),
     drizzle(),
     async (c) => {
-      // Step 1: Extract and validate request data
       const { id: chatId, messages } = c.req.valid("json");
       const { tx } = c.var;
 
-      // Convert ChatUIMessages to ModelMessages
-      // The validated messages match the ChatUIMessage structure
       const modelMessages = convertToModelMessages(messages as ChatUIMessage[]);
-
       const lastMessageIndex = modelMessages.length - 1;
-      // Get the last message (should be from user)
       const lastMessage = modelMessages[lastMessageIndex] as UserModelMessage;
 
-      // Ensure chat exists in database before inserting messages
-      const existingChats = await tx
-        .selectDistinct({
-          id: chats.id,
-          title: chats.title,
-        })
-        .from(chats)
-        .where(eq(chats.id, chatId));
+      const messageText =
+        typeof lastMessage.content === "string"
+          ? lastMessage.content
+          : lastMessage.content
+              .map((part) => (part.type === "text" ? part.text : ""))
+              .join(" ");
 
-      if (existingChats.length === 0) {
-        // Create chat entry with placeholder title
-        await tx.insert(chats).values({
-          id: chatId,
-          title: "New Chat", // Placeholder, will be updated during streaming
-        });
-      }
+      // Ensure chat exists with placeholder title
+      await ensureChatExists(tx, chatId);
 
-      // insert user message into database
+      // Determine if we should use the database query agent
+      const {
+        object: { useAgent },
+      } = await generateObject({
+        model: anthropic("claude-3-5-haiku-20241022"),
+        schema: z.object({ useAgent: z.boolean() }),
+        prompt: messageText,
+        system:
+          'Decide if the question requires database access. Return {"useAgent": true} for database queries, {"useAgent": false} otherwise.',
+      });
+
+      // Insert user message
       await insertUserMessage({
         tx,
         chatId,
@@ -221,71 +221,96 @@ export const route = factory
         position: lastMessageIndex,
       });
 
-      const result = streamText({
-        messages: modelMessages,
-        model: wrapLanguageModel({
-          model: anthropic("claude-3-5-haiku-20241022"),
-          middleware: extractReasoningMiddleware({ tagName: "think" }),
-        }),
-        onFinish: async (result) => {
-          // Insert assistant message into the database
-          await insertAssistantMessage({
-            tx: tx,
-            chatId: chatId,
-            text: result.text,
-            position: lastMessageIndex + 1,
+      // Stream response using appropriate model/agent
+      const result = useAgent
+        ? databaseQueryAgent.stream({ messages: modelMessages })
+        : streamText({
+            messages: modelMessages,
+            model: wrapLanguageModel({
+              model: anthropic("claude-3-5-haiku-20241022"),
+              middleware: extractReasoningMiddleware({ tagName: "think" }),
+            }),
+            onFinish: async (result) => {
+              await insertAssistantMessage({
+                tx,
+                chatId,
+                text: result.text,
+                position: lastMessageIndex + 1,
+              });
+            },
           });
-        },
-      });
 
       return result.toUIMessageStreamResponse({
         messageMetadata: async ({ part }) => {
-          // When streaming starts, generate and update title for new chats
           if (part.type === "start") {
-            const currentChat = await tx
-              .selectDistinct({
-                id: chats.id,
-                title: chats.title,
-              })
-              .from(chats)
-              .where(eq(chats.id, chatId));
+            return await handleChatTitleGeneration(tx, chatId, messageText);
+          }
 
-            // Only generate title if it's still the placeholder
-            if (currentChat.length > 0 && currentChat[0].title === "New Chat") {
-              // Generate title for new chat
-              const messageText =
-                typeof lastMessage.content === "string"
-                  ? lastMessage.content
-                  : lastMessage.content
-                      .map((part) => (part.type === "text" ? part.text : ""))
-                      .join(" ");
-
-              const titleResult = await generateObject({
-                model: anthropic("claude-3-5-haiku-20241022"),
-                prompt: "Generate a title for the chat: " + messageText,
-                schema: z.object({
-                  title: z.string(),
-                }),
-              });
-
-              // Update chat with generated title
-              await tx
-                .update(chats)
-                .set({ title: titleResult.object.title })
-                .where(eq(chats.id, chatId));
-
-              return {
-                chatTitle: titleResult.object.title,
-                isNewChat: true,
-              };
-            } else if (currentChat.length > 0) {
-              return {
-                chatTitle: currentChat[0].title,
-                isNewChat: false,
-              };
-            }
+          if (part.type === "finish" && useAgent) {
+            const fullText = await result.text;
+            await insertAssistantMessage({
+              tx,
+              chatId,
+              text: fullText,
+              position: lastMessageIndex + 1,
+            });
           }
         },
       });
     },
   );
+
+// Helper function to ensure chat exists
+async function ensureChatExists(tx: Tx, chatId: string) {
+  const existingChats = await tx
+    .selectDistinct({ id: chats.id })
+    .from(chats)
+    .where(eq(chats.id, chatId));
+
+  if (existingChats.length === 0) {
+    await tx.insert(chats).values({
+      id: chatId,
+      title: "New Chat",
+    });
+  }
+}
+
+// Helper function to handle chat title generation
+async function handleChatTitleGeneration(
+  tx: Tx,
+  chatId: string,
+  messageText: string,
+) {
+  const currentChat = await tx
+    .selectDistinct({ id: chats.id, title: chats.title })
+    .from(chats)
+    .where(eq(chats.id, chatId));
+
+  if (currentChat.length === 0) return;
+
+  const chat = currentChat[0];
+
+  // Generate title only for new chats
+  if (chat.title === "New Chat") {
+    const titleResult = await generateObject({
+      model: anthropic("claude-3-5-haiku-20241022"),
+      prompt: "Generate a title for the chat: " + messageText,
+      schema: z.object({ title: z.string() }),
+    });
+
+    await tx
+      .update(chats)
+      .set({ title: titleResult.object.title })
+      .where(eq(chats.id, chatId));
+
+    return {
+      chatTitle: titleResult.object.title,
+      isNewChat: true,
+    };
+  }
+
+  return {
+    chatTitle: chat.title,
+    isNewChat: false,
+  };
+}
