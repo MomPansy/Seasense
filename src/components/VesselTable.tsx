@@ -212,10 +212,12 @@ export function VesselTable({ vessels }: VesselTableProps) {
         </div>
         <div className="flex gap-2">
           <ColumnVisibilityDropdown table={table} columnLabels={columnLabels} />
-          <Button variant="outline" className="gap-2" onClick={handleExport}>
-            <Download className="h-4 w-4" />
-            Download Vessel Scoring
-          </Button>
+          {activePreset === "tankers" && (
+            <Button variant="outline" className="gap-2" onClick={handleExport}>
+              <Download className="h-4 w-4" />
+              Download Vessel Scoring
+            </Button>
+          )}
           <ExportTableButton table={table} columnLabels={columnLabels} />
         </div>
       </div>
