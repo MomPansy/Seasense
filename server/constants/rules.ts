@@ -19,11 +19,7 @@ export interface Ruleset {
 
 const tankerRule = (vesselInfo: VesselDetails) => {
   const shipcodesOfInterest = [
-    "A11", // LNG/LPG tankers
-    "A12", // chem tankers
-    "A13", // oil tankers
-    "A22", // oil bulk carriers
-    "W11", // non-seagoing tanker
+    "A1" // all (seagoing) tankers
   ];
 
   return shipcodesOfInterest.some((codeprefix) =>
