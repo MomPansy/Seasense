@@ -37,7 +37,7 @@
   {
     "columnName": "FlagCode",
     "type": "text",
-    "description": "The country code of the ship's registered flag."
+    "description": "The 3-letter country code of the ship's registered flag."
   },
   {
     "columnName": "FlagEffectiveDate",
