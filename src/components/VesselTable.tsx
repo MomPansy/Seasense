@@ -37,6 +37,32 @@ interface VesselTableProps {
 export function VesselTable({ vessels }: VesselTableProps) {
   const navigate = useNavigate();
 
+  // Clear state on page refresh BEFORE state initialization
+  // This must run synchronously before useState hooks
+  const isPageRefresh = !sessionStorage.getItem("vesselTable_isNavigating");
+  if (isPageRefresh) {
+    // Clear all vesselTable state on fresh page load
+    const keys = Object.keys(sessionStorage);
+    keys.forEach((key) => {
+      if (key.startsWith("vesselTable_")) {
+        sessionStorage.removeItem(key);
+      }
+    });
+  }
+
+  // Set up navigation tracking
+  useEffect(() => {
+    // Set flag to indicate we're now in navigation mode
+    sessionStorage.setItem("vesselTable_isNavigating", "true");
+
+    // Clear the navigation flag when the user actually refreshes or closes the tab
+    const handleBeforeUnload = () => {
+      sessionStorage.removeItem("vesselTable_isNavigating");
+    };
+    window.addEventListener("beforeunload", handleBeforeUnload);
+    return () => window.removeEventListener("beforeunload", handleBeforeUnload);
+  }, []);
+
   // Restore state from sessionStorage
   const getInitialState = <T,>(key: string, defaultValue: T): T => {
     try {
