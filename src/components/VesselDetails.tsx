@@ -194,7 +194,7 @@ const AssessmentSection = ({
   trippedRules: { name: string; tripped: boolean }[];
 }) => (
   <DetailCard title="Assessment">
-    <div className="min-h-[200px] space-y-4">
+    <div className="space-y-3">
       {!isTanker ? (
         <span className="body-small text-muted-foreground">-</span>
       ) : (
@@ -237,7 +237,7 @@ const AssessmentSection = ({
 
 const ActionsSection = () => (
   <DetailCard title="Actions">
-    <div className="min-h-[200px]">
+    <div className="space-y-3">
       <span className="body-small text-muted-foreground">-</span>
     </div>
   </DetailCard>
