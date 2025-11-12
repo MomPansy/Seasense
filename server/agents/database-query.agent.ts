@@ -13,7 +13,7 @@ import {
   messages as messagesTable,
   type ToolInteraction,
 } from "server/drizzle/messages.ts";
-import { db, type Tx } from "server/lib/db.ts";
+import { readOnlyDb, type Tx } from "server/lib/db.ts";
 import vessel_arrivals_schema from "server/vessel_arrivals.description.json";
 import vessel_departures_schema from "server/vessel_departures.description.json";
 import vessels_schema from "server/vessels.description.json";
@@ -85,7 +85,7 @@ const databaseQueryAgent = new Agent({
       }),
       execute: async ({ sqlQuery }) => {
         // Execute the SQL query against the database
-        const result = await db.execute(sqlQuery);
+        const result = await readOnlyDb.execute(sqlQuery);
         return result;
       },
     }),
