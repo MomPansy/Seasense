@@ -81,11 +81,11 @@ export const route = factory
           and(
             lte(
               vesselsDueToArrive.dueToArriveTime,
-              format(addHours(currDate, hoursToPull), "yyyy-MM-dd HH:mm:ss"),
+              format(addHours(currDate, hoursToPull), "yyyy-MM-dd HH:mm:ssX"),
             ),
             gte(
               vesselsDueToArrive.dueToArriveTime,
-              format(currDate, "yyyy-MM-dd HH:mm:ss"),
+              format(currDate, "yyyy-MM-dd HH:mm:ssX"),
             ),
           ),
         );

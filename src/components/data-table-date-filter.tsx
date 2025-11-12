@@ -1,4 +1,5 @@
 import { Column, Table } from "@tanstack/react-table";
+import { format } from "date-fns";
 import { FilterIcon } from "lucide-react";
 import * as React from "react";
 import { Button } from "./ui/button";
@@ -17,9 +18,6 @@ export function DataTableDateFilter<TData, TValue>({
 }: DataTableDateFilterProps<TData, TValue>) {
   const [isOpen, setIsOpen] = React.useState(false);
 
-  // Timezone adjustment: subtract 8 hours
-  const TIMEZONE_OFFSET_MS = 8 * 60 * 60 * 1000;
-
   // Get all date values from the table to determine min/max
   const { minDate, maxDate } = React.useMemo(() => {
     if (!table) return { minDate: 0, maxDate: 0 };
@@ -29,7 +27,7 @@ export function DataTableDateFilter<TData, TValue>({
       .rows.map((row) => {
         const value = row.getValue(column?.id ?? "");
         if (typeof value === "string") {
-          const timestamp = new Date(value).getTime() - TIMEZONE_OFFSET_MS;
+          const timestamp = new Date(value).getTime();
           return isNaN(timestamp) ? null : timestamp;
         }
         return null;
@@ -82,16 +80,6 @@ export function DataTableDateFilter<TData, TValue>({
   if (!column || minDate === 0 || maxDate === 0) {
     return null;
   }
-
-  const formatDisplayDate = (timestamp: number) => {
-    const date = new Date(timestamp);
-    const day = String(date.getDate()).padStart(2, "0");
-    const month = String(date.getMonth() + 1).padStart(2, "0");
-    const year = String(date.getFullYear()).slice(-2);
-    const hours = String(date.getHours()).padStart(2, "0");
-    const minutes = String(date.getMinutes()).padStart(2, "0");
-    return `${day}/${month}/${year} ${hours}:${minutes}`;
-  };
 
   const range = maxDate - minDate;
   const startPercent = ((startValue - minDate) / range) * 100;
@@ -173,13 +161,13 @@ export function DataTableDateFilter<TData, TValue>({
               <div>
                 <span className="text-gray-900">From: </span>
                 <span className="font-medium text-gray-900">
-                  {formatDisplayDate(startValue)}
+                  {format(startValue, "dd/MM/yy HH:mm:ss X")}
                 </span>
               </div>
               <div>
                 <span className="text-gray-900">To: </span>
                 <span className="font-medium text-gray-900">
-                  {formatDisplayDate(endValue)}
+                  {format(endValue, "dd/MM/yy HH:mm:ss X")}
                 </span>
               </div>
             </div>

@@ -1,5 +1,6 @@
 import { useNavigate } from "@tanstack/react-router";
 import { ColumnDef } from "@tanstack/react-table";
+import { differenceInMilliseconds, format } from "date-fns";
 import { InferResponseType } from "hono/client";
 import { ArrowUpDown } from "lucide-react";
 import { api } from "src/lib/api";
@@ -15,24 +16,6 @@ import { Stack } from "./ui/stack";
 type ArrivingVesselsResponse = InferResponseType<
   typeof api.vessels.arriving.$post
 >[number];
-
-// Timezone adjustment: subtract 8 hours
-const TIMEZONE_OFFSET_MS = 8 * 60 * 60 * 1000;
-
-const adjustTimezone = (dateString: string): number => {
-  return new Date(dateString).getTime() - TIMEZONE_OFFSET_MS;
-};
-
-const formatDateTime = (dateString: string | null) => {
-  if (!dateString) return "N/A";
-  const date = new Date(adjustTimezone(dateString));
-  const day = String(date.getDate()).padStart(2, "0");
-  const month = String(date.getMonth() + 1).padStart(2, "0");
-  const year = String(date.getFullYear()).slice(-2);
-  const hours = String(date.getHours()).padStart(2, "0");
-  const minutes = String(date.getMinutes()).padStart(2, "0");
-  return `${day}/${month}/${year} ${hours}:${minutes}`;
-};
 
 export const createColumns = (
   navigate: ReturnType<typeof useNavigate>,
@@ -302,22 +285,24 @@ export const createColumns = (
         </Stack>
       );
     },
-    cell: ({ row }) =>
-      formatDateTime(row.original.vesselArrivalDetails.dueToArriveTime),
+    cell: ({ row }) => {
+      return row.original.vesselArrivalDetails.dueToArriveTime
+        ? format(
+            row.original.vesselArrivalDetails.dueToArriveTime,
+            "dd/MM/yy HH:mm:ss X",
+          )
+        : "N/A";
+    },
     sortingFn: (rowA, rowB) => {
-      const dateA = rowA.original.vesselArrivalDetails.dueToArriveTime
-        ? adjustTimezone(rowA.original.vesselArrivalDetails.dueToArriveTime)
-        : 0;
-      const dateB = rowB.original.vesselArrivalDetails.dueToArriveTime
-        ? adjustTimezone(rowB.original.vesselArrivalDetails.dueToArriveTime)
-        : 0;
-      return dateA - dateB;
+      const dateA = rowA.original.vesselArrivalDetails.dueToArriveTime ?? 0;
+      const dateB = rowB.original.vesselArrivalDetails.dueToArriveTime ?? 0;
+      return differenceInMilliseconds(dateA, dateB);
     },
     filterFn: (row, _columnId, filterValue: { start: number; end: number }) => {
       const dateStr = row.original.vesselArrivalDetails.dueToArriveTime;
       if (!dateStr) return false;
 
-      const date = adjustTimezone(dateStr);
+      const date = new Date(dateStr).getTime();
       return date >= filterValue.start && date <= filterValue.end;
     },
   },
