@@ -1,4 +1,3 @@
-import { useNavigate } from "@tanstack/react-router";
 import { InferResponseType } from "hono/client";
 import { ArrowLeft, Copy } from "lucide-react";
 import { useMemo } from "react";
@@ -244,8 +243,6 @@ const ActionsSection = () => (
 );
 
 export function VesselDetails({ vessel }: VesselDetailsProps) {
-  const navigate = useNavigate();
-
   // Memoized vessel type and tanker checking
   const vesselType = useMemo(
     () => mapStatCode(vessel.vesselDetails?.statCode5),
@@ -258,7 +255,10 @@ export function VesselDetails({ vessel }: VesselDetailsProps) {
   );
 
   const trippedRules = useMemo(
-    () => vessel.score.checkedRules.filter((rule) => rule.tripped),
+    () =>
+      vessel.score.checkedRules.filter(
+        (rule: { name: string; tripped: boolean }) => rule.tripped,
+      ),
     [vessel.score.checkedRules],
   );
 
@@ -326,7 +326,7 @@ Actions:
         <Button
           variant="ghost"
           className="gap-2"
-          onClick={() => navigate({ to: "/" })}
+          onClick={() => window.history.back()}
         >
           <ArrowLeft className="h-5 w-5" />
           <span>Back</span>

@@ -13,7 +13,7 @@ import {
 } from "@tanstack/react-table";
 import { InferResponseType } from "hono/client";
 import { Download } from "lucide-react";
-import { useState, useMemo, useDeferredValue } from "react";
+import { useState, useMemo, useDeferredValue, useEffect } from "react";
 import { toast } from "sonner";
 import { api } from "@/lib/api";
 import { mapStatCode } from "@/lib/utils";
@@ -36,21 +36,89 @@ interface VesselTableProps {
 
 export function VesselTable({ vessels }: VesselTableProps) {
   const navigate = useNavigate();
-  const [sorting, setSorting] = useState<SortingState>([
-    { id: "vesselArrivalDetails_dueToArriveTime", desc: false },
-  ]);
-  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
-  const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({
-    score_score: false,
-  });
+
+  // Restore state from sessionStorage
+  const getInitialState = <T,>(key: string, defaultValue: T): T => {
+    try {
+      const saved = sessionStorage.getItem(`vesselTable_${key}`);
+      return saved ? (JSON.parse(saved) as T) : defaultValue;
+    } catch {
+      return defaultValue;
+    }
+  };
+
+  const [sorting, setSorting] = useState<SortingState>(
+    getInitialState("sorting", [
+      { id: "vesselArrivalDetails_dueToArriveTime", desc: false },
+    ]),
+  );
+  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>(
+    getInitialState("columnFilters", []),
+  );
+  const [columnVisibility, setColumnVisibility] = useState<VisibilityState>(
+    getInitialState("columnVisibility", { score_score: false }),
+  );
   const [rowSelection, setRowSelection] = useState<RowSelectionState>({});
-  const [searchQuery, setSearchQuery] = useState("");
+  const [searchQuery, setSearchQuery] = useState(
+    getInitialState("searchQuery", ""),
+  );
   const deferredSearchQuery = useDeferredValue(searchQuery);
-  const [excludeScore100, setExcludeScore100] = useState(true);
-  const [includeOnlyTankers, setIncludeOnlyTankers] = useState(false);
+  const [excludeScore100, setExcludeScore100] = useState(
+    getInitialState("excludeScore100", true),
+  );
+  const [includeOnlyTankers, setIncludeOnlyTankers] = useState(
+    getInitialState("includeOnlyTankers", false),
+  );
   const [activePreset, setActivePreset] = useState<
     "all" | "tankers" | "imo_issues" | null
-  >("all");
+  >(getInitialState("activePreset", "all"));
+
+  // Save state to sessionStorage whenever it changes
+  useEffect(() => {
+    sessionStorage.setItem("vesselTable_sorting", JSON.stringify(sorting));
+  }, [sorting]);
+
+  useEffect(() => {
+    sessionStorage.setItem(
+      "vesselTable_columnFilters",
+      JSON.stringify(columnFilters),
+    );
+  }, [columnFilters]);
+
+  useEffect(() => {
+    sessionStorage.setItem(
+      "vesselTable_columnVisibility",
+      JSON.stringify(columnVisibility),
+    );
+  }, [columnVisibility]);
+
+  useEffect(() => {
+    sessionStorage.setItem(
+      "vesselTable_searchQuery",
+      JSON.stringify(searchQuery),
+    );
+  }, [searchQuery]);
+
+  useEffect(() => {
+    sessionStorage.setItem(
+      "vesselTable_excludeScore100",
+      JSON.stringify(excludeScore100),
+    );
+  }, [excludeScore100]);
+
+  useEffect(() => {
+    sessionStorage.setItem(
+      "vesselTable_includeOnlyTankers",
+      JSON.stringify(includeOnlyTankers),
+    );
+  }, [includeOnlyTankers]);
+
+  useEffect(() => {
+    sessionStorage.setItem(
+      "vesselTable_activePreset",
+      JSON.stringify(activePreset),
+    );
+  }, [activePreset]);
 
   // Filter vessels based on search query and preset exclusions
   const filteredVessels = useMemo(() => {
