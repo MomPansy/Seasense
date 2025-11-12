@@ -36,7 +36,9 @@ interface VesselTableProps {
 
 export function VesselTable({ vessels }: VesselTableProps) {
   const navigate = useNavigate();
-  const [sorting, setSorting] = useState<SortingState>([]);
+  const [sorting, setSorting] = useState<SortingState>([
+    { id: "vesselArrivalDetails_dueToArriveTime", desc: false },
+  ]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({
     score_score: false,
@@ -181,12 +183,7 @@ export function VesselTable({ vessels }: VesselTableProps) {
   const applyTankersPreset = () => {
     setExcludeScore100(false);
     setIncludeOnlyTankers(true);
-    setColumnFilters([
-      {
-        id: "vesselDetails_statCode5",
-        value: ["Chemical Tanker", "LNG Tanker", "LPG Tanker", "Tanker"],
-      },
-    ]);
+    setColumnFilters([]);
     setColumnVisibility((prev) => ({ ...prev, score_score: true }));
     setActivePreset("tankers");
   };
@@ -265,7 +262,7 @@ export function VesselTable({ vessels }: VesselTableProps) {
         <span className="text-sm text-muted-foreground">
           Showing {table.getFilteredRowModel().rows.length} records
           {activePreset === "imo_issues" &&
-            " (MDH IMO is missing, unverified in IHS, or conflicts with IHS data)"}
+            " (MDH IMO is missing, unverified in IHS, or conflicts with stored IHS data)"}
         </span>
         <div className="flex gap-2 items-center">
           {lastUpdated && (
