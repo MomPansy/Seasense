@@ -73,6 +73,10 @@ const VesselDetailsSection = ({ vessel }: { vessel: VesselType }) => (
         label="Name"
         value={vessel.vesselArrivalDetails.vesselName ?? "-"}
       />
+      <DetailRow
+        label="Vessel Type"
+        value={mapStatCode(vessel.vesselDetails?.statCode5)}
+      />
       <DetailRow label="Flag" value={vessel.vesselDetails?.flagName ?? "-"} />
       <DetailRow
         label="IMO Number"
@@ -93,13 +97,17 @@ const VesselDetailsSection = ({ vessel }: { vessel: VesselType }) => (
       />
       <DetailRow
         label="Gross Tonnage"
-        value={formatNumber(vessel.vesselDetails?.grossTonnage)}
+        value={
+          vessel.vesselDetails?.grossTonnage
+            ? `${formatNumber(vessel.vesselDetails.grossTonnage)} t`
+            : "-"
+        }
       />
       <DetailRow
         label="Length Overall"
         value={
           vessel.vesselDetails?.lengthOverallLoa
-            ? `${parseFloat(vessel.vesselDetails.lengthOverallLoa)}m`
+            ? `${parseFloat(vessel.vesselDetails.lengthOverallLoa)} m`
             : "-"
         }
       />
@@ -107,24 +115,44 @@ const VesselDetailsSection = ({ vessel }: { vessel: VesselType }) => (
   </DetailCard>
 );
 
-const OwnershipSection = ({ vessel }: { vessel: VesselType }) => (
-  <DetailCard title="Ownership">
-    <div className="space-y-3">
-      <DetailRow
-        label="Group Owner"
-        value={vessel.vesselDetails?.groupBeneficialOwner ?? "-"}
-      />
-      <DetailRow
-        label="Registered Owner"
-        value={vessel.vesselDetails?.registeredOwner ?? "-"}
-      />
-      <DetailRow
-        label="Operator"
-        value={vessel.vesselDetails?.operator ?? "-"}
-      />
-    </div>
-  </DetailCard>
-);
+const OwnershipSection = ({ vessel }: { vessel: VesselType }) => {
+  const formatOwnerWithCountry = (
+    owner?: string | null,
+    country?: string | null,
+  ) => {
+    if (!owner) return "-";
+    if (!country) return owner;
+    return `${owner} (${country})`;
+  };
+
+  return (
+    <DetailCard title="Ownership">
+      <div className="space-y-3">
+        <DetailRow
+          label="Group Owner"
+          value={formatOwnerWithCountry(
+            vessel.vesselDetails?.groupBeneficialOwner,
+            vessel.vesselDetails?.groupBeneficialOwnerCountryOfRegistration,
+          )}
+        />
+        <DetailRow
+          label="Registered Owner"
+          value={formatOwnerWithCountry(
+            vessel.vesselDetails?.registeredOwner,
+            vessel.vesselDetails?.registeredOwnerCountryOfRegistration,
+          )}
+        />
+        <DetailRow
+          label="Operator"
+          value={formatOwnerWithCountry(
+            vessel.vesselDetails?.operator,
+            vessel.vesselDetails?.operatorCountryOfRegistration,
+          )}
+        />
+      </div>
+    </DetailCard>
+  );
+};
 
 const CrewSection = () => (
   <DetailCard title="Crew">
@@ -247,7 +275,7 @@ ${trippedRules.length > 0 ? trippedRules.map((rule) => `- ${rule.name}`).join("\
     const text = `Details of VVOCC for ${vessel.vesselArrivalDetails.vesselName ?? "-"}
 
 Vessel Name: ${vessel.vesselArrivalDetails.vesselName ?? "-"}
-Vessel Type: ...
+Vessel Type: ${mapStatCode(vessel.vesselDetails?.statCode5)}
 Flag: ${vessel.vesselDetails?.flagName ?? "-"}
 IMO: ${vessel.vesselDetails?.ihslRorImoShipNo ?? "-"}
 C/S: ${vessel.vesselArrivalDetails.callsign ?? "-"}
@@ -265,9 +293,9 @@ Current Location:
 -
 
 Owner:
-Group Owner: ${vessel.vesselDetails?.groupBeneficialOwner ?? "-"} (...)
-Registered Owner: ${vessel.vesselDetails?.registeredOwner ?? "-"} (...)
-Operator: ${vessel.vesselDetails?.operator ?? "-"} (...)
+Group Owner: ${vessel.vesselDetails?.groupBeneficialOwner ?? "-"}${vessel.vesselDetails?.groupBeneficialOwnerCountryOfRegistration ? ` (${vessel.vesselDetails.groupBeneficialOwnerCountryOfRegistration})` : ""}
+Registered Owner: ${vessel.vesselDetails?.registeredOwner ?? "-"}${vessel.vesselDetails?.registeredOwnerCountryOfRegistration ? ` (${vessel.vesselDetails.registeredOwnerCountryOfRegistration})` : ""}
+Operator: ${vessel.vesselDetails?.operator ?? "-"}${vessel.vesselDetails?.operatorCountryOfRegistration ? ` (${vessel.vesselDetails.operatorCountryOfRegistration})` : ""}
 
 Crew:
 No. Of Crew: -
