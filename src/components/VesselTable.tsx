@@ -249,7 +249,7 @@ export function VesselTable({ vessels }: VesselTableProps) {
   };
 
   const applyTankersPreset = () => {
-    setExcludeScore100(false);
+    setExcludeScore100(true);
     setIncludeOnlyTankers(true);
     setColumnFilters([]);
     setColumnVisibility((prev) => ({ ...prev, score_score: true }));
