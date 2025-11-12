@@ -1,5 +1,5 @@
 import { Link, useNavigate } from "@tanstack/react-router";
-import { Bell, Settings, MessageSquare } from "lucide-react";
+import { MessageSquare } from "lucide-react";
 import { Button } from "./ui/button";
 import { SidebarTrigger } from "./ui/sidebar";
 
@@ -54,12 +54,6 @@ export function Header({ activeTab, onTabChange }: HeaderProps) {
                 <MessageSquare className="h-5 w-5" />
               </Button>
             </Link>
-            <Button variant="ghost" size="icon">
-              <Bell className="h-5 w-5" />
-            </Button>
-            <Button variant="ghost" size="icon">
-              <Settings className="h-5 w-5" />
-            </Button>
           </div>
         </div>
       </div>
