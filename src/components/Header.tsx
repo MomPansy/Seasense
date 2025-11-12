@@ -1,3 +1,4 @@
+import { UserButton } from "@clerk/clerk-react";
 import { Link, useNavigate } from "@tanstack/react-router";
 import { MessageSquare } from "lucide-react";
 import { Button } from "./ui/button";
@@ -54,6 +55,7 @@ export function Header({ activeTab, onTabChange }: HeaderProps) {
                 <MessageSquare className="h-5 w-5" />
               </Button>
             </Link>
+            <UserButton />
           </div>
         </div>
       </div>
