@@ -100,7 +100,7 @@
     "dev": "npm run dev:db:wait && npm-run-all --parallel dev:server dev:app:wait",
     "build:typecheck": "tsc --build",
     "build:server": "tsx --tsconfig tsconfig.node.json scripts/build-server.ts",
-    "build:app": "dotenvx run --env-file .env.vite --env-file .env.production -- vite build",
+    "build:app": "dotenvx run --env-file .env.vite -- vite build",
     "build": "npm run build:typecheck && rimraf dist && npm run build:server && npm run build:app",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix && prettier . --write",
