@@ -57,11 +57,6 @@ function App() {
     initializeApiAuth(auth.getToken);
   }, [auth.getToken]);
 
-  // Don't render router until auth is loaded
-  // if (!auth.isLoaded) {
-  //   return <div className="flex items-center justify-center min-h-screen">Loading...</div>;
-  // }
-
   return (
     <Activity mode={auth.isLoaded ? "visible" : "hidden"}>
       <RouterProvider router={router} context={{ auth }} />;

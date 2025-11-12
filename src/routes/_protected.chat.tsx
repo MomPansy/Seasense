@@ -36,7 +36,6 @@ function ChatPage() {
           </div>
         }
       >
-        {/* Use key to force remount when chatId changes */}
         <ChatMain key={chatId} chatId={chatId} />
       </Suspense>
     </div>
