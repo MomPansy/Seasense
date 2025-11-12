@@ -41,14 +41,16 @@ export const createColumns = (
     id: "select",
     size: 40,
     header: ({ table }) => (
-      <Checkbox
-        checked={
-          table.getIsAllPageRowsSelected() ||
-          (table.getIsSomePageRowsSelected() && "indeterminate")
-        }
-        onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-        aria-label="Select all"
-      />
+      <div className="pl-2.5">
+        <Checkbox
+          checked={
+            table.getIsAllPageRowsSelected() ||
+            (table.getIsSomePageRowsSelected() && "indeterminate")
+          }
+          onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
+          aria-label="Select all"
+        />
+      </div>
     ),
     cell: ({ row }) => (
       <Checkbox
@@ -67,6 +69,7 @@ export const createColumns = (
         <Button
           variant="ghost"
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+          size="sm"
         >
           IMO Number
           <ArrowUpDown className="h-4 w-4" />
@@ -98,6 +101,7 @@ export const createColumns = (
         <Button
           variant="ghost"
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+          size="sm"
         >
           Vessel Name
           <ArrowUpDown className="h-4 w-4" />
@@ -133,6 +137,7 @@ export const createColumns = (
         <Button
           variant="ghost"
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+          size="sm"
         >
           Call Sign
           <ArrowUpDown className="h-4 w-4" />
