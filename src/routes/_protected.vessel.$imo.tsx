@@ -17,7 +17,7 @@ function RouteComponent() {
   } = useQuery({
     queryKey: ["vessel", imo],
     queryFn: async () => {
-      const response = await api.vessels.arriving.$post({ json: {} });
+      const response = await api.vessels.arriving.$post({ json: { imo } });
       if (!response.ok) {
         throw new Error("Failed to fetch vessel details");
       }

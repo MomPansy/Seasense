@@ -68,6 +68,8 @@ export const route = factory
       }),
     ),
     async (c) => {
+      const validated = c.req.valid("json");
+      const reqImo = validated.imo;
       const hoursToPull = 72; // to change if necessary
       const currDate = new Date();
       const vesselInfo = await db
@@ -89,9 +91,9 @@ export const route = factory
         );
 
       let vesselInfoToEvaluate = vesselInfo;
-      if (c.req.param("imo")) {
+      if (reqImo) {
         vesselInfoToEvaluate = vesselInfoToEvaluate.filter((vesselDetails) => {
-          return vesselDetails.vessels_due_to_arrive.imo === c.req.param("imo");
+          return vesselDetails.vessels_due_to_arrive.imo === reqImo;
         });
       }
 
