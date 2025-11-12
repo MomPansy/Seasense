@@ -11,6 +11,7 @@ export const exportVesselScores = async (
   if (!response.ok) {
     throw new Error("Failed to fetch vessels");
   }
+
   const headers = await response.json();
 
   const tableRows =
