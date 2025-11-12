@@ -103,22 +103,27 @@ export const createColumns = (
         </Button>
       );
     },
-    cell: ({ row }) => (
-      <Button
-        variant="link"
-        className="p-0 h-auto font-normal"
-        onClick={() => {
-          if (!row.original.vesselArrivalDetails.imo) return;
-          navigate({
-            to: `/vessel/$imo`,
-            params: { imo: row.original.vesselArrivalDetails.imo },
-          });
-        }}
-        disabled={!row.original.vesselArrivalDetails.imo}
-      >
-        {row.original.vesselArrivalDetails.vesselName ?? "N/A"}
-      </Button>
-    ),
+    cell: ({ row }) => {
+      if (row.original.score.score === 100) {
+        return row.original.vesselArrivalDetails.vesselName ?? "N/A";
+      }
+      return (
+        <Button
+          variant="link"
+          className="p-0 h-auto font-normal"
+          onClick={() => {
+            if (!row.original.vesselArrivalDetails.imo) return;
+            navigate({
+              to: `/vessel/$imo`,
+              params: { imo: row.original.vesselArrivalDetails.imo },
+            });
+          }}
+          disabled={!row.original.vesselArrivalDetails.imo}
+        >
+          {row.original.vesselArrivalDetails.vesselName ?? "N/A"}
+        </Button>
+      );
+    },
   },
   {
     accessorKey: "vesselArrivalDetails.callsign",
