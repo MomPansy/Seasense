@@ -288,11 +288,21 @@ export function VesselTable({ vessels }: VesselTableProps) {
   const handleExport = async () => {
     toast.success("Exporting vessel details to Excel");
     const buffer = await exportVesselScores(table);
+
+    // Generate datetime stamp in YYYYMMDD_HHMMSS format (Singapore time, UTC+8)
+    const now = new Date();
+    const sgTime = new Date(now.getTime() + 8 * 60 * 60 * 1000);
+    const timestamp = sgTime
+      .toISOString()
+      .replace(/[-:]/g, "")
+      .replace("T", "_")
+      .slice(0, 15);
+
     downloadFile({
       data: buffer,
       dataType:
         "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-      filename: "scores.xlsx",
+      filename: `scores_export_${timestamp}.xlsx`,
     });
   };
 

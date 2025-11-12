@@ -1,5 +1,6 @@
 import { Table } from "@tanstack/react-table";
 import { Download } from "lucide-react";
+import * as XLSX from "xlsx";
 import { Button } from "./ui/button";
 
 interface ExportTableButtonProps<TData> {
@@ -11,9 +12,21 @@ interface ExportTableButtonProps<TData> {
 export function ExportTableButton<TData>({
   table,
   columnLabels,
-  filename = "table-export.csv",
+  filename = "table_export.xlsx",
 }: ExportTableButtonProps<TData>) {
-  const exportToCSV = () => {
+  const exportToXLSX = () => {
+    // Generate datetime stamp in YYYYMMDD_HHMMSS format (Singapore time, UTC+8)
+    const now = new Date();
+    const sgTime = new Date(now.getTime() + 8 * 60 * 60 * 1000);
+    const timestamp = sgTime
+      .toISOString()
+      .replace(/[-:]/g, "")
+      .replace("T", "_")
+      .slice(0, 15);
+
+    // Insert timestamp before file extension
+    const finalFilename = filename.replace(/\.xlsx$/, `_${timestamp}.xlsx`);
+
     // Get visible columns (excluding select column)
     const visibleColumns = table
       .getAllLeafColumns()
@@ -25,77 +38,61 @@ export function ExportTableButton<TData>({
         ? table.getSelectedRowModel().rows
         : table.getSortedRowModel().rows;
 
-    // Create CSV header using user-friendly labels
-    const headers = visibleColumns
-      .map((col) => {
-        // Use columnLabels for user-friendly names
-        return columnLabels[col.id] || col.id;
-      })
-      .map((h) => `"${h}"`)
-      .join(",");
-
-    // Create CSV rows
-    const csvRows = rows.map((row) => {
-      return visibleColumns
-        .map((col) => {
-          // Get the displayed value by rendering the cell
-          const cell = row.getAllCells().find((c) => c.column.id === col.id);
-          if (!cell) return '""';
-
-          // Check if column has a custom export formatter
-          const meta = col.columnDef.meta as
-            | { exportFormatter?: (row: TData) => string }
-            | undefined;
-          if (meta?.exportFormatter) {
-            const formattedValue = meta.exportFormatter(row.original);
-            const cellStr = formattedValue.replace(/"/g, '""');
-            return `"${cellStr}"`;
-          }
-
-          const value = cell.getValue();
-
-          // Handle different cell value types
-          if (value === null || value === undefined) {
-            return '""';
-          }
-
-          // Convert value to string based on type
-          let cellStr: string;
-          if (typeof value === "object") {
-            // Handle objects and arrays
-            cellStr = JSON.stringify(value);
-          } else if (typeof value === "string") {
-            cellStr = value;
-          } else {
-            // For numbers, booleans, and other primitives
-            cellStr = String(value as string | number | boolean);
-          }
-
-          // Escape quotes
-          cellStr = cellStr.replace(/"/g, '""');
-          return `"${cellStr}"`;
-        })
-        .join(",");
+    // Create header row using user-friendly labels
+    const headers = visibleColumns.map((col) => {
+      // Use columnLabels for user-friendly names
+      return columnLabels[col.id] || col.id;
     });
 
-    // Combine headers and rows
-    const csv = [headers, ...csvRows].join("\n");
+    // Create data rows
+    const dataRows = rows.map((row) => {
+      return visibleColumns.map((col) => {
+        // Get the displayed value by rendering the cell
+        const cell = row.getAllCells().find((c) => c.column.id === col.id);
+        if (!cell) return "";
 
-    // Create blob and download
-    const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
-    const link = document.createElement("a");
-    const url = URL.createObjectURL(blob);
+        // Check if column has a custom export formatter
+        const meta = col.columnDef.meta as
+          | { exportFormatter?: (row: TData) => string }
+          | undefined;
+        if (meta?.exportFormatter) {
+          return meta.exportFormatter(row.original);
+        }
 
-    link.setAttribute("href", url);
-    link.setAttribute("download", filename);
-    link.style.visibility = "hidden";
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+        const value = cell.getValue();
+
+        // Handle different cell value types
+        if (value === null || value === undefined) {
+          return "";
+        }
+
+        // Convert value based on type
+        if (typeof value === "object") {
+          // Handle objects and arrays
+          return JSON.stringify(value);
+        } else if (typeof value === "string") {
+          return value;
+        } else {
+          // For numbers, booleans, and other primitives
+          return value as string | number | boolean;
+        }
+      });
+    });
+
+    // Combine headers and data rows
+    const worksheetData = [headers, ...dataRows];
+
+    // Create worksheet and workbook
+    const worksheet = XLSX.utils.aoa_to_sheet(worksheetData);
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, "Sheet1");
+
+    // Generate and download file
+    XLSX.writeFile(workbook, finalFilename);
   };
 
   return (
-    <Button variant="outline" className="gap-2" onClick={exportToCSV}>
+    <Button variant="outline" className="gap-2" onClick={exportToXLSX}>
       <Download className="h-4 w-4" />
       Export Table
     </Button>
