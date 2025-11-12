@@ -233,11 +233,6 @@ export function VesselTable({ vessels }: VesselTableProps) {
 
   return (
     <Stack direction="column" gap="4">
-      <div className="flex items-center justify-end">
-        <div className="w-full max-w-md">
-          <SearchBar onSearch={setSearchQuery} />
-        </div>
-      </div>
       <div className="flex justify-between items-center">
         <div className="flex gap-2">
           <Button
@@ -262,6 +257,16 @@ export function VesselTable({ vessels }: VesselTableProps) {
             IMO Issues
           </Button>
         </div>
+        <div className="w-full max-w-md">
+          <SearchBar onSearch={setSearchQuery} />
+        </div>
+      </div>
+      <div className="flex justify-between items-center">
+        <span className="text-sm text-muted-foreground">
+          Showing {table.getFilteredRowModel().rows.length} records
+          {activePreset === "imo_issues" &&
+            " (MDH IMO is missing, unverified in IHS, or conflicts with IHS data)"}
+        </span>
         <div className="flex gap-2 items-center">
           {lastUpdated && (
             <span className="text-sm text-muted-foreground">
