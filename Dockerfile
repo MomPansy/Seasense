@@ -22,6 +22,7 @@ RUN apk add --no-cache wget
 COPY --from=prod-deps /app/node_modules ./node_modules
 COPY --from=build /app/dist ./dist
 COPY --chown=node:node .env.production .env.production
+COPY --chown=node:node .env.vite .env.vite
 COPY --chown=node:node package*.json ./
 USER node
 EXPOSE 3000
