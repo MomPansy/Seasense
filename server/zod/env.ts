@@ -5,8 +5,6 @@ export const appEnvVariablesSchema = z.object({
   DB_READONLY_URL: z.string(),
   ANTHROPIC_API_KEY: z.string(),
   MDH_API_KEY: z.string(),
-  SEASENSE_USERNAME: z.string(),
-  SEASENSE_PASSWORD: z.string(),
   CLERK_SECRET_KEY: z.string(),
   CLERK_PUBLISHABLE_KEY: z.string(),
 });
