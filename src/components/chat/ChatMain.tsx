@@ -2,7 +2,7 @@ import { useChat } from "@ai-sdk/react";
 import { useQueryClient, useSuspenseQuery } from "@tanstack/react-query";
 import { DefaultChatTransport } from "ai";
 import { useChatStore } from "@/components/ui/chatStore";
-import { fetchChatMessages } from "@/lib/api";
+import { fetchChatMessages, getAuthHeaders } from "@/lib/api";
 import type { ChatUIMessage } from "@/types/chat";
 import { ChatFooter } from "./ChatFooter";
 import { MessageAssistant } from "./MessageAssistant";
@@ -35,6 +35,7 @@ export function ChatMain({ chatId }: ChatMainProps) {
     // Pass the fetched messages to initialize the chat
     transport: new DefaultChatTransport({
       api: chatUrl,
+      headers: async () => await getAuthHeaders(),
     }),
     onFinish: ({ message }) => {
       // Mark streaming as complete

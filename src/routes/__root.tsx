@@ -1,41 +1,48 @@
-import { Outlet, createRootRoute } from "@tanstack/react-router";
-import { useState } from "react";
-import { ChatSidebar } from "../components/ChatSidebar";
-import { Header } from "../components/Header";
-import { SidebarProvider } from "../components/ui/sidebar";
-import { Toaster } from "../components/ui/sonner";
+import { useAuth } from "@clerk/clerk-react";
+import {
+  Outlet,
+  createRootRouteWithContext,
+  useNavigate,
+} from "@tanstack/react-router";
+import { useEffect } from "react";
+import { Button } from "@/components/ui/button";
 
-export const Route = createRootRoute({
-  component: RootComponent,
+interface RouterContext {
+  auth: ReturnType<typeof useAuth>;
+}
+
+export const Route = createRootRouteWithContext<RouterContext>()({
+  component: Component,
+  notFoundComponent: NotFoundComponent,
 });
 
-function RootComponent() {
-  const [activeTab, setActiveTab] = useState<"arriving" | "profiling">(
-    "arriving",
-  );
+function Component() {
+  return <Outlet />;
+}
+
+export default function NotFoundComponent() {
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    navigate({ to: "/" });
+  }, [navigate]);
 
   return (
-    <SidebarProvider defaultOpen={false}>
-      <ChatSidebar />
-      <div className="flex flex-col w-full min-h-screen">
-        <Header activeTab={activeTab} onTabChange={setActiveTab} />
-        {activeTab === "arriving" ? (
-          <Outlet />
-        ) : (
-          <main className="px-8 py-6">
-            <div className="flex items-center justify-center h-[60vh]">
-              <div className="text-center space-y-4">
-                <h2>Vessel Risk Profiling</h2>
-                <p className="text-muted-foreground">
-                  This feature is coming soon. Stay tuned for comprehensive
-                  vessel risk analysis.
-                </p>
-              </div>
-            </div>
-          </main>
-        )}
-        <Toaster />
+    <div className="flex items-center justify-center min-h-screen">
+      <div className="flex flex-col items-center justify-center gap-4 max-w-md text-center">
+        <h1 className="text-4xl font-bold text-blue-600 balance">
+          Page Not Found
+        </h1>
+        <p className="text-lg text-blue-600">
+          Oops! The page you are looking for does not exist.
+        </p>
+        <Button
+          className="w-1/2 bg-orange-500 hover:bg-orange-600"
+          onClick={() => (window.location.href = "/")}
+        >
+          Home
+        </Button>
       </div>
-    </SidebarProvider>
+    </div>
   );
 }

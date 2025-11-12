@@ -2,8 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { Suspense, useMemo } from "react";
 import { ChatMain } from "@/components/chat/ChatMain";
 import { useChatStore } from "@/components/ui/chatStore";
-
-export const Route = createFileRoute("/chat")({
+export const Route = createFileRoute("/_protected/chat")({
   component: ChatPage,
   validateSearch: (search: Record<string, unknown>) => {
     return {

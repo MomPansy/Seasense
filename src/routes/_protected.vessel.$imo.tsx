@@ -3,7 +3,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { VesselDetails } from "@/components/VesselDetails";
 import { api } from "@/lib/api";
 
-export const Route = createFileRoute("/vessel/$imo")({
+export const Route = createFileRoute("/_protected/vessel/$imo")({
   component: RouteComponent,
 });
 

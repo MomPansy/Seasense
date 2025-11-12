@@ -8,10 +8,13 @@ import { vessels } from "server/drizzle/vessels.ts";
 import { vesselsDueToArrive } from "server/drizzle/vessels_due_to_arrive.ts";
 import { factory } from "server/factory.ts";
 import { db } from "server/lib/db.ts";
+import { requireAuth } from "server/middlewares/clerk.ts";
 import { scoreVessel, checkedRule } from "server/services/score.ts";
 
 export const route = factory
   .createApp()
+  // Apply requireAuth to all routes in this file
+  .use("/*", requireAuth)
   // Search vessels by name
   .get(
     "/name/:vesselName",

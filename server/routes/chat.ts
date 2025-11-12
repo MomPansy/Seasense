@@ -18,6 +18,7 @@ import { chats } from "server/drizzle/chats.ts";
 import { messages as messagesTable } from "server/drizzle/messages.ts";
 import { factory } from "server/factory.ts";
 import { type Tx } from "server/lib/db.ts";
+import { requireAuth } from "server/middlewares/clerk.ts";
 import { drizzle } from "server/middlewares/drizzle.ts";
 import { type ChatUIMessage } from "server/types/chat.ts";
 
@@ -98,6 +99,8 @@ async function insertAssistantMessage({
 
 export const route = factory
   .createApp()
+  // Require authentication for all chat routes
+  .use("/*", requireAuth)
   .get("/", drizzle(), async (c) => {
     const tx = c.var.tx;
 

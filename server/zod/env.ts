@@ -7,6 +7,8 @@ export const appEnvVariablesSchema = z.object({
   MDH_API_KEY: z.string(),
   SEASENSE_USERNAME: z.string(),
   SEASENSE_PASSWORD: z.string(),
+  CLERK_SECRET_KEY: z.string(),
+  CLERK_PUBLISHABLE_KEY: z.string(),
 });
 
 export type AppEnvVariables = z.infer<typeof appEnvVariablesSchema>;
