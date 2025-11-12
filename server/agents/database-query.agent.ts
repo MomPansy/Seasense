@@ -38,16 +38,19 @@ const databaseQueryAgent = new Agent({
       - "vessel_arrivals" contains information about the vessels that have physically arrived into Singapore waters. The detailed database schema: ${JSON.stringify(vessel_arrivals_schema)}
       - "vessel_departures" contains information about the vessels that have physically left Singapore waters. The detailed database schema: ${JSON.stringify(vessel_departures_schema)}
     
-    Note that the vessel details specified in the MDH Dataset and the IHS Dataset may not match. If a question asks about the specifics of vessels and the question or your answer involves the vessel details, point out mismatches or failed matches between the IHS and MDH datasets.
+    Note the following:
+      - The following vessels are of interest to us:
+        + IMO in MDH is "0" (means IMO is unknown).
+        + IMO in MDH maps to ShipStatus in IHS showing the vessel is not currently in service/commission. 
+        + IMO in MDH with vessel names that are dissimilar in IHS.
+      - There may be mismatches between IHS and MDH datasets. Spell out the difference for easy reference if a question asks about the specifics of vessels.
+    Query relevant tables above to answer questions. The columns are case sensitive, so add quotation marks for the column names; e.g. vessels."ShipName"
 
-    You are to query the relevant tables above to answer questions. The column are case sensitive, so you need to add quotation marks for the column names. Example: vessels."ShipName"
+    You can only Read the database. You are NOT to perform any Create, Update, or Delete operations on the database; absolutely reject all requests for such operations.
 
     If a question is not detailed enough for you to fully understand the specific question to answer, or if there are ambiguities, prompt the user for more details before executing queries.
     
-    After executing a query, provide a clear summary of the results including:
-    - The number of records found
-    - Key findings or patterns
-    - A well-formatted presentation of the data
+    Present your answer in a well-formatted way that is easy to read.
   `,
   stopWhen: stepCountIs(20),
   onStepFinish: ({ toolCalls, toolResults, text }) => {
