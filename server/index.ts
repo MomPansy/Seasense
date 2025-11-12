@@ -1,6 +1,9 @@
 import { serve } from "@hono/node-server";
 import { serveStatic } from "@hono/node-server/serve-static";
+import type { MiddlewareHandler } from "hono";
+import { basicAuth } from "hono/basic-auth";
 import { cors } from "hono/cors";
+import { appEnvVariables } from "./env.ts";
 import { factory } from "./factory.ts";
 import { route as chatRoute } from "./routes/chat.ts";
 import { route as exampleRoute } from "./routes/example.ts";
@@ -8,6 +11,19 @@ import { scoreRoute } from "./routes/score.ts";
 import { route as vesselsRoute } from "./routes/vessels.ts";
 
 const app = factory.createApp();
+
+app.use("/api/*", (async (c, next) => {
+  if (c.req.path === "/api/chat") {
+    await next();
+    return;
+  }
+
+  const auth = basicAuth({
+    username: appEnvVariables.SEASENSE_USERNAME,
+    password: appEnvVariables.SEASENSE_PASSWORD,
+  });
+  await auth(c, next);
+}) satisfies MiddlewareHandler);
 
 // Add CORS middleware for local development
 app.use(
