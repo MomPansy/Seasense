@@ -1,5 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
+import { TableSkeleton } from "@/components/TableSkeleton";
+import { Skeleton } from "@/components/ui/skeleton";
 import { VesselTable } from "@/components/VesselTable";
 import { api } from "@/lib/api";
 
@@ -26,7 +28,10 @@ function App() {
   if (isLoading) {
     return (
       <main className="px-8 py-6">
-        <div>Loading vessels...</div>
+        <div className="mb-6">
+          <Skeleton className="h-8 w-96 mb-2" />
+        </div>
+        <TableSkeleton rows={10} columns={8} />
       </main>
     );
   }

@@ -8,175 +8,181 @@
 // You should NOT make any changes in this file as it will be overwritten.
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
-import { Route as rootRouteImport } from './routes/__root'
-import { Route as SignUpRouteImport } from './routes/sign-up'
-import { Route as SignInRouteImport } from './routes/sign-in'
-import { Route as ProtectedRouteImport } from './routes/_protected'
-import { Route as IndexRouteImport } from './routes/index'
-import { Route as ProtectedTableRouteImport } from './routes/_protected.table'
-import { Route as ProtectedChatRouteImport } from './routes/_protected.chat'
-import { Route as ProtectedVesselImoRouteImport } from './routes/_protected.vessel.$imo'
+import { Route as rootRouteImport } from "./routes/__root";
+import { Route as SignUpRouteImport } from "./routes/sign-up";
+import { Route as SignInRouteImport } from "./routes/sign-in";
+import { Route as ProtectedRouteImport } from "./routes/_protected";
+import { Route as IndexRouteImport } from "./routes/index";
+import { Route as ProtectedTableRouteImport } from "./routes/_protected.table";
+import { Route as ProtectedChatRouteImport } from "./routes/_protected.chat";
+import { Route as ProtectedVesselImoRouteImport } from "./routes/_protected.vessel.$imo";
 
 const SignUpRoute = SignUpRouteImport.update({
-  id: '/sign-up',
-  path: '/sign-up',
+  id: "/sign-up",
+  path: "/sign-up",
   getParentRoute: () => rootRouteImport,
-} as any)
+} as any);
 const SignInRoute = SignInRouteImport.update({
-  id: '/sign-in',
-  path: '/sign-in',
+  id: "/sign-in",
+  path: "/sign-in",
   getParentRoute: () => rootRouteImport,
-} as any)
+} as any);
 const ProtectedRoute = ProtectedRouteImport.update({
-  id: '/_protected',
+  id: "/_protected",
   getParentRoute: () => rootRouteImport,
-} as any)
+} as any);
 const IndexRoute = IndexRouteImport.update({
-  id: '/',
-  path: '/',
+  id: "/",
+  path: "/",
   getParentRoute: () => rootRouteImport,
-} as any)
+} as any);
 const ProtectedTableRoute = ProtectedTableRouteImport.update({
-  id: '/table',
-  path: '/table',
+  id: "/table",
+  path: "/table",
   getParentRoute: () => ProtectedRoute,
-} as any)
+} as any);
 const ProtectedChatRoute = ProtectedChatRouteImport.update({
-  id: '/chat',
-  path: '/chat',
+  id: "/chat",
+  path: "/chat",
   getParentRoute: () => ProtectedRoute,
-} as any)
+} as any);
 const ProtectedVesselImoRoute = ProtectedVesselImoRouteImport.update({
-  id: '/vessel/$imo',
-  path: '/vessel/$imo',
+  id: "/vessel/$imo",
+  path: "/vessel/$imo",
   getParentRoute: () => ProtectedRoute,
-} as any)
+} as any);
 
 export interface FileRoutesByFullPath {
-  '/': typeof IndexRoute
-  '/sign-in': typeof SignInRoute
-  '/sign-up': typeof SignUpRoute
-  '/chat': typeof ProtectedChatRoute
-  '/table': typeof ProtectedTableRoute
-  '/vessel/$imo': typeof ProtectedVesselImoRoute
+  "/": typeof IndexRoute;
+  "/sign-in": typeof SignInRoute;
+  "/sign-up": typeof SignUpRoute;
+  "/chat": typeof ProtectedChatRoute;
+  "/table": typeof ProtectedTableRoute;
+  "/vessel/$imo": typeof ProtectedVesselImoRoute;
 }
 export interface FileRoutesByTo {
-  '/': typeof IndexRoute
-  '/sign-in': typeof SignInRoute
-  '/sign-up': typeof SignUpRoute
-  '/chat': typeof ProtectedChatRoute
-  '/table': typeof ProtectedTableRoute
-  '/vessel/$imo': typeof ProtectedVesselImoRoute
+  "/": typeof IndexRoute;
+  "/sign-in": typeof SignInRoute;
+  "/sign-up": typeof SignUpRoute;
+  "/chat": typeof ProtectedChatRoute;
+  "/table": typeof ProtectedTableRoute;
+  "/vessel/$imo": typeof ProtectedVesselImoRoute;
 }
 export interface FileRoutesById {
-  __root__: typeof rootRouteImport
-  '/': typeof IndexRoute
-  '/_protected': typeof ProtectedRouteWithChildren
-  '/sign-in': typeof SignInRoute
-  '/sign-up': typeof SignUpRoute
-  '/_protected/chat': typeof ProtectedChatRoute
-  '/_protected/table': typeof ProtectedTableRoute
-  '/_protected/vessel/$imo': typeof ProtectedVesselImoRoute
+  __root__: typeof rootRouteImport;
+  "/": typeof IndexRoute;
+  "/_protected": typeof ProtectedRouteWithChildren;
+  "/sign-in": typeof SignInRoute;
+  "/sign-up": typeof SignUpRoute;
+  "/_protected/chat": typeof ProtectedChatRoute;
+  "/_protected/table": typeof ProtectedTableRoute;
+  "/_protected/vessel/$imo": typeof ProtectedVesselImoRoute;
 }
 export interface FileRouteTypes {
-  fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/sign-in' | '/sign-up' | '/chat' | '/table' | '/vessel/$imo'
-  fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/sign-in' | '/sign-up' | '/chat' | '/table' | '/vessel/$imo'
+  fileRoutesByFullPath: FileRoutesByFullPath;
+  fullPaths:
+    | "/"
+    | "/sign-in"
+    | "/sign-up"
+    | "/chat"
+    | "/table"
+    | "/vessel/$imo";
+  fileRoutesByTo: FileRoutesByTo;
+  to: "/" | "/sign-in" | "/sign-up" | "/chat" | "/table" | "/vessel/$imo";
   id:
-    | '__root__'
-    | '/'
-    | '/_protected'
-    | '/sign-in'
-    | '/sign-up'
-    | '/_protected/chat'
-    | '/_protected/table'
-    | '/_protected/vessel/$imo'
-  fileRoutesById: FileRoutesById
+    | "__root__"
+    | "/"
+    | "/_protected"
+    | "/sign-in"
+    | "/sign-up"
+    | "/_protected/chat"
+    | "/_protected/table"
+    | "/_protected/vessel/$imo";
+  fileRoutesById: FileRoutesById;
 }
 export interface RootRouteChildren {
-  IndexRoute: typeof IndexRoute
-  ProtectedRoute: typeof ProtectedRouteWithChildren
-  SignInRoute: typeof SignInRoute
-  SignUpRoute: typeof SignUpRoute
+  IndexRoute: typeof IndexRoute;
+  ProtectedRoute: typeof ProtectedRouteWithChildren;
+  SignInRoute: typeof SignInRoute;
+  SignUpRoute: typeof SignUpRoute;
 }
 
-declare module '@tanstack/react-router' {
+declare module "@tanstack/react-router" {
   interface FileRoutesByPath {
-    '/sign-up': {
-      id: '/sign-up'
-      path: '/sign-up'
-      fullPath: '/sign-up'
-      preLoaderRoute: typeof SignUpRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/sign-in': {
-      id: '/sign-in'
-      path: '/sign-in'
-      fullPath: '/sign-in'
-      preLoaderRoute: typeof SignInRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/_protected': {
-      id: '/_protected'
-      path: ''
-      fullPath: ''
-      preLoaderRoute: typeof ProtectedRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/': {
-      id: '/'
-      path: '/'
-      fullPath: '/'
-      preLoaderRoute: typeof IndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/_protected/table': {
-      id: '/_protected/table'
-      path: '/table'
-      fullPath: '/table'
-      preLoaderRoute: typeof ProtectedTableRouteImport
-      parentRoute: typeof ProtectedRoute
-    }
-    '/_protected/chat': {
-      id: '/_protected/chat'
-      path: '/chat'
-      fullPath: '/chat'
-      preLoaderRoute: typeof ProtectedChatRouteImport
-      parentRoute: typeof ProtectedRoute
-    }
-    '/_protected/vessel/$imo': {
-      id: '/_protected/vessel/$imo'
-      path: '/vessel/$imo'
-      fullPath: '/vessel/$imo'
-      preLoaderRoute: typeof ProtectedVesselImoRouteImport
-      parentRoute: typeof ProtectedRoute
-    }
+    "/sign-up": {
+      id: "/sign-up";
+      path: "/sign-up";
+      fullPath: "/sign-up";
+      preLoaderRoute: typeof SignUpRouteImport;
+      parentRoute: typeof rootRouteImport;
+    };
+    "/sign-in": {
+      id: "/sign-in";
+      path: "/sign-in";
+      fullPath: "/sign-in";
+      preLoaderRoute: typeof SignInRouteImport;
+      parentRoute: typeof rootRouteImport;
+    };
+    "/_protected": {
+      id: "/_protected";
+      path: "";
+      fullPath: "";
+      preLoaderRoute: typeof ProtectedRouteImport;
+      parentRoute: typeof rootRouteImport;
+    };
+    "/": {
+      id: "/";
+      path: "/";
+      fullPath: "/";
+      preLoaderRoute: typeof IndexRouteImport;
+      parentRoute: typeof rootRouteImport;
+    };
+    "/_protected/table": {
+      id: "/_protected/table";
+      path: "/table";
+      fullPath: "/table";
+      preLoaderRoute: typeof ProtectedTableRouteImport;
+      parentRoute: typeof ProtectedRoute;
+    };
+    "/_protected/chat": {
+      id: "/_protected/chat";
+      path: "/chat";
+      fullPath: "/chat";
+      preLoaderRoute: typeof ProtectedChatRouteImport;
+      parentRoute: typeof ProtectedRoute;
+    };
+    "/_protected/vessel/$imo": {
+      id: "/_protected/vessel/$imo";
+      path: "/vessel/$imo";
+      fullPath: "/vessel/$imo";
+      preLoaderRoute: typeof ProtectedVesselImoRouteImport;
+      parentRoute: typeof ProtectedRoute;
+    };
   }
 }
 
 interface ProtectedRouteChildren {
-  ProtectedChatRoute: typeof ProtectedChatRoute
-  ProtectedTableRoute: typeof ProtectedTableRoute
-  ProtectedVesselImoRoute: typeof ProtectedVesselImoRoute
+  ProtectedChatRoute: typeof ProtectedChatRoute;
+  ProtectedTableRoute: typeof ProtectedTableRoute;
+  ProtectedVesselImoRoute: typeof ProtectedVesselImoRoute;
 }
 
 const ProtectedRouteChildren: ProtectedRouteChildren = {
   ProtectedChatRoute: ProtectedChatRoute,
   ProtectedTableRoute: ProtectedTableRoute,
   ProtectedVesselImoRoute: ProtectedVesselImoRoute,
-}
+};
 
 const ProtectedRouteWithChildren = ProtectedRoute._addFileChildren(
   ProtectedRouteChildren,
-)
+);
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   ProtectedRoute: ProtectedRouteWithChildren,
   SignInRoute: SignInRoute,
   SignUpRoute: SignUpRoute,
-}
+};
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
-  ._addFileTypes<FileRouteTypes>()
+  ._addFileTypes<FileRouteTypes>();
