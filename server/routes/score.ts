@@ -30,7 +30,7 @@ export const scoreRoute = factory
     },
   )
   .get("/headers", (c) => {
-    const doorRuleHeader = `${arrivalRuleset.door.name} ${arrivalRuleset.door.weight}`;
+    const doorRuleHeader = `${arrivalRuleset.door.name} (${arrivalRuleset.door.weight})`;
     const autoRuleHeaders = arrivalRuleset.rules.map(
       (rule) => `${rule.name} (${rule.weight})`,
     );
