@@ -9,6 +9,7 @@ import { DataTableDateFilter } from "./data-table-date-filter";
 import { ThreatBadge } from "./ThreatBadge";
 import { Button } from "./ui/button";
 import { Checkbox } from "./ui/checkbox";
+import { Stack } from "./ui/stack";
 
 // This will give you the exact response type from the endpoint
 type ArrivingVesselsResponse = InferResponseType<
@@ -143,15 +144,18 @@ export const createColumns = (
     accessorKey: "vesselDetails.statCode5",
     header: ({ column }) => {
       return (
-        <Button
-          variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-          className="gap-1"
-        >
-          Vessel Type
-          <ArrowUpDown className="h-4 w-4" />
+        <Stack direction="row" items="center">
+          <Button
+            variant="ghost"
+            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+            className="gap-1"
+            size="sm"
+          >
+            Vessel Type
+            <ArrowUpDown className="h-4 w-4" />
+          </Button>
           <DataTableColumnFilter column={column} title="Vessel Type" />
-        </Button>
+        </Stack>
       );
     },
     cell: ({ row }) => mapStatCode(row.original.vesselDetails?.statCode5),
@@ -166,15 +170,18 @@ export const createColumns = (
     accessorKey: "vesselDetails.flagName",
     header: ({ column }) => {
       return (
-        <Button
-          variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-          className="gap-1"
-        >
-          Flag
-          <ArrowUpDown className="h-4 w-4" />
+        <Stack direction="row" items="center">
+          <Button
+            variant="ghost"
+            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+            className="gap-1"
+            size="sm"
+          >
+            Flag
+            <ArrowUpDown className="h-4 w-4" />
+          </Button>
           <DataTableColumnFilter column={column} title="Flag" />
-        </Button>
+        </Stack>
       );
     },
     filterFn: (row, columnId, filterValue: string[]) => {
@@ -187,15 +194,18 @@ export const createColumns = (
     accessorKey: "score.score",
     header: ({ column }) => {
       return (
-        <Button
-          variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-          className="gap-1"
-        >
-          Initial Threat Score
-          <ArrowUpDown className="h-4 w-4" />
+        <Stack direction="row" items="center">
+          <Button
+            variant="ghost"
+            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+            className="gap-1"
+            size="sm"
+          >
+            Initial Threat Score
+            <ArrowUpDown className="h-4 w-4" />
+          </Button>
           <DataTableColumnFilter column={column} title="Initial Threat Score" />
-        </Button>
+        </Stack>
       );
     },
     cell: ({ row }) => (
@@ -221,15 +231,18 @@ export const createColumns = (
     accessorKey: "vesselArrivalDetails.locationFrom",
     header: ({ column }) => {
       return (
-        <Button
-          variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-          className="gap-1"
-        >
-          From
-          <ArrowUpDown className="h-4 w-4" />
+        <Stack direction="row" items="center">
+          <Button
+            variant="ghost"
+            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+            className="gap-1"
+            size="sm"
+          >
+            From
+            <ArrowUpDown className="h-4 w-4" />
+          </Button>
           <DataTableColumnFilter column={column} title="From" />
-        </Button>
+        </Stack>
       );
     },
     filterFn: (row, columnId, filterValue: string[]) => {
@@ -242,15 +255,18 @@ export const createColumns = (
     accessorKey: "vesselArrivalDetails.locationTo",
     header: ({ column }) => {
       return (
-        <Button
-          variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-          className="gap-1"
-        >
-          To
-          <ArrowUpDown className="h-4 w-4" />
+        <Stack direction="row" items="center">
+          <Button
+            variant="ghost"
+            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+            className="gap-1"
+            size="sm"
+          >
+            To
+            <ArrowUpDown className="h-4 w-4" />
+          </Button>
           <DataTableColumnFilter column={column} title="To" />
-        </Button>
+        </Stack>
       );
     },
     filterFn: (row, columnId, filterValue: string[]) => {
@@ -263,19 +279,22 @@ export const createColumns = (
     accessorKey: "vesselArrivalDetails.dueToArriveTime",
     header: ({ column, table }) => {
       return (
-        <Button
-          variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-          className="gap-1"
-        >
-          Arrival Time
-          <ArrowUpDown className="h-4 w-4" />
+        <Stack direction="row" items="center">
+          <Button
+            variant="ghost"
+            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+            className="gap-1"
+            size="sm"
+          >
+            Arrival Time
+            <ArrowUpDown className="h-4 w-4" />
+          </Button>
           <DataTableDateFilter
             column={column}
             table={table}
             title="Arrival Time"
           />
-        </Button>
+        </Stack>
       );
     },
     cell: ({ row }) =>
