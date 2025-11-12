@@ -27,7 +27,7 @@ class VesselsDueToArriveTransformer(MdhDataTransformer):
                 "callsign": vessel_particulars["callSign"],
                 "imo": vessel_particulars["imoNumber"],
                 "flag": vessel_particulars["flag"],
-                "due_to_arrive_time": raw_arrival,
+                "due_to_arrive_time": arrival_utc,
                 "location_from": record["locationFrom"],
                 "location_to": record["locationTo"],
                 "fetched_at": fetched_at,
