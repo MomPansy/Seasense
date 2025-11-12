@@ -375,13 +375,13 @@ export function VesselTable({ vessels }: VesselTableProps) {
             </span>
           )}
           <ColumnVisibilityDropdown table={table} columnLabels={columnLabels} />
+          <ExportTableButton table={table} columnLabels={columnLabels} />
           {activePreset === "tankers" && (
             <Button variant="outline" className="gap-2" onClick={handleExport}>
               <Download className="h-4 w-4" />
-              Download Vessel Scoring
+              Export Scores
             </Button>
           )}
-          <ExportTableButton table={table} columnLabels={columnLabels} />
         </div>
       </div>
       <DataTable

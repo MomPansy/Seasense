@@ -98,7 +98,7 @@ export const createColumns = (
       return (
         <Button
           variant="link"
-          className="p-0 h-auto font-normal"
+          className="p-0 h-auto font-normal cursor-pointer"
           onClick={() => {
             if (!row.original.vesselArrivalDetails.imo) return;
             navigate({

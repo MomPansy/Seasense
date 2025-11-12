@@ -1,5 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
+import { useMemo } from "react";
 import { TableSkeleton } from "@/components/TableSkeleton";
 import { Skeleton } from "@/components/ui/skeleton";
 import { VesselTable } from "@/components/VesselTable";
@@ -25,6 +26,21 @@ function App() {
     },
   });
 
+  // Calculate last updated timestamp (must be before any conditional returns)
+  const lastUpdated = useMemo(() => {
+    const timestamps = vessels
+      .map((vessel) => vessel.vesselArrivalDetails.fetchedAt)
+      .filter((timestamp): timestamp is string => timestamp !== null)
+      .map((timestamp) => new Date(timestamp).getTime());
+
+    if (timestamps.length === 0) return null;
+
+    const maxDate = new Date(Math.max(...timestamps));
+    const pad = (num: number) => String(num).padStart(2, "0");
+
+    return `${pad(maxDate.getHours())}:${pad(maxDate.getMinutes())}, ${pad(maxDate.getDate())}/${pad(maxDate.getMonth() + 1)}/${String(maxDate.getFullYear()).slice(-2)}`;
+  }, [vessels]);
+
   if (isLoading) {
     return (
       <main className="px-8 py-6">
@@ -48,7 +64,8 @@ function App() {
     <main className="px-8 py-6">
       <div className="mb-6">
         <h1 className="mb-2">
-          Vessels arriving to Singapore within 24-72 hours
+          Vessels due to arrive for next 72 hours, updated on{" "}
+          {lastUpdated ?? "N/A"}
         </h1>
       </div>
 
