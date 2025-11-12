@@ -9,7 +9,7 @@ import { MessageAssistant } from "./MessageAssistant";
 import { MessageUser } from "./MessageUser";
 
 const chatUrl = import.meta.env.DEV
-  ? "http://localhost:3000/api/chat"
+  ? "http://localhost:3000/api/chat_new"
   : "/api/chat";
 
 interface ChatMainProps {
