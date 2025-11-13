@@ -1,5 +1,4 @@
-import { Column, Table } from "@tanstack/react-table";
-import { format } from "date-fns";
+import { Column } from "@tanstack/react-table";
 import { FilterIcon } from "lucide-react";
 import * as React from "react";
 import { Button } from "./ui/button";
@@ -7,86 +6,88 @@ import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
 
 interface DataTableDateFilterProps<TData, TValue> {
   column?: Column<TData, TValue>;
-  table?: Table<TData>;
   title?: string;
 }
 
+type TimeRangePreset = "within24" | "24to48" | "48to72";
+
 export function DataTableDateFilter<TData, TValue>({
   column,
-  table,
   title,
 }: DataTableDateFilterProps<TData, TValue>) {
   const [isOpen, setIsOpen] = React.useState(false);
 
-  // Get all date values from the table to determine min/max
-  const { minDate, maxDate } = React.useMemo(() => {
-    if (!table) return { minDate: 0, maxDate: 0 };
-
-    const dates = table
-      .getCoreRowModel()
-      .rows.map((row) => {
-        const value = row.getValue(column?.id ?? "");
-        if (typeof value === "string") {
-          const timestamp = new Date(value).getTime();
-          return isNaN(timestamp) ? null : timestamp;
-        }
-        return null;
-      })
-      .filter((d): d is number => d !== null);
-
-    if (dates.length === 0) return { minDate: 0, maxDate: 0 };
-
-    return {
-      minDate: Math.min(...dates),
-      maxDate: Math.max(...dates),
-    };
-  }, [table, column?.id]);
-
   const filterValue = column?.getFilterValue() as
-    | { start: number; end: number }
+    | { start: number; end: number; preset?: TimeRangePreset }
     | undefined;
 
-  const [startValue, setStartValue] = React.useState(minDate);
-  const [endValue, setEndValue] = React.useState(maxDate);
+  // Local state for pending selection
+  const [pendingPreset, setPendingPreset] = React.useState<
+    TimeRangePreset | undefined
+  >(undefined);
 
-  React.useEffect(() => {
-    if (filterValue) {
-      setStartValue(filterValue.start);
-      setEndValue(filterValue.end);
-    } else {
-      setStartValue(minDate);
-      setEndValue(maxDate);
+  // Sync pending selection with filter value when opening
+  const handleOpenChange = (open: boolean) => {
+    setIsOpen(open);
+    if (open) {
+      setPendingPreset(filterValue?.preset);
     }
-  }, [filterValue, minDate, maxDate]);
+  };
 
   const isFiltered = !!filterValue;
 
-  const handleApply = () => {
-    if (startValue !== minDate || endValue !== maxDate) {
-      column?.setFilterValue({ start: startValue, end: endValue });
-    } else {
-      column?.setFilterValue(undefined);
-    }
-    setIsOpen(false);
+  const handlePresetClick = (preset: TimeRangePreset) => {
+    setPendingPreset(preset);
   };
 
   const handleClear = () => {
-    setStartValue(minDate);
-    setEndValue(maxDate);
-    column?.setFilterValue(undefined);
+    setPendingPreset(undefined);
+  };
+
+  const handleApply = () => {
+    if (!pendingPreset) {
+      column?.setFilterValue(undefined);
+      setIsOpen(false);
+      return;
+    }
+
+    const now = Date.now();
+    const oneHour = 60 * 60 * 1000;
+    const twentyFourHours = 24 * oneHour;
+
+    let start: number;
+    let end: number;
+
+    switch (pendingPreset) {
+      case "within24":
+        start = now;
+        end = now + twentyFourHours;
+        break;
+      case "24to48":
+        start = now + twentyFourHours;
+        end = now + 2 * twentyFourHours;
+        break;
+      case "48to72":
+        start = now + 2 * twentyFourHours;
+        end = now + 3 * twentyFourHours;
+        break;
+    }
+
+    column?.setFilterValue({ start, end, preset: pendingPreset });
     setIsOpen(false);
   };
 
-  if (!column || minDate === 0 || maxDate === 0) {
+  const handleCancel = () => {
+    setPendingPreset(filterValue?.preset);
+    setIsOpen(false);
+  };
+
+  if (!column) {
     return null;
   }
 
-  const range = maxDate - minDate;
-  const startPercent = ((startValue - minDate) / range) * 100;
-  const endPercent = ((endValue - minDate) / range) * 100;
-
   return (
-    <Popover open={isOpen} onOpenChange={setIsOpen}>
+    <Popover open={isOpen} onOpenChange={handleOpenChange}>
       <PopoverTrigger
         onClick={(e) => {
           e.stopPropagation();
@@ -96,91 +97,75 @@ export function DataTableDateFilter<TData, TValue>({
         <FilterIcon className="size-3.5" />
       </PopoverTrigger>
       <PopoverContent
-        className="w-96 bg-white"
+        className="w-64 bg-white border-gray-200"
         align="start"
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="space-y-4">
-          <div className="space-y-2">
-            <h4 className="font-medium leading-none">Filter by {title}</h4>
-            <p className="text-sm text-muted-foreground">
-              Drag the sliders to select a date range
+        <div className="space-y-3">
+          <div className="flex items-center justify-between">
+            <p className="text-sm font-medium text-gray-900">
+              {title ?? "Filter"}
             </p>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={handleClear}
+              disabled={!isFiltered}
+              className="h-6 px-2 text-xs text-gray-700 hover:text-gray-900 hover:bg-gray-100"
+            >
+              Clear
+            </Button>
           </div>
 
-          <div className="space-y-6 pt-2">
-            {/* Range slider */}
-            <div className="relative h-2">
-              {/* Track */}
-              <div className="absolute w-full h-2 bg-gray-200 rounded-full" />
-              {/* Active range */}
-              <div
-                className="absolute h-2 bg-primary rounded-full"
-                style={{
-                  left: `${startPercent}%`,
-                  right: `${100 - endPercent}%`,
-                }}
-              />
-              {/* Start handle */}
-              <input
-                type="range"
-                min={minDate}
-                max={maxDate}
-                value={startValue}
-                onChange={(e) => {
-                  const newStart = Number(e.target.value);
-                  setStartValue(Math.min(newStart, endValue));
-                }}
-                onClick={(e) => e.stopPropagation()}
-                onMouseDown={(e) => e.stopPropagation()}
-                className="absolute w-full h-2 appearance-none bg-transparent pointer-events-none [&::-webkit-slider-thumb]:pointer-events-auto [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-4 [&::-webkit-slider-thumb]:h-4 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-primary [&::-webkit-slider-thumb]:cursor-pointer [&::-moz-range-thumb]:pointer-events-auto [&::-moz-range-thumb]:appearance-none [&::-moz-range-thumb]:w-4 [&::-moz-range-thumb]:h-4 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-primary [&::-moz-range-thumb]:cursor-pointer [&::-moz-range-thumb]:border-0"
-                style={{
-                  zIndex:
-                    startValue > maxDate - (maxDate - minDate) / 2 ? 5 : 3,
-                }}
-              />
-              {/* End handle */}
-              <input
-                type="range"
-                min={minDate}
-                max={maxDate}
-                value={endValue}
-                onChange={(e) => {
-                  const newEnd = Number(e.target.value);
-                  setEndValue(Math.max(newEnd, startValue));
-                }}
-                onClick={(e) => e.stopPropagation()}
-                onMouseDown={(e) => e.stopPropagation()}
-                className="absolute w-full h-2 appearance-none bg-transparent pointer-events-none [&::-webkit-slider-thumb]:pointer-events-auto [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-4 [&::-webkit-slider-thumb]:h-4 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-primary [&::-webkit-slider-thumb]:cursor-pointer [&::-moz-range-thumb]:pointer-events-auto [&::-moz-range-thumb]:appearance-none [&::-moz-range-thumb]:w-4 [&::-moz-range-thumb]:h-4 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-primary [&::-moz-range-thumb]:cursor-pointer [&::-moz-range-thumb]:border-0"
-                style={{ zIndex: 4 }}
-              />
-            </div>
-
-            {/* Date labels */}
-            <div className="flex justify-between text-sm">
-              <div>
-                <span className="text-gray-900">From: </span>
-                <span className="font-medium text-gray-900">
-                  {format(startValue, "dd/MM/yy HH:mm:ss X")}
-                </span>
-              </div>
-              <div>
-                <span className="text-gray-900">To: </span>
-                <span className="font-medium text-gray-900">
-                  {format(endValue, "dd/MM/yy HH:mm:ss X")}
-                </span>
-              </div>
-            </div>
+          <div className="space-y-2">
+            <p className="text-sm text-gray-600">Select a time range</p>
           </div>
 
-          <div className="flex justify-between gap-2 pt-2">
+          {/* Preset Buttons */}
+          <div className="space-y-2">
+            <Button
+              variant="outline"
+              className={`w-full justify-start bg-white text-gray-900 border-gray-300 hover:bg-[#27867d] hover:text-white ${
+                pendingPreset === "within24"
+                  ? "bg-[#0f796f] hover:bg-[#27867d] text-white border-[#0f796f]"
+                  : ""
+              }`}
+              onClick={() => handlePresetClick("within24")}
+            >
+              Within 24hrs
+            </Button>
+            <Button
+              variant="outline"
+              className={`w-full justify-start bg-white text-gray-900 border-gray-300 hover:bg-[#27867d] hover:text-white ${
+                pendingPreset === "24to48"
+                  ? "bg-[#0f796f] hover:bg-[#27867d] text-white border-[#0f796f]"
+                  : ""
+              }`}
+              onClick={() => handlePresetClick("24to48")}
+            >
+              Between 24-48hrs
+            </Button>
+            <Button
+              variant="outline"
+              className={`w-full justify-start bg-white text-gray-900 border-gray-300 hover:bg-[#27867d] hover:text-white ${
+                pendingPreset === "48to72"
+                  ? "bg-[#0f796f] hover:bg-[#27867d] text-white border-[#0f796f]"
+                  : ""
+              }`}
+              onClick={() => handlePresetClick("48to72")}
+            >
+              Between 48-72hrs
+            </Button>
+          </div>
+
+          <div className="flex items-center gap-2 pt-2 border-t border-gray-200">
             <Button
               variant="outline"
               size="sm"
-              onClick={handleClear}
-              className="flex-1 bg-white text-gray-900 border-gray-300 hover:bg-gray-50 hover:text-gray-900"
+              onClick={handleCancel}
+              className="flex-1 text-gray-700 hover:text-gray-900 hover:bg-gray-100"
             >
-              Clear
+              Cancel
             </Button>
             <Button size="sm" onClick={handleApply} className="flex-1">
               Apply

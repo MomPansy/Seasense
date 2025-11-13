@@ -278,7 +278,7 @@ export const createColumns = (
   },
   {
     accessorKey: "vesselArrivalDetails.dueToArriveTime",
-    header: ({ column, table }) => {
+    header: ({ column }) => {
       return (
         <Stack direction="row" items="center">
           <Button
@@ -290,11 +290,7 @@ export const createColumns = (
             Arrival Time
             <ArrowUpDown className="h-4 w-4" />
           </Button>
-          <DataTableDateFilter
-            column={column}
-            table={table}
-            title="Arrival Time"
-          />
+          <DataTableDateFilter column={column} title="Arrival Time" />
         </Stack>
       );
     },
@@ -311,12 +307,22 @@ export const createColumns = (
       const dateB = rowB.original.vesselArrivalDetails.dueToArriveTime ?? 0;
       return differenceInMilliseconds(dateA, dateB);
     },
-    filterFn: (row, _columnId, filterValue: { start: number; end: number }) => {
+    filterFn: (
+      row,
+      _columnId,
+      filterValue: {
+        start: number;
+        end: number;
+        preset?: string;
+      },
+    ) => {
       const dateStr = row.original.vesselArrivalDetails.dueToArriveTime;
       if (!dateStr) return false;
 
-      const date = new Date(dateStr).getTime();
-      return date >= filterValue.start && date <= filterValue.end;
+      const timestamp = new Date(dateStr).getTime();
+
+      // Check if timestamp falls within the time range
+      return timestamp >= filterValue.start && timestamp <= filterValue.end;
     },
     meta: {
       exportFormatter: (row: ArrivingVesselsResponse) => {
