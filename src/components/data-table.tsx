@@ -133,7 +133,7 @@ export function DataTable({
                 return (
                   <Tooltip key={row.id}>
                     <TooltipTrigger asChild>{rowContent}</TooltipTrigger>
-                    <TooltipContent>
+                    <TooltipContent align="start">
                       <p>
                         This IMO number refers to different vessels within the
                         MDH and IHS databases.
@@ -145,7 +145,7 @@ export function DataTable({
                 return (
                   <Tooltip key={row.id}>
                     <TooltipTrigger asChild>{rowContent}</TooltipTrigger>
-                    <TooltipContent>
+                    <TooltipContent align="start">
                       <p>
                         This vessel either did not provide an IMO number or
                         provided an invalid one.
