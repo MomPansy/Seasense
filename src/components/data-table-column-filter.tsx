@@ -1,5 +1,5 @@
 import { Column } from "@tanstack/react-table";
-import { Filter } from "lucide-react";
+import { FilterIcon } from "lucide-react";
 import * as React from "react";
 import { Button } from "src/components/ui/button";
 import { Checkbox } from "src/components/ui/checkbox";
@@ -90,9 +90,13 @@ export function DataTableColumnFilter<TData, TValue>({
         onClick={(e) => {
           e.stopPropagation();
         }}
-        className={`inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 shrink-0 outline-none hover:bg-accent hover:text-accent-foreground h-8 size-8 ${isFiltered ? "text-primary" : ""}`}
+        className={`inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 shrink-0 outline-none hover:bg-accent hover:text-accent-foreground h-8 size-8 ${isFiltered ? "text-blue-600" : ""}`}
       >
-        <Filter className="size-3.5" />
+        {isFiltered ? (
+          <FilterIcon className="size-3.5 fill-current" />
+        ) : (
+          <FilterIcon className="size-3.5" />
+        )}
       </PopoverTrigger>
       <PopoverContent
         className="w-64 bg-white border-gray-200"

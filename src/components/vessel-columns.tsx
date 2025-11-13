@@ -2,7 +2,7 @@ import { useNavigate } from "@tanstack/react-router";
 import { ColumnDef } from "@tanstack/react-table";
 import { differenceInMilliseconds, format } from "date-fns";
 import { InferResponseType } from "hono/client";
-import { ArrowUpDown } from "lucide-react";
+import { ArrowUpDown, ArrowUp, ArrowDown } from "lucide-react";
 import { DateTime } from "luxon";
 import { api } from "src/lib/api";
 import { mapStatCode } from "src/lib/utils";
@@ -48,6 +48,7 @@ export const createColumns = (
   {
     accessorKey: "vesselArrivalDetails.imo",
     header: ({ column }) => {
+      const isSorted = column.getIsSorted();
       return (
         <Button
           variant="ghost"
@@ -55,7 +56,13 @@ export const createColumns = (
           size="sm"
         >
           IMO Number
-          <ArrowUpDown className="h-4 w-4" />
+          {isSorted === "asc" ? (
+            <ArrowUp className="h-4 w-4 text-blue-600" />
+          ) : isSorted === "desc" ? (
+            <ArrowDown className="h-4 w-4 text-blue-600" />
+          ) : (
+            <ArrowUpDown className="h-4 w-4" />
+          )}
         </Button>
       );
     },
@@ -80,6 +87,7 @@ export const createColumns = (
   {
     accessorKey: "vesselArrivalDetails.vesselName",
     header: ({ column }) => {
+      const isSorted = column.getIsSorted();
       return (
         <Button
           variant="ghost"
@@ -87,7 +95,13 @@ export const createColumns = (
           size="sm"
         >
           Vessel Name
-          <ArrowUpDown className="h-4 w-4" />
+          {isSorted === "asc" ? (
+            <ArrowUp className="h-4 w-4 text-blue-600" />
+          ) : isSorted === "desc" ? (
+            <ArrowDown className="h-4 w-4 text-blue-600" />
+          ) : (
+            <ArrowUpDown className="h-4 w-4" />
+          )}
         </Button>
       );
     },
@@ -116,6 +130,7 @@ export const createColumns = (
   {
     accessorKey: "vesselArrivalDetails.callsign",
     header: ({ column }) => {
+      const isSorted = column.getIsSorted();
       return (
         <Button
           variant="ghost"
@@ -123,7 +138,13 @@ export const createColumns = (
           size="sm"
         >
           Call Sign
-          <ArrowUpDown className="h-4 w-4" />
+          {isSorted === "asc" ? (
+            <ArrowUp className="h-4 w-4 text-blue-600" />
+          ) : isSorted === "desc" ? (
+            <ArrowDown className="h-4 w-4 text-blue-600" />
+          ) : (
+            <ArrowUpDown className="h-4 w-4" />
+          )}
         </Button>
       );
     },
@@ -131,6 +152,7 @@ export const createColumns = (
   {
     accessorKey: "vesselDetails.statCode5",
     header: ({ column }) => {
+      const isSorted = column.getIsSorted();
       return (
         <Stack direction="row" items="center">
           <Button
@@ -140,7 +162,13 @@ export const createColumns = (
             size="sm"
           >
             Vessel Type
-            <ArrowUpDown className="h-4 w-4" />
+            {isSorted === "asc" ? (
+              <ArrowUp className="h-4 w-4 text-blue-600" />
+            ) : isSorted === "desc" ? (
+              <ArrowDown className="h-4 w-4 text-blue-600" />
+            ) : (
+              <ArrowUpDown className="h-4 w-4" />
+            )}
           </Button>
           <DataTableColumnFilter column={column} title="Vessel Type" />
         </Stack>
@@ -157,6 +185,7 @@ export const createColumns = (
   {
     accessorKey: "vesselDetails.flagName",
     header: ({ column }) => {
+      const isSorted = column.getIsSorted();
       return (
         <Stack direction="row" items="center">
           <Button
@@ -166,7 +195,13 @@ export const createColumns = (
             size="sm"
           >
             Flag
-            <ArrowUpDown className="h-4 w-4" />
+            {isSorted === "asc" ? (
+              <ArrowUp className="h-4 w-4 text-blue-600" />
+            ) : isSorted === "desc" ? (
+              <ArrowDown className="h-4 w-4 text-blue-600" />
+            ) : (
+              <ArrowUpDown className="h-4 w-4" />
+            )}
           </Button>
           <DataTableColumnFilter column={column} title="Flag" />
         </Stack>
@@ -181,6 +216,7 @@ export const createColumns = (
   {
     accessorKey: "score.level",
     header: ({ column }) => {
+      const isSorted = column.getIsSorted();
       return (
         <Stack direction="row" items="center">
           <Button
@@ -190,7 +226,13 @@ export const createColumns = (
             size="sm"
           >
             Threat Level
-            <ArrowUpDown className="h-4 w-4" />
+            {isSorted === "asc" ? (
+              <ArrowUp className="h-4 w-4 text-blue-600" />
+            ) : isSorted === "desc" ? (
+              <ArrowDown className="h-4 w-4 text-blue-600" />
+            ) : (
+              <ArrowUpDown className="h-4 w-4" />
+            )}
           </Button>
           <DataTableColumnFilter column={column} title="Threat Level" />
         </Stack>
@@ -206,6 +248,7 @@ export const createColumns = (
   {
     accessorKey: "score.score",
     header: ({ column }) => {
+      const isSorted = column.getIsSorted();
       return (
         <Stack direction="row" items="center">
           <Button
@@ -215,7 +258,13 @@ export const createColumns = (
             size="sm"
           >
             Score
-            <ArrowUpDown className="h-4 w-4" />
+            {isSorted === "asc" ? (
+              <ArrowUp className="h-4 w-4 text-blue-600" />
+            ) : isSorted === "desc" ? (
+              <ArrowDown className="h-4 w-4 text-blue-600" />
+            ) : (
+              <ArrowUpDown className="h-4 w-4" />
+            )}
           </Button>
           <DataTableColumnFilter column={column} title="Score" />
         </Stack>
@@ -231,6 +280,7 @@ export const createColumns = (
   {
     accessorKey: "vesselArrivalDetails.locationFrom",
     header: ({ column }) => {
+      const isSorted = column.getIsSorted();
       return (
         <Stack direction="row" items="center">
           <Button
@@ -240,7 +290,13 @@ export const createColumns = (
             size="sm"
           >
             From
-            <ArrowUpDown className="h-4 w-4" />
+            {isSorted === "asc" ? (
+              <ArrowUp className="h-4 w-4 text-blue-600" />
+            ) : isSorted === "desc" ? (
+              <ArrowDown className="h-4 w-4 text-blue-600" />
+            ) : (
+              <ArrowUpDown className="h-4 w-4" />
+            )}
           </Button>
           <DataTableColumnFilter column={column} title="From" />
         </Stack>
@@ -255,6 +311,7 @@ export const createColumns = (
   {
     accessorKey: "vesselArrivalDetails.locationTo",
     header: ({ column }) => {
+      const isSorted = column.getIsSorted();
       return (
         <Stack direction="row" items="center">
           <Button
@@ -264,7 +321,13 @@ export const createColumns = (
             size="sm"
           >
             To
-            <ArrowUpDown className="h-4 w-4" />
+            {isSorted === "asc" ? (
+              <ArrowUp className="h-4 w-4 text-blue-600" />
+            ) : isSorted === "desc" ? (
+              <ArrowDown className="h-4 w-4 text-blue-600" />
+            ) : (
+              <ArrowUpDown className="h-4 w-4" />
+            )}
           </Button>
           <DataTableColumnFilter column={column} title="To" />
         </Stack>
@@ -279,6 +342,7 @@ export const createColumns = (
   {
     accessorKey: "vesselArrivalDetails.dueToArriveTime",
     header: ({ column }) => {
+      const isSorted = column.getIsSorted();
       return (
         <Stack direction="row" items="center">
           <Button
@@ -288,7 +352,13 @@ export const createColumns = (
             size="sm"
           >
             Arrival Time
-            <ArrowUpDown className="h-4 w-4" />
+            {isSorted === "asc" ? (
+              <ArrowUp className="h-4 w-4 text-blue-600" />
+            ) : isSorted === "desc" ? (
+              <ArrowDown className="h-4 w-4 text-blue-600" />
+            ) : (
+              <ArrowUpDown className="h-4 w-4" />
+            )}
           </Button>
           <DataTableDateFilter column={column} title="Arrival Time" />
         </Stack>
