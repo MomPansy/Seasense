@@ -12,7 +12,7 @@ import {
   useReactTable,
 } from "@tanstack/react-table";
 import { InferResponseType } from "hono/client";
-import { Download } from "lucide-react";
+import { Download, X } from "lucide-react";
 import { useState, useMemo, useDeferredValue, useEffect } from "react";
 import { toast } from "sonner";
 import { api } from "@/lib/api";
@@ -269,7 +269,7 @@ export function VesselTable({ vessels }: VesselTableProps) {
   const applyAllVesselsPreset = () => {
     setColumnFilters([]);
     setColumnVisibility((prev) => ({ ...prev, score_score: false }));
-    setExcludeScore100(true);
+    setExcludeScore100(false);
     setIncludeOnlyTankers(false);
     setActivePreset("all");
   };
@@ -332,6 +332,26 @@ export function VesselTable({ vessels }: VesselTableProps) {
     });
   };
 
+  const handleClearAllFilters = () => {
+    setColumnFilters([]);
+    setSearchQuery("");
+    setExcludeScore100(true);
+    setIncludeOnlyTankers(false);
+    setActivePreset("all");
+    setSorting([{ id: "vesselArrivalDetails_dueToArriveTime", desc: false }]);
+  };
+
+  // Check if there are any active filters
+  const hasActiveFilters =
+    columnFilters.length > 0 ||
+    searchQuery !== "" ||
+    !excludeScore100 ||
+    includeOnlyTankers ||
+    activePreset !== "all" ||
+    (sorting.length > 0 &&
+      (sorting[0]?.id !== "vesselArrivalDetails_dueToArriveTime" ||
+        sorting[0]?.desc));
+
   return (
     <Stack direction="column" gap="4">
       <div className="flex justify-between items-center">
@@ -374,6 +394,15 @@ export function VesselTable({ vessels }: VesselTableProps) {
               Last Updated: {lastUpdated}
             </span>
           )}
+          <Button
+            variant="outline"
+            className="gap-2"
+            onClick={handleClearAllFilters}
+            disabled={!hasActiveFilters}
+          >
+            <X className="h-4 w-4" />
+            Clear All Filters
+          </Button>
           <ColumnVisibilityDropdown table={table} columnLabels={columnLabels} />
           <ExportTableButton table={table} columnLabels={columnLabels} />
           {activePreset === "tankers" && (

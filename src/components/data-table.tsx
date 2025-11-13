@@ -21,6 +21,11 @@ import {
   TableHeader,
   TableRow,
 } from "src/components/ui/table";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "src/components/ui/tooltip";
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
@@ -90,18 +95,50 @@ export function DataTable<TData, TValue>({
         </TableHeader>
         <TableBody>
           {table.getRowModel().rows.length ? (
-            table.getRowModel().rows.map((row) => (
-              <TableRow
-                key={row.id}
-                data-state={row.getIsSelected() && "selected"}
-              >
-                {row.getVisibleCells().map((cell) => (
-                  <TableCell key={cell.id}>
-                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                  </TableCell>
-                ))}
-              </TableRow>
-            ))
+            table.getRowModel().rows.map((row) => {
+              // Check if row has score property and if score is 100
+              const hasScore100 =
+                row.original &&
+                typeof row.original === "object" &&
+                "score" in row.original &&
+                row.original.score &&
+                typeof row.original.score === "object" &&
+                "score" in row.original.score &&
+                row.original.score.score === 100;
+
+              const rowContent = (
+                <TableRow
+                  key={row.id}
+                  data-state={row.getIsSelected() && "selected"}
+                  className={hasScore100 ? "bg-red-50 hover:bg-red-100" : ""}
+                >
+                  {row.getVisibleCells().map((cell) => (
+                    <TableCell key={cell.id}>
+                      {flexRender(
+                        cell.column.columnDef.cell,
+                        cell.getContext(),
+                      )}
+                    </TableCell>
+                  ))}
+                </TableRow>
+              );
+
+              if (hasScore100) {
+                return (
+                  <Tooltip key={row.id}>
+                    <TooltipTrigger asChild>{rowContent}</TooltipTrigger>
+                    <TooltipContent>
+                      <p>
+                        This vessel either did not provide an IMO number or
+                        provided an invalid one
+                      </p>
+                    </TooltipContent>
+                  </Tooltip>
+                );
+              }
+
+              return rowContent;
+            })
           ) : (
             <TableRow>
               <TableCell colSpan={columns.length} className="h-24 text-center">
