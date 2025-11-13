@@ -93,7 +93,7 @@ export function VesselTable({ vessels }: VesselTableProps) {
   );
   const deferredSearchQuery = useDeferredValue(searchQuery);
   const [excludeScore100, setExcludeScore100] = useState(
-    getInitialState("excludeScore100", true),
+    getInitialState("excludeScore100", false),
   );
   const [includeOnlyTankers, setIncludeOnlyTankers] = useState(
     getInitialState("includeOnlyTankers", false),
