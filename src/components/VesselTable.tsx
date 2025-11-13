@@ -296,21 +296,6 @@ export function VesselTable({ vessels }: VesselTableProps) {
       : "";
   };
 
-  // Last updated timestamp calculation
-  const lastUpdated = useMemo(() => {
-    const timestamps = vessels
-      .map((vessel) => vessel.vesselArrivalDetails.fetchedAt)
-      .filter((timestamp): timestamp is string => timestamp !== null)
-      .map((timestamp) => new Date(timestamp).getTime());
-
-    if (timestamps.length === 0) return null;
-
-    const maxDate = new Date(Math.max(...timestamps));
-    const pad = (num: number) => String(num).padStart(2, "0");
-
-    return `${pad(maxDate.getHours())}:${pad(maxDate.getMinutes())}, ${pad(maxDate.getDate())}/${pad(maxDate.getMonth() + 1)}/${String(maxDate.getFullYear()).slice(-2)}`;
-  }, [vessels]);
-
   const handleExport = async () => {
     toast.success("Exporting vessel details to Excel");
     const buffer = await exportVesselScores(table);
@@ -389,11 +374,6 @@ export function VesselTable({ vessels }: VesselTableProps) {
             " (MDH IMO is missing, unverified in IHS, or conflicts with stored IHS data)"}
         </span>
         <div className="flex gap-2 items-center">
-          {lastUpdated && (
-            <span className="text-sm text-muted-foreground">
-              Last Updated: {lastUpdated}
-            </span>
-          )}
           <Button
             variant="outline"
             className="gap-2"
