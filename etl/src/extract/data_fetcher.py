@@ -9,9 +9,9 @@ class DataFetcher:
         self.endpoint = endpoint
         self.api_key = api_key
 
-    def call_api(self, api, api_key):
+    def call_api(self):
         try:
-            r = requests.get(api, headers={"apikey": api_key}, timeout=10)
+            r = requests.get(self.endpoint, headers={"apikey": self.api_key}, timeout=10)
             r.raise_for_status()
             data = r.json()
             return r.status_code, data, None
@@ -33,8 +33,8 @@ class DataFetcher:
                 (self.endpoint, status_code, json.dumps(response_json) if response_json is not None else None, details)
             )
         
-    def fetch(self, conn):
-        status, data, err = self.call_api(self.endpoint, self.api_key)
+    def fetch_and_save(self, conn):
+        status, data, err = self.call_api()
         with conn:
             self.save_raw(conn, status if status else 0, data, err)      
         if not status or status >= 300:

@@ -3,8 +3,8 @@ from datetime import datetime
 from etl.src.transform import MdhDataTransformer
 
 class VesselDeparturesTransformer(MdhDataTransformer):
-    def __init__(self, conn, data_name):
-        super().__init__(conn, data_name)
+    def __init__(self, conn, data_name, location_code_mappings):
+        super().__init__(conn, data_name, location_code_mappings)
 
     def staging_transform_row(self, fetched_at, response_json):
         rows = []

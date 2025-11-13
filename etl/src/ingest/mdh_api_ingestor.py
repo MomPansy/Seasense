@@ -1,6 +1,4 @@
-import os
 import psycopg2
-import pytz
 import traceback
 import etl.src.util.env as env
 
@@ -12,7 +10,7 @@ from etl.src.load import MdhVesselArrivalsLoader, MdhVesselDeparturesLoader, Mdh
 from etl.src.util.logger import logger
 
 class MdhApiIngestor:
-    def ingest(DB_URL, MDH_API_KEY, data_name, data_window_hours):
+    def ingest(DB_URL, MDH_API_KEY, data_name, data_window_hours, location_code_mappings):
         now = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
         apis = {
             "vessel_arrivals": f"https://sg-mdh-api.mpa.gov.sg/v1/vessel/arrivals/date/{now}/hours/{data_window_hours}",
@@ -32,7 +30,7 @@ class MdhApiIngestor:
             logger.info(f"Fetching data for {data_name} with data_window_hours={data_window_hours}...")
             endpoint = apis[data_name]
             ingestor = DataFetcher(data_name, endpoint, MDH_API_KEY)
-            ingestor.fetch(conn)
+            ingestor.fetch_and_save(conn)
             logger.debug(f"Data fetched and stored in raw table for {data_name}.")
 
             # Transform data and insert into staging table
@@ -45,7 +43,7 @@ class MdhApiIngestor:
             if data_name not in TRANSFORMERS:
                 raise ValueError(f"No transformer defined for data_name: {data_name}")
             transformer_class = TRANSFORMERS[data_name]
-            transformer = transformer_class(conn, data_name)
+            transformer = transformer_class(conn, data_name, location_code_mappings)
             transformer.transform()
             logger.debug(f"Data transformed and inserted into staging table for {data_name}.")
 

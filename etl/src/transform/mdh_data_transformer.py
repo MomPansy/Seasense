@@ -2,10 +2,11 @@ import pytz
 from etl.src.util.logger import logger
 
 class MdhDataTransformer:
-    def __init__(self, conn, data_name):
+    def __init__(self, conn, data_name, location_code_mappings):
         self.conn = conn
         self.data_name = data_name
         self.tz = pytz.timezone("Asia/Singapore")
+        self.location_code_mappings = location_code_mappings
     
     
     def reset_staging_table(self):

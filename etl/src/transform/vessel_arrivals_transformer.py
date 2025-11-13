@@ -3,8 +3,8 @@ from datetime import datetime
 from etl.src.transform import MdhDataTransformer
 
 class VesselArrivalsTransformer(MdhDataTransformer):
-    def __init__(self, conn, data_name):
-        super().__init__(conn, data_name)
+    def __init__(self, conn, data_name, location_code_mappings):
+        super().__init__(conn, data_name, location_code_mappings)
 
     def staging_transform_row(self, fetched_at, response_json):
         rows = []
@@ -21,6 +21,14 @@ class VesselArrivalsTransformer(MdhDataTransformer):
                 arrival_utc = arrival_gmt8.astimezone(pytz.UTC)
             else:
                 arrival_utc = None
+                
+            # Convert location names from long form to short form
+            location_from = record["locationFrom"]
+            if (location_from in self.location_code_mappings):
+                location_from = self.location_code_mappings.get(location_from)
+            location_to = record["locationTo"]
+            if (location_to in self.location_code_mappings):
+                location_to = self.location_code_mappings.get(location_to)
 
             rows.append({
                 "vessel_name": vessel_particulars["vesselName"],
@@ -28,8 +36,8 @@ class VesselArrivalsTransformer(MdhDataTransformer):
                 "imo": vessel_particulars["imoNumber"],
                 "flag": vessel_particulars["flag"],
                 "arrived_time": arrival_utc,
-                "location_from": record["locationFrom"],
-                "location_to": record["locationTo"],
+                "location_from": location_from,
+                "location_to": location_to,
                 "fetched_at": fetched_at,
             })
         return rows
