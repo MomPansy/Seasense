@@ -4,6 +4,7 @@ import requests
 import traceback
 
 from etl.src.ingest.mdh_api_ingestor import MdhApiIngestor
+from loguru import logger
 
 
 def fetch_location_codes(MDH_API_KEY):
@@ -26,8 +27,10 @@ def fetch_location_codes(MDH_API_KEY):
 def main(DB_URL, MDH_API_KEY, datasets):
     location_code_mappings = None
     if any(item in datasets for item in ["vessels_due_to_arrive", "vessel_arrivals"]):
+        logger.info(f"Fetching latest location code values...")
         location_codes_json = fetch_location_codes(MDH_API_KEY)
         location_code_mappings = {entry['locationDescription']: entry['locationCode'] for entry in location_codes_json}
+        logger.info(f"Data fetched for location code values: {len(location_codes_json)} entries.")
     for data_name, data_window_hours in datasets.items():
         MdhApiIngestor.ingest(DB_URL, MDH_API_KEY, data_name, data_window_hours, location_code_mappings)
 
