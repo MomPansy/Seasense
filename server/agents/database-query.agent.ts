@@ -19,15 +19,25 @@ import vessel_departures_schema from "server/vessel_departures.description.json"
 import vessels_schema from "server/vessels.description.json";
 import vessels_due_to_arrive_schema from "server/vessels_due_to_arrive.description.json";
 
+const webSearchTool = anthropic.tools.webSearch_20250305({
+  maxUses: 5,
+});
+
+const webFetchTool = anthropic.tools.webFetch_20250910({ maxUses: 5 });
+
 const databaseQueryAgent = new Agent({
   model: wrapLanguageModel({
-    model: anthropic("claude-sonnet-4-0"),
+    model: anthropic("claude-opus-4-20250514"),
     middleware: extractReasoningMiddleware({ tagName: "think" }),
   }),
   system: `
     You are a database query agent that helps users retrieve information from a 
     database by generating SQL queries based on user questions. 
-    Use the provided tool to execute SQL queries and return the results to the user. 
+    Use the provided tool to execute SQL queries and return the results to the user. If the user query requires information not present in the database, 
+    you may use the web search tool to gather additional information. If you require positional information you can access 
+    1. https://www.vesselfinder.com/vessels/details/:MMSI 
+      to fetch the relevant details, but note that this is MMSI instead of IMO.
+    2. https://shipinfo.net/, here is an example endpoint https://shipinfo.net/find_vessel_Seven-Seas_IMO-9384760_MMSI-235060176
 
     There are 2 main datasets available:
     (1) IHS Dataset ("vessels" table):
@@ -92,6 +102,8 @@ const databaseQueryAgent = new Agent({
         return result;
       },
     }),
+    web_search: webSearchTool,
+    web_fetch: webFetchTool,
   },
 });
 
