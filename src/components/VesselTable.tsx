@@ -82,7 +82,10 @@ export function VesselTable({ vessels }: VesselTableProps) {
     getInitialState("columnFilters", []),
   );
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>(
-    getInitialState("columnVisibility", { score_score: false }),
+    getInitialState("columnVisibility", {
+      score_level: false,
+      score_score: false,
+    }),
   );
   const [rowSelection, setRowSelection] = useState<RowSelectionState>({});
   const [searchQuery, setSearchQuery] = useState(
@@ -244,7 +247,8 @@ export function VesselTable({ vessels }: VesselTableProps) {
     vesselArrivalDetails_callsign: "Call Sign",
     vesselDetails_statCode5: "Vessel Type",
     vesselDetails_flagName: "Flag",
-    score_score: "Initial Threat Score",
+    score_level: "Threat Level",
+    score_score: "Score",
     vesselArrivalDetails_locationFrom: "From",
     vesselArrivalDetails_locationTo: "To",
     vesselArrivalDetails_dueToArriveTime: "Arrival Time",
@@ -257,7 +261,7 @@ export function VesselTable({ vessels }: VesselTableProps) {
       case "imo_issues":
         return Object.fromEntries(
           Object.entries(baseColumnLabels).filter(
-            ([key]) => key !== "score_score",
+            ([key]) => key !== "score_score" && key !== "score_level",
           ),
         );
       default:
@@ -268,7 +272,11 @@ export function VesselTable({ vessels }: VesselTableProps) {
   // Preset filter handlers
   const applyAllVesselsPreset = () => {
     setColumnFilters([]);
-    setColumnVisibility((prev) => ({ ...prev, score_score: false }));
+    setColumnVisibility((prev) => ({
+      ...prev,
+      score_level: false,
+      score_score: false,
+    }));
     setExcludeScore100(false);
     setIncludeOnlyTankers(false);
     setActivePreset("all");
@@ -278,13 +286,21 @@ export function VesselTable({ vessels }: VesselTableProps) {
     setExcludeScore100(true);
     setIncludeOnlyTankers(true);
     setColumnFilters([]);
-    setColumnVisibility((prev) => ({ ...prev, score_score: true }));
+    setColumnVisibility((prev) => ({
+      ...prev,
+      score_level: true,
+      score_score: true,
+    }));
     setActivePreset("tankers");
   };
 
   const applyIMOIssuesPreset = () => {
     setColumnFilters([{ id: "score_score", value: ["100"] }]);
-    setColumnVisibility((prev) => ({ ...prev, score_score: false }));
+    setColumnVisibility((prev) => ({
+      ...prev,
+      score_level: false,
+      score_score: false,
+    }));
     setExcludeScore100(false);
     setIncludeOnlyTankers(false);
     setActivePreset("imo_issues");

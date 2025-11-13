@@ -8,7 +8,6 @@ import { api } from "src/lib/api";
 import { mapStatCode } from "src/lib/utils";
 import { DataTableColumnFilter } from "./data-table-column-filter";
 import { DataTableDateFilter } from "./data-table-date-filter";
-import { ThreatBadge } from "./ThreatBadge";
 import { Button } from "./ui/button";
 import { Checkbox } from "./ui/checkbox";
 import { Stack } from "./ui/stack";
@@ -180,6 +179,31 @@ export const createColumns = (
     },
   },
   {
+    accessorKey: "score.level",
+    header: ({ column }) => {
+      return (
+        <Stack direction="row" items="center">
+          <Button
+            variant="ghost"
+            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+            className="gap-1"
+            size="sm"
+          >
+            Threat Level
+            <ArrowUpDown className="h-4 w-4" />
+          </Button>
+          <DataTableColumnFilter column={column} title="Threat Level" />
+        </Stack>
+      );
+    },
+    cell: ({ row }) => row.original.score.level,
+    filterFn: (row, columnId, filterValue: string[]) => {
+      if (filterValue.length === 0) return true;
+      const cellValue = String(row.getValue(columnId));
+      return filterValue.includes(cellValue);
+    },
+  },
+  {
     accessorKey: "score.score",
     header: ({ column }) => {
       return (
@@ -190,26 +214,14 @@ export const createColumns = (
             className="gap-1"
             size="sm"
           >
-            Initial Threat Score
+            Score
             <ArrowUpDown className="h-4 w-4" />
           </Button>
-          <DataTableColumnFilter column={column} title="Initial Threat Score" />
+          <DataTableColumnFilter column={column} title="Score" />
         </Stack>
       );
     },
-    cell: ({ row }) => (
-      <ThreatBadge
-        level={row.original.score.level}
-        percentage={row.original.score.score}
-      />
-    ),
-    meta: {
-      exportFormatter: (row: ArrivingVesselsResponse) => {
-        const level = row.score.level;
-        const percentage = row.score.score;
-        return `Level ${level} - ${percentage}%`;
-      },
-    },
+    cell: ({ row }) => row.original.score.score,
     filterFn: (row, columnId, filterValue: string[]) => {
       if (filterValue.length === 0) return true;
       const cellValue = String(row.getValue(columnId));
