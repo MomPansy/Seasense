@@ -64,14 +64,14 @@ export const exportVesselScores = async (
 
     const sumStartCell = row.getCell(2).address;
     const sumEndCell = row.getCell(colNum - 1).address;
-    const sumCell = row.getCell(colNum).address;
+    const sumCell = row.getCell(colNum + 1).address;
     row.getCell(colNum).value = {
-      formula: `SUM(${sumStartCell}:${sumEndCell})`,
-      result: vesselInfo.score.score,
-    };
-    row.getCell(colNum + 1).value = {
       formula: `IFS(${sumCell} >= 100, 2, ${sumCell} >= 70, 3, ${sumCell} >= 50, 4, ${sumCell} >= 30, 5)`,
       result: vesselInfo.score.level,
+    };
+    row.getCell(colNum + 1).value = {
+      formula: `SUM(${sumStartCell}:${sumEndCell})`,
+      result: vesselInfo.score.score,
     };
 
     row.commit();

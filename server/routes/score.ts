@@ -40,7 +40,7 @@ export const scoreRoute = factory
     const manualRuleHeaders = arrivalRuleset.manualRules.map(
       (rule) => `${rule.name} (${rule.weight}) [MANUAL]`,
     );
-    const otherHeaders = ["Score", "Threat level"];
+    const otherHeaders = ["Threat level", "Score"];
 
     return c.json(
       ["IMO", "Vessel Name", doorRuleHeader]
