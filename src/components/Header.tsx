@@ -38,7 +38,10 @@ export function Header({ activeTab, onTabChange }: HeaderProps) {
                 Arriving Vessels
               </button>
               <button
-                onClick={() => onTabChange("profiling")}
+                onClick={() => {
+                  onTabChange("profiling");
+                  navigate({ to: "/search" });
+                }}
                 className={`nav-title pb-2 border-b-2 transition-colors ${
                   activeTab === "profiling"
                     ? "border-primary text-primary"

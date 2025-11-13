@@ -7,13 +7,12 @@ import { mapStatCode } from "@/lib/utils";
 import { ThreatBadge } from "./ThreatBadge";
 import { Button } from "./ui/button";
 
-type ArrivingVesselsResponse = InferResponseType<
-  typeof api.vessels.arriving.$post
+type VesselDetailsResponse = InferResponseType<
+  typeof api.vessels.vesselDetails.$post
 >;
-type VesselType = ArrivingVesselsResponse[number];
 
 interface VesselDetailsProps {
-  vessel: VesselType;
+  vessel: VesselDetailsResponse;
 }
 
 // Constants
@@ -65,39 +64,40 @@ const formatNumber = (value: string | number | null | undefined) => {
 };
 
 // Section Components
-const VesselDetailsSection = ({ vessel }: { vessel: VesselType }) => (
+const VesselDetailsSection = ({
+  vessel,
+}: {
+  vessel: VesselDetailsResponse;
+}) => (
   <DetailCard title="Vessel Details">
     <div className="space-y-3">
-      <DetailRow
-        label="Name"
-        value={vessel.vesselArrivalDetails.vesselName ?? "-"}
-      />
+      <DetailRow label="Name" value={vessel.vesselDetails.shipName ?? "-"} />
       <DetailRow
         label="Vessel Type"
-        value={mapStatCode(vessel.vesselDetails?.statCode5)}
+        value={mapStatCode(vessel.vesselDetails.statCode5)}
       />
-      <DetailRow label="Flag" value={vessel.vesselDetails?.flagName ?? "-"} />
+      <DetailRow label="Flag" value={vessel.vesselDetails.flagName ?? "-"} />
       <DetailRow
         label="IMO Number"
         value={
           <a
-            href={`https://www.marinetraffic.com/en/ais/details/ships/imo:${vessel.vesselDetails?.ihslRorImoShipNo}`}
+            href={`https://www.marinetraffic.com/en/ais/details/ships/imo:${vessel.vesselDetails.ihslRorImoShipNo}`}
             target="_blank"
             rel="noopener noreferrer"
             className="text-primary hover:underline"
           >
-            {vessel.vesselDetails?.ihslRorImoShipNo ?? "-"}
+            {vessel.vesselDetails.ihslRorImoShipNo}
           </a>
         }
       />
       <DetailRow
         label="Call Sign"
-        value={vessel.vesselArrivalDetails.callsign ?? "-"}
+        value={vessel.vesselDetails.callSign ?? "-"}
       />
       <DetailRow
         label="Gross Tonnage"
         value={
-          vessel.vesselDetails?.grossTonnage
+          vessel.vesselDetails.grossTonnage
             ? `${formatNumber(vessel.vesselDetails.grossTonnage)} t`
             : "-"
         }
@@ -105,7 +105,7 @@ const VesselDetailsSection = ({ vessel }: { vessel: VesselType }) => (
       <DetailRow
         label="Length Overall"
         value={
-          vessel.vesselDetails?.lengthOverallLoa
+          vessel.vesselDetails.lengthOverallLoa
             ? `${parseFloat(vessel.vesselDetails.lengthOverallLoa)} m`
             : "-"
         }
@@ -114,7 +114,7 @@ const VesselDetailsSection = ({ vessel }: { vessel: VesselType }) => (
   </DetailCard>
 );
 
-const OwnershipSection = ({ vessel }: { vessel: VesselType }) => {
+const OwnershipSection = ({ vessel }: { vessel: VesselDetailsResponse }) => {
   const formatOwnerWithCountry = (
     owner?: string | null,
     country?: string | null,
@@ -130,22 +130,22 @@ const OwnershipSection = ({ vessel }: { vessel: VesselType }) => {
         <DetailRow
           label="Group Owner"
           value={formatOwnerWithCountry(
-            vessel.vesselDetails?.groupBeneficialOwner,
-            vessel.vesselDetails?.groupBeneficialOwnerCountryOfRegistration,
+            vessel.vesselDetails.groupBeneficialOwner,
+            vessel.vesselDetails.groupBeneficialOwnerCountryOfRegistration,
           )}
         />
         <DetailRow
           label="Registered Owner"
           value={formatOwnerWithCountry(
-            vessel.vesselDetails?.registeredOwner,
-            vessel.vesselDetails?.registeredOwnerCountryOfRegistration,
+            vessel.vesselDetails.registeredOwner,
+            vessel.vesselDetails.registeredOwnerCountryOfRegistration,
           )}
         />
         <DetailRow
           label="Operator"
           value={formatOwnerWithCountry(
-            vessel.vesselDetails?.operator,
-            vessel.vesselDetails?.operatorCountryOfRegistration,
+            vessel.vesselDetails.operator,
+            vessel.vesselDetails.operatorCountryOfRegistration,
           )}
         />
       </div>
@@ -188,9 +188,9 @@ const AssessmentSection = ({
   isTanker,
   trippedRules,
 }: {
-  vessel: VesselType;
+  vessel: VesselDetailsResponse;
   isTanker: boolean;
-  trippedRules: { name: string; tripped: boolean }[];
+  trippedRules: { name: string; description: string; tripped: boolean }[];
 }) => (
   <DetailCard title="Assessment">
     <div className="space-y-3">
@@ -218,7 +218,7 @@ const AssessmentSection = ({
             <ul className="list-disc list-inside space-y-1 ml-4">
               {trippedRules.map((rule, index) => (
                 <li key={index} className="body-small">
-                  {rule.name}
+                  {rule.description}
                 </li>
               ))}
               {trippedRules.length === 0 && (
@@ -245,8 +245,8 @@ const ActionsSection = () => (
 export function VesselDetails({ vessel }: VesselDetailsProps) {
   // Memoized vessel type and tanker checking
   const vesselType = useMemo(
-    () => mapStatCode(vessel.vesselDetails?.statCode5),
-    [vessel.vesselDetails?.statCode5],
+    () => mapStatCode(vessel.vesselDetails.statCode5),
+    [vessel.vesselDetails.statCode5],
   );
 
   const isTanker = useMemo(
@@ -269,18 +269,18 @@ Level ${vessel.score.level || -1} - ${vessel.score.score || 0}%
 ${getThreatMessage(vessel.score.score || 0)}
 
 Parameters tripped:
-${trippedRules.length > 0 ? trippedRules.map((rule) => `- ${rule.name}`).join("\n") : "- No parameters tripped"}`
+${trippedRules.length > 0 ? trippedRules.map((rule) => `- ${rule.description}`).join("\n") : "- No parameters tripped"}`
       : "-";
 
-    const text = `Details of VVOCC for ${vessel.vesselArrivalDetails.vesselName ?? "-"}
+    const text = `Details of VVOCC for ${vessel.vesselDetails.shipName ?? "-"}
 
-Vessel Name: ${vessel.vesselArrivalDetails.vesselName ?? "-"}
-Vessel Type: ${mapStatCode(vessel.vesselDetails?.statCode5)}
-Flag: ${vessel.vesselDetails?.flagName ?? "-"}
-IMO: ${vessel.vesselDetails?.ihslRorImoShipNo ?? "-"}
-C/S: ${vessel.vesselArrivalDetails.callsign ?? "-"}
-Gross Tonnage: ${formatNumber(vessel.vesselDetails?.grossTonnage)} t
-Length Overall: ${vessel.vesselDetails?.lengthOverallLoa ? `${parseFloat(vessel.vesselDetails.lengthOverallLoa)} m` : "-"}
+Vessel Name: ${vessel.vesselDetails.shipName ?? "-"}
+Vessel Type: ${mapStatCode(vessel.vesselDetails.statCode5)}
+Flag: ${vessel.vesselDetails.flagName ?? "-"}
+IMO: ${vessel.vesselDetails.ihslRorImoShipNo}
+C/S: ${vessel.vesselDetails.callSign ?? "-"}
+Gross Tonnage: ${formatNumber(vessel.vesselDetails.grossTonnage)} t
+Length Overall: ${vessel.vesselDetails.lengthOverallLoa ? `${parseFloat(vessel.vesselDetails.lengthOverallLoa)} m` : "-"}
 
 Voyage:
 LPOC: 
@@ -293,9 +293,9 @@ Current Location:
 -
 
 Owner:
-Group Owner: ${vessel.vesselDetails?.groupBeneficialOwner ?? "-"}${vessel.vesselDetails?.groupBeneficialOwnerCountryOfRegistration ? ` (${vessel.vesselDetails.groupBeneficialOwnerCountryOfRegistration})` : ""}
-Registered Owner: ${vessel.vesselDetails?.registeredOwner ?? "-"}${vessel.vesselDetails?.registeredOwnerCountryOfRegistration ? ` (${vessel.vesselDetails.registeredOwnerCountryOfRegistration})` : ""}
-Operator: ${vessel.vesselDetails?.operator ?? "-"}${vessel.vesselDetails?.operatorCountryOfRegistration ? ` (${vessel.vesselDetails.operatorCountryOfRegistration})` : ""}
+Group Owner: ${vessel.vesselDetails.groupBeneficialOwner ?? "-"}${vessel.vesselDetails.groupBeneficialOwnerCountryOfRegistration ? ` (${vessel.vesselDetails.groupBeneficialOwnerCountryOfRegistration})` : ""}
+Registered Owner: ${vessel.vesselDetails.registeredOwner ?? "-"}${vessel.vesselDetails.registeredOwnerCountryOfRegistration ? ` (${vessel.vesselDetails.registeredOwnerCountryOfRegistration})` : ""}
+Operator: ${vessel.vesselDetails.operator ?? "-"}${vessel.vesselDetails.operatorCountryOfRegistration ? ` (${vessel.vesselDetails.operatorCountryOfRegistration})` : ""}
 
 Crew:
 No. Of Crew: -

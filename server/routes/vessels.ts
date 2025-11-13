@@ -1,9 +1,11 @@
 import { zValidator } from "@hono/zod-validator";
-import { addHours, format } from "date-fns";
-import { and, desc, eq, gte, ilike, lte } from "drizzle-orm";
+import { addHours, format, subHours } from "date-fns";
+import { and, desc, eq, gte, ilike, lte, or } from "drizzle-orm";
+import { HTTPException } from "hono/http-exception";
 import { stringSimilarity } from "string-similarity-js";
 import { z } from "zod";
 import { arrivalRuleset } from "server/constants/rules.ts";
+import { vesselArrivals } from "server/drizzle/vessel_arrivals.ts";
 import { vessels } from "server/drizzle/vessels.ts";
 import { vesselsDueToArrive } from "server/drizzle/vessels_due_to_arrive.ts";
 import { factory } from "server/factory.ts";
@@ -56,7 +58,75 @@ export const route = factory
         return c.json({ error: "Vessel not found" }, 404);
       }
 
-      return c.json(vessel[0]);
+      const vesselDetails = vessel[0];
+      const score = scoreVessel(vesselDetails, arrivalRuleset);
+
+      return c.json({
+        vesselDetails,
+        score,
+      });
+    },
+  )
+  .post(
+    "/vesselDetails",
+    zValidator(
+      "json",
+      z.object({
+        imo: z.string().min(1),
+      }),
+    ),
+    async (c) => {
+      const validated = c.req.valid("json");
+      const imo = validated.imo;
+      const vessel = await db
+        .select()
+        .from(vessels)
+        .where(eq(vessels.ihslRorImoShipNo, imo))
+        .limit(1);
+
+      if (vessel.length === 0) {
+        throw new HTTPException(404, { message: "Ship not found." });
+      }
+
+      const vesselDetails = vessel[0];
+      const score = scoreVessel(vesselDetails, arrivalRuleset);
+
+      return c.json({
+        vesselDetails,
+        score,
+      });
+    },
+  )
+  .post(
+    "/search",
+    zValidator(
+      "json",
+      z.object({
+        query: z.string().min(1),
+      }),
+    ),
+    async (c) => {
+      const hoursToPull = 72; // to change if necessary
+      const currDate = new Date();
+      const validated = c.req.valid("json");
+      const query = validated.query;
+      const results = await db
+        .selectDistinctOn([vesselArrivals.imo])
+        .from(vesselArrivals)
+        .where(
+          and(
+            gte(vesselArrivals.arrivedTime, subHours(currDate, hoursToPull)),
+            or(
+              ilike(vesselArrivals.imo, `%${query}%`),
+              ilike(vesselArrivals.vesselName, `%${query}%`),
+              ilike(vesselArrivals.callsign, `%${query}%`),
+            ),
+          ),
+        )
+        .leftJoin(vessels, eq(vesselArrivals.imo, vessels.ihslRorImoShipNo))
+        .orderBy(vesselArrivals.imo, desc(vesselArrivals.arrivedTime));
+
+      return c.json(results);
     },
   )
   .post(
@@ -134,39 +204,40 @@ export const route = factory
         }
 
         return {
-          vesselDetails: vessel.vessels
-            ? {
-                ihslRorImoShipNo: vessel.vessels.ihslRorImoShipNo,
-                shipName: vessel.vessels.shipName,
-                exName: vessel.vessels.exName,
-                shipStatus: vessel.vessels.shipStatus,
-                callSign: vessel.vessels.callSign,
-                flagCode: vessel.vessels.flagCode,
-                flagName: vessel.vessels.flagName,
-                maritimeMobileServiceIdentityMmsiNumber:
-                  vessel.vessels.maritimeMobileServiceIdentityMmsiNumber,
-                grossTonnage: vessel.vessels.grossTonnage,
-                lengthOverallLoa: vessel.vessels.lengthOverallLoa,
-                shiptypeLevel5: vessel.vessels.shiptypeLevel5,
-                statCode5: vessel.vessels.statCode5,
-                shiponOfacSanctionList: vessel.vessels.shiponOfacSanctionList,
-                shiponOfacNonSdnSanctionList:
-                  vessel.vessels.shiponOfacNonSdnSanctionList,
-                shiponUsTreasuryOfacAdvisoryList:
-                  vessel.vessels.shiponUsTreasuryOfacAdvisoryList,
-                shiponEuSanctionList: vessel.vessels.shiponEuSanctionList,
-                shiponUnSanctionList: vessel.vessels.shiponUnSanctionList,
-                groupBeneficialOwner: vessel.vessels.groupBeneficialOwner,
-                groupBeneficialOwnerCountryOfRegistration:
-                  vessel.vessels.groupBeneficialOwnerCountryOfRegistration,
-                operator: vessel.vessels.operator,
-                operatorCountryOfRegistration:
-                  vessel.vessels.operatorCountryOfRegistration,
-                registeredOwner: vessel.vessels.registeredOwner,
-                registeredOwnerCountryOfRegistration:
-                  vessel.vessels.registeredOwnerCountryOfRegistration,
-              }
-            : null,
+          vesselDetails:
+            vessel.vessels && score.score < 100
+              ? {
+                  ihslRorImoShipNo: vessel.vessels.ihslRorImoShipNo,
+                  shipName: vessel.vessels.shipName,
+                  exName: vessel.vessels.exName,
+                  shipStatus: vessel.vessels.shipStatus,
+                  callSign: vessel.vessels.callSign,
+                  flagCode: vessel.vessels.flagCode,
+                  flagName: vessel.vessels.flagName,
+                  maritimeMobileServiceIdentityMmsiNumber:
+                    vessel.vessels.maritimeMobileServiceIdentityMmsiNumber,
+                  grossTonnage: vessel.vessels.grossTonnage,
+                  lengthOverallLoa: vessel.vessels.lengthOverallLoa,
+                  shiptypeLevel5: vessel.vessels.shiptypeLevel5,
+                  statCode5: vessel.vessels.statCode5,
+                  shiponOfacSanctionList: vessel.vessels.shiponOfacSanctionList,
+                  shiponOfacNonSdnSanctionList:
+                    vessel.vessels.shiponOfacNonSdnSanctionList,
+                  shiponUsTreasuryOfacAdvisoryList:
+                    vessel.vessels.shiponUsTreasuryOfacAdvisoryList,
+                  shiponEuSanctionList: vessel.vessels.shiponEuSanctionList,
+                  shiponUnSanctionList: vessel.vessels.shiponUnSanctionList,
+                  groupBeneficialOwner: vessel.vessels.groupBeneficialOwner,
+                  groupBeneficialOwnerCountryOfRegistration:
+                    vessel.vessels.groupBeneficialOwnerCountryOfRegistration,
+                  operator: vessel.vessels.operator,
+                  operatorCountryOfRegistration:
+                    vessel.vessels.operatorCountryOfRegistration,
+                  registeredOwner: vessel.vessels.registeredOwner,
+                  registeredOwnerCountryOfRegistration:
+                    vessel.vessels.registeredOwnerCountryOfRegistration,
+                }
+              : null,
           vesselArrivalDetails: vessel.vessels_due_to_arrive,
           score,
         };

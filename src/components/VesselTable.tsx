@@ -380,7 +380,11 @@ export function VesselTable({ vessels }: VesselTableProps) {
           </Button>
         </div>
         <div className="w-full max-w-md">
-          <SearchBar onSearch={setSearchQuery} value={searchQuery} />
+          <SearchBar
+            onSearch={setSearchQuery}
+            placeholder="IMO Number, Vessel Details, Callsign, or Ownership Details"
+            value={searchQuery}
+          />
         </div>
       </div>
       <div className="flex justify-between items-center">
