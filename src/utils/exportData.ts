@@ -66,7 +66,7 @@ export const exportVesselScores = async (
     const sumEndCell = row.getCell(colNum - 1).address;
     const sumCell = row.getCell(colNum + 1).address;
     row.getCell(colNum).value = {
-      formula: `IFS(${sumCell} >= 100, 2, ${sumCell} >= 70, 3, ${sumCell} >= 50, 4, ${sumCell} >= 30, 5)`,
+      formula: `IF(${sumCell} >= 100, 2, IF(${sumCell} >= 70, 3, IF(${sumCell} >= 50, 4, IF(${sumCell} >= 30, 5, ""))))`,
       result: vesselInfo.score.level,
     };
     row.getCell(colNum + 1).value = {
