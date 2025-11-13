@@ -1,5 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
+import { format } from "date-fns";
 import { useMemo } from "react";
 import { TableSkeleton } from "@/components/TableSkeleton";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -40,9 +41,8 @@ function App() {
     if (timestamps.length === 0) return null;
 
     const maxDate = new Date(Math.max(...timestamps));
-    const pad = (num: number) => String(num).padStart(2, "0");
 
-    return `${pad(maxDate.getHours())}:${pad(maxDate.getMinutes())}, ${pad(maxDate.getDate())}/${pad(maxDate.getMonth() + 1)}/${String(maxDate.getFullYear()).slice(-2)}`;
+    return format(maxDate, "yyyy-MM-dd HH:mm");
   }, [vessels]);
 
   if (isLoading) {
