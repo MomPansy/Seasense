@@ -93,7 +93,7 @@ export function VesselTable({ vessels }: VesselTableProps) {
   );
   const deferredSearchQuery = useDeferredValue(searchQuery);
   const [excludeScore100, setExcludeScore100] = useState(
-    getInitialState("excludeScore100", true),
+    getInitialState("excludeScore100", false),
   );
   const [includeOnlyTankers, setIncludeOnlyTankers] = useState(
     getInitialState("includeOnlyTankers", false),
@@ -380,7 +380,11 @@ export function VesselTable({ vessels }: VesselTableProps) {
           </Button>
         </div>
         <div className="w-full max-w-md">
-          <SearchBar onSearch={setSearchQuery} value={searchQuery} />
+          <SearchBar
+            onSearch={setSearchQuery}
+            placeholder="IMO Number, Vessel Details, Callsign, or Ownership Details"
+            value={searchQuery}
+          />
         </div>
       </div>
       <div className="flex justify-between items-center">

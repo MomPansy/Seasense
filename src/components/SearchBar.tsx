@@ -4,10 +4,15 @@ import { Input } from "./ui/input";
 
 interface SearchBarProps {
   onSearch: (query: string) => void;
+  placeholder: string;
   value?: string;
 }
 
-export function SearchBar({ onSearch, value = "" }: SearchBarProps) {
+export function SearchBar({
+  onSearch,
+  placeholder = "",
+  value = "",
+}: SearchBarProps) {
   const [searchQuery, setSearchQuery] = useState(value);
 
   // Sync internal state with external value when it changes
@@ -33,7 +38,7 @@ export function SearchBar({ onSearch, value = "" }: SearchBarProps) {
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-muted-foreground" />
           <Input
             type="text"
-            placeholder="IMO Number, Vessel Details, Callsign, or Ownership Details"
+            placeholder={placeholder}
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             onKeyDown={handleKeyDown}

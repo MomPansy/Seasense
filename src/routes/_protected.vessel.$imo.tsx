@@ -17,13 +17,15 @@ function RouteComponent() {
   } = useQuery({
     queryKey: ["vessel", imo],
     queryFn: async () => {
-      const response = await api.vessels.arriving.$post({ json: { imo } });
-      if (!response.ok) {
+      const response = await api.vessels.vesselDetails.$post({ json: { imo } });
+      if (response.status === 404) {
+        return null;
+      } else if (!response.ok) {
         throw new Error("Failed to fetch vessel details");
       }
-      const vessels = await response.json();
+      const vessel = await response.json();
       // Find the vessel with matching IMO
-      return vessels.find((v) => v.vesselArrivalDetails.imo === imo);
+      return vessel;
     },
   });
 
@@ -46,7 +48,7 @@ function RouteComponent() {
   if (!vessel) {
     return (
       <main className="px-8 py-6">
-        <div>Vessel not found</div>
+        <div>No vessel with that IMO could be found.</div>
       </main>
     );
   }

@@ -14,6 +14,7 @@ import { Route as SignInRouteImport } from './routes/sign-in'
 import { Route as ProtectedRouteImport } from './routes/_protected'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as ProtectedTableRouteImport } from './routes/_protected.table'
+import { Route as ProtectedSearchRouteImport } from './routes/_protected.search'
 import { Route as ProtectedChatRouteImport } from './routes/_protected.chat'
 import { Route as ProtectedVesselImoRouteImport } from './routes/_protected.vessel.$imo'
 
@@ -41,6 +42,11 @@ const ProtectedTableRoute = ProtectedTableRouteImport.update({
   path: '/table',
   getParentRoute: () => ProtectedRoute,
 } as any)
+const ProtectedSearchRoute = ProtectedSearchRouteImport.update({
+  id: '/search',
+  path: '/search',
+  getParentRoute: () => ProtectedRoute,
+} as any)
 const ProtectedChatRoute = ProtectedChatRouteImport.update({
   id: '/chat',
   path: '/chat',
@@ -57,6 +63,7 @@ export interface FileRoutesByFullPath {
   '/sign-in': typeof SignInRoute
   '/sign-up': typeof SignUpRoute
   '/chat': typeof ProtectedChatRoute
+  '/search': typeof ProtectedSearchRoute
   '/table': typeof ProtectedTableRoute
   '/vessel/$imo': typeof ProtectedVesselImoRoute
 }
@@ -65,6 +72,7 @@ export interface FileRoutesByTo {
   '/sign-in': typeof SignInRoute
   '/sign-up': typeof SignUpRoute
   '/chat': typeof ProtectedChatRoute
+  '/search': typeof ProtectedSearchRoute
   '/table': typeof ProtectedTableRoute
   '/vessel/$imo': typeof ProtectedVesselImoRoute
 }
@@ -75,14 +83,29 @@ export interface FileRoutesById {
   '/sign-in': typeof SignInRoute
   '/sign-up': typeof SignUpRoute
   '/_protected/chat': typeof ProtectedChatRoute
+  '/_protected/search': typeof ProtectedSearchRoute
   '/_protected/table': typeof ProtectedTableRoute
   '/_protected/vessel/$imo': typeof ProtectedVesselImoRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/sign-in' | '/sign-up' | '/chat' | '/table' | '/vessel/$imo'
+  fullPaths:
+    | '/'
+    | '/sign-in'
+    | '/sign-up'
+    | '/chat'
+    | '/search'
+    | '/table'
+    | '/vessel/$imo'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/sign-in' | '/sign-up' | '/chat' | '/table' | '/vessel/$imo'
+  to:
+    | '/'
+    | '/sign-in'
+    | '/sign-up'
+    | '/chat'
+    | '/search'
+    | '/table'
+    | '/vessel/$imo'
   id:
     | '__root__'
     | '/'
@@ -90,6 +113,7 @@ export interface FileRouteTypes {
     | '/sign-in'
     | '/sign-up'
     | '/_protected/chat'
+    | '/_protected/search'
     | '/_protected/table'
     | '/_protected/vessel/$imo'
   fileRoutesById: FileRoutesById
@@ -138,6 +162,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ProtectedTableRouteImport
       parentRoute: typeof ProtectedRoute
     }
+    '/_protected/search': {
+      id: '/_protected/search'
+      path: '/search'
+      fullPath: '/search'
+      preLoaderRoute: typeof ProtectedSearchRouteImport
+      parentRoute: typeof ProtectedRoute
+    }
     '/_protected/chat': {
       id: '/_protected/chat'
       path: '/chat'
@@ -157,12 +188,14 @@ declare module '@tanstack/react-router' {
 
 interface ProtectedRouteChildren {
   ProtectedChatRoute: typeof ProtectedChatRoute
+  ProtectedSearchRoute: typeof ProtectedSearchRoute
   ProtectedTableRoute: typeof ProtectedTableRoute
   ProtectedVesselImoRoute: typeof ProtectedVesselImoRoute
 }
 
 const ProtectedRouteChildren: ProtectedRouteChildren = {
   ProtectedChatRoute: ProtectedChatRoute,
+  ProtectedSearchRoute: ProtectedSearchRoute,
   ProtectedTableRoute: ProtectedTableRoute,
   ProtectedVesselImoRoute: ProtectedVesselImoRoute,
 }
