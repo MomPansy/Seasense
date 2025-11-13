@@ -3,6 +3,7 @@ import { ColumnDef } from "@tanstack/react-table";
 import { differenceInMilliseconds, format } from "date-fns";
 import { InferResponseType } from "hono/client";
 import { ArrowUpDown } from "lucide-react";
+import { DateTime } from "luxon";
 import { api } from "src/lib/api";
 import { mapStatCode } from "src/lib/utils";
 import { DataTableColumnFilter } from "./data-table-column-filter";
@@ -304,6 +305,24 @@ export const createColumns = (
 
       const date = new Date(dateStr).getTime();
       return date >= filterValue.start && date <= filterValue.end;
+    },
+    meta: {
+      exportFormatter: (row: ArrivingVesselsResponse) => {
+        const dueToArriveTimeString = row.vesselArrivalDetails.dueToArriveTime;
+
+        if (!dueToArriveTimeString) {
+          return "N/A";
+        } else {
+          const utcDueToArriveTime = DateTime.fromFormat(
+            dueToArriveTimeString,
+            "yyyy-MM-dd HH:mm:ssZZ",
+            { zone: "utc" },
+          );
+          const sgDueToArriveTime =
+            utcDueToArriveTime.setZone("Asia/Singapore");
+          return sgDueToArriveTime.toFormat("yyyy-MM-dd HH:mm");
+        }
+      },
     },
   },
 ];
