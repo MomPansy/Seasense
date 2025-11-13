@@ -35,7 +35,7 @@ export function Header({ activeTab, onTabChange }: HeaderProps) {
                     : "border-transparent text-muted-foreground hover:text-foreground"
                 }`}
               >
-                Vessel Scoring & Threat Evaluation
+                Arriving Vessels
               </button>
               <button
                 onClick={() => onTabChange("profiling")}
