@@ -17,7 +17,7 @@ export const Route = createFileRoute("/_protected")({
 });
 
 function RootComponent() {
-  const [activeTab, setActiveTab] = useState<"arriving" | "profiling">(
+  const [activeTab, setActiveTab] = useState<"arriving" | "profiling" | "chat">(
     "arriving",
   );
 

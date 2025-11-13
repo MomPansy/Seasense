@@ -1,12 +1,10 @@
 import { UserButton } from "@clerk/clerk-react";
-import { Link, useNavigate } from "@tanstack/react-router";
-import { MessageSquare } from "lucide-react";
-import { Button } from "./ui/button";
+import { useNavigate } from "@tanstack/react-router";
 import { SidebarTrigger } from "./ui/sidebar";
 
 interface HeaderProps {
-  activeTab: "arriving" | "profiling";
-  onTabChange: (tab: "arriving" | "profiling") => void;
+  activeTab: "arriving" | "profiling" | "chat";
+  onTabChange: (tab: "arriving" | "profiling" | "chat") => void;
 }
 
 export function Header({ activeTab, onTabChange }: HeaderProps) {
@@ -50,14 +48,22 @@ export function Header({ activeTab, onTabChange }: HeaderProps) {
               >
                 Vessel Risk Profiling
               </button>
+              <button
+                onClick={() => {
+                  onTabChange("chat");
+                  navigate({ to: "/chat", search: { id: undefined } });
+                }}
+                className={`nav-title pb-2 border-b-2 transition-colors ${
+                  activeTab === "chat"
+                    ? "border-primary text-primary"
+                    : "border-transparent text-muted-foreground hover:text-foreground"
+                }`}
+              >
+                SeaSense AI
+              </button>
             </nav>
           </div>
           <div className="flex items-center gap-4">
-            <Link to="/chat" search={{ id: undefined }}>
-              <Button variant="ghost" size="icon">
-                <MessageSquare className="h-5 w-5" />
-              </Button>
-            </Link>
             <UserButton />
           </div>
         </div>
