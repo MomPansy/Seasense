@@ -290,7 +290,7 @@ export const createColumns = (
       return row.original.vesselArrivalDetails.dueToArriveTime
         ? format(
             row.original.vesselArrivalDetails.dueToArriveTime,
-            "dd/MM/yy HH:mm:ss X",
+            "yyyy-MM-dd HH:mm",
           )
         : "N/A";
     },
