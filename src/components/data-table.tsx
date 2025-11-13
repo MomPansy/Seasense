@@ -13,6 +13,7 @@ import {
   OnChangeFn,
   RowSelectionState,
 } from "@tanstack/react-table";
+import { ArrayElement } from "@/utils/type";
 import {
   Table,
   TableBody,
@@ -26,10 +27,13 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "src/components/ui/tooltip";
+import { ArrivingVesselsResponse } from "./VesselTable";
 
-interface DataTableProps<TData, TValue> {
-  columns: ColumnDef<TData, TValue>[];
-  data: TData[];
+type VesselData = ArrayElement<ArrivingVesselsResponse>;
+
+interface DataTableProps {
+  columns: ColumnDef<VesselData>[];
+  data: VesselData[];
   sorting?: SortingState;
   setSorting?: OnChangeFn<SortingState>;
   columnFilters?: ColumnFiltersState;
@@ -40,7 +44,7 @@ interface DataTableProps<TData, TValue> {
   setRowSelection?: OnChangeFn<RowSelectionState>;
 }
 
-export function DataTable<TData, TValue>({
+export function DataTable({
   columns,
   data,
   sorting = [],
@@ -51,7 +55,7 @@ export function DataTable<TData, TValue>({
   setColumnVisibility,
   rowSelection = {},
   setRowSelection,
-}: DataTableProps<TData, TValue>) {
+}: DataTableProps) {
   const table = useReactTable({
     data,
     columns,
@@ -97,20 +101,22 @@ export function DataTable<TData, TValue>({
           {table.getRowModel().rows.length ? (
             table.getRowModel().rows.map((row) => {
               // Check if row has score property and if score is 100
-              const hasScore100 =
-                row.original &&
-                typeof row.original === "object" &&
-                "score" in row.original &&
-                row.original.score &&
-                typeof row.original.score === "object" &&
-                "score" in row.original.score &&
-                row.original.score.score === 100;
+              const incorrectImo = row.original.score.checkedRules.find(
+                (rule) => rule.name === "Incorrect IMO",
+              );
+              const invalidImo = row.original.score.checkedRules.find(
+                (rule) => rule.name === "Invalid IMO",
+              );
 
               const rowContent = (
                 <TableRow
                   key={row.id}
                   data-state={row.getIsSelected() && "selected"}
-                  className={hasScore100 ? "bg-red-50 hover:bg-red-100" : ""}
+                  className={
+                    incorrectImo || invalidImo
+                      ? "bg-red-50 hover:bg-red-100"
+                      : ""
+                  }
                 >
                   {row.getVisibleCells().map((cell) => (
                     <TableCell key={cell.id}>
@@ -123,14 +129,26 @@ export function DataTable<TData, TValue>({
                 </TableRow>
               );
 
-              if (hasScore100) {
+              if (incorrectImo) {
+                return (
+                  <Tooltip key={row.id}>
+                    <TooltipTrigger asChild>{rowContent}</TooltipTrigger>
+                    <TooltipContent>
+                      <p>
+                        This IMO number refers to different vessels within the
+                        MDH and IHS databases.
+                      </p>
+                    </TooltipContent>
+                  </Tooltip>
+                );
+              } else if (invalidImo) {
                 return (
                   <Tooltip key={row.id}>
                     <TooltipTrigger asChild>{rowContent}</TooltipTrigger>
                     <TooltipContent>
                       <p>
                         This vessel either did not provide an IMO number or
-                        provided an invalid one
+                        provided an invalid one.
                       </p>
                     </TooltipContent>
                   </Tooltip>
