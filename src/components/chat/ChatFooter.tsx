@@ -1,7 +1,7 @@
 import type { UseChatHelpers } from "@ai-sdk/react";
 import { Send, Square } from "lucide-react";
 import { useState, FormEvent } from "react";
-import type { ChatUIMessage } from "@/types/chat";
+import type { ChatUIMessage } from "server/types/chat";
 import { Button } from "../ui/button";
 import { Textarea } from "../ui/textarea";
 

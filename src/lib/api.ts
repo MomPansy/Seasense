@@ -1,7 +1,7 @@
 import { redirect } from "@tanstack/react-router";
 import { hc } from "hono/client";
-import type { ChatUIMessage } from "@/types/chat";
 import { type ApiRoutes } from "server/index";
+import type { ChatUIMessage } from "server/types/chat";
 
 // Note: This must be imported and used at the module level, not inside a React component
 // Clerk's useAuth() hook cannot be called here because this is not a React component
@@ -36,9 +36,7 @@ export const { api } = hc<ApiRoutes>(window.location.origin, {
   },
 });
 
-export async function fetchChatMessages(
-  chatId: string,
-): Promise<ChatUIMessage[]> {
+export async function fetchChatMessages(chatId: string) {
   const response = await api.chat[":id"].messages.$get({
     param: { id: chatId },
   });
@@ -47,5 +45,7 @@ export async function fetchChatMessages(
     throw new Error("Failed to fetch chat messages");
   }
 
-  return (await response.json()) as ChatUIMessage[];
+  const data = await response.json();
+
+  return data as ChatUIMessage[];
 }

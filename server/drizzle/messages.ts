@@ -1,4 +1,3 @@
-import { AssistantContent, UserContent } from "ai";
 import {
   pgTable,
   text,
@@ -10,21 +9,6 @@ import {
 import { relations } from "drizzle-orm/relations";
 import { chats } from "./chats.ts";
 
-// Custom interface for tool interactions (calls and results)
-export interface ToolInteraction {
-  text?: string;
-  toolCalls?: {
-    toolName: string;
-    toolCallId: string;
-    input: unknown;
-  }[];
-  toolResults?: {
-    toolName: string;
-    toolCallId: string;
-    output: unknown;
-  }[];
-}
-
 export const messages = pgTable("messages", {
   id: uuid("id").primaryKey().defaultRandom(),
   chatId: text("chat_id")
@@ -34,9 +18,7 @@ export const messages = pgTable("messages", {
     .notNull()
     .$type<"system" | "user" | "assistant" | "data">(),
   content: text("content"),
-  userContent: jsonb("user_content").$type<UserContent>(),
-  assistantContent: jsonb("assistant_content").$type<AssistantContent>(),
-  toolContent: jsonb("tool_content").$type<ToolInteraction>(),
+  uiMessage: jsonb("ui_message"),
   position: integer("position").notNull(),
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });

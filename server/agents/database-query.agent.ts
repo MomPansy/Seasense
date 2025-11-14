@@ -6,14 +6,9 @@ import {
   stepCountIs,
   tool,
   wrapLanguageModel,
-  type AssistantContent,
 } from "ai";
 import { z } from "zod";
-import {
-  messages as messagesTable,
-  type ToolInteraction,
-} from "server/drizzle/messages.ts";
-import { readOnlyDb, type Tx } from "server/lib/db.ts";
+import { readOnlyDb } from "server/lib/db.ts";
 import vessel_arrivals_schema from "server/vessel_arrivals.description.json";
 import vessel_departures_schema from "server/vessel_departures.description.json";
 import vessels_schema from "server/vessels.description.json";
@@ -107,95 +102,7 @@ const databaseQueryAgent = new Agent({
   },
 });
 
-// Helper function to save agent response to database
-export async function saveAgentResponse({
-  tx,
-  chatId,
-  messagePosition,
-  result,
-}: {
-  tx: Tx;
-  chatId: string;
-  messagePosition: number;
-  result: Awaited<ReturnType<typeof databaseQueryAgent.stream>>;
-}) {
-  const fullText = await result.text;
-  const steps = await result.steps;
+type DatabaseQueryAgentType = InferAgentUIMessage<typeof databaseQueryAgent>;
 
-  // Build assistant content with text and reasoning
-  const assistantContent: AssistantContent = [];
-
-  // Build tool interaction data in the format: { text, toolCalls, toolResults }
-  const toolInteraction: ToolInteraction = {
-    text: fullText,
-    toolCalls: [],
-    toolResults: [],
-  };
-
-  // Add text response to assistant content
-  if (fullText) {
-    assistantContent.push({ type: "text", text: fullText });
-  }
-
-  // Collect tool calls and results from all steps
-  for (const step of steps) {
-    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
-    if (step.toolCalls && step.toolCalls.length > 0) {
-      for (const toolCall of step.toolCalls) {
-        // Add to assistant content for context
-        assistantContent.push({
-          type: "tool-call",
-          toolCallId: toolCall.toolCallId,
-          toolName: toolCall.toolName,
-          input: "input" in toolCall ? toolCall.input : undefined,
-        });
-
-        // Add to tool interaction
-        toolInteraction.toolCalls?.push({
-          toolName: toolCall.toolName,
-          toolCallId: toolCall.toolCallId,
-          input: "input" in toolCall ? toolCall.input : undefined,
-        });
-      }
-    }
-
-    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
-    if (step.toolResults && step.toolResults.length > 0) {
-      for (const toolResult of step.toolResults) {
-        const output = "output" in toolResult ? toolResult.output : undefined;
-        // Add to assistant content
-        assistantContent.push({
-          type: "tool-result",
-          toolCallId: toolResult.toolCallId,
-          toolName: toolResult.toolName,
-          // @ts-expect-error - output type mismatch between agent result and AssistantContent
-          output,
-        });
-
-        // Add to tool interaction
-        toolInteraction.toolResults?.push({
-          toolName: toolResult.toolName,
-          toolCallId: toolResult.toolCallId,
-          output,
-        });
-      }
-    }
-  }
-
-  // Save assistant message with tool calls
-  await tx.insert(messagesTable).values({
-    chatId: chatId,
-    role: "assistant",
-    content: fullText,
-    assistantContent:
-      assistantContent.length > 0 ? assistantContent : undefined,
-    toolContent: toolInteraction,
-    position: messagePosition,
-  });
-
-  console.info("Agent response saved to database");
-}
-
-type DatabaseQueryAgent = InferAgentUIMessage<typeof databaseQueryAgent>;
-
-export { databaseQueryAgent, type DatabaseQueryAgent };
+export { databaseQueryAgent };
+export type { DatabaseQueryAgentType };

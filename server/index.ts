@@ -4,7 +4,6 @@ import { cors } from "hono/cors";
 import { factory } from "./factory.ts";
 import { clerk } from "./middlewares/clerk.ts";
 import { route as chatRoute } from "./routes/chat.ts";
-import { route as chatNewRoute } from "./routes/chat_new.ts";
 import { route as exampleRoute } from "./routes/example.ts";
 import { scoreRoute } from "./routes/score.ts";
 import { route as vesselsRoute } from "./routes/vessels.ts";
@@ -41,8 +40,7 @@ export const apiRoutes = app
   .route("/example", exampleRoute)
   .route("/vessels", vesselsRoute)
   .route("/score", scoreRoute)
-  .route("/chat", chatRoute)
-  .route("/chat_new", chatNewRoute);
+  .route("/chat", chatRoute);
 
 export type ApiRoutes = typeof apiRoutes;
 

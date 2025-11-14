@@ -3,13 +3,14 @@ import { useQueryClient, useSuspenseQuery } from "@tanstack/react-query";
 import { DefaultChatTransport } from "ai";
 import { useChatStore } from "@/components/ui/chatStore";
 import { fetchChatMessages, getAuthHeaders } from "@/lib/api";
-import type { ChatUIMessage } from "@/types/chat";
+import { DatabaseQueryAgentType } from "server/agents/database-query.agent";
+import type { ChatUIMessage } from "server/types/chat";
 import { ChatFooter } from "./ChatFooter";
 import { MessageAssistant } from "./MessageAssistant";
 import { MessageUser } from "./MessageUser";
 
 const chatUrl = import.meta.env.DEV
-  ? "http://localhost:3000/api/chat_new"
+  ? "http://localhost:3000/api/chat"
   : "/api/chat";
 
 interface ChatMainProps {
@@ -42,20 +43,20 @@ export function ChatMain({ chatId }: ChatMainProps) {
       setStreaming(chatId, false);
 
       // Extract title from message metadata when streaming finishes
-      if (message.metadata?.chatTitle && message.metadata.isNewChat) {
-        setChatTitle(chatId, message.metadata.chatTitle);
+      const metadata = message.metadata;
+      if (metadata?.chatTitle && metadata.isNewChat) {
+        setChatTitle(chatId, metadata.chatTitle);
       }
 
       // Invalidate queries to refresh sidebar
       queryClient.invalidateQueries({ queryKey: ["chats"] });
 
       // Remove from active chats after first message completes and chat is saved
-      if (message.metadata?.isNewChat) {
+      if (metadata?.isNewChat) {
         removeChat(chatId);
       }
     },
   });
-
   // Track when streaming starts
   const isStreaming = status === "streaming";
   if (isStreaming) {
@@ -90,11 +91,15 @@ export function ChatMain({ chatId }: ChatMainProps) {
         <div className="flex-1 p-6 pb-12 overflow-y-auto">
           <div className="max-w-4xl mx-auto">
             <div className="space-y-6">
-              {messages.map((message) =>
+              {messages.map((message, index) =>
                 message.role === "user" ? (
                   <MessageUser key={message.id} message={message} />
                 ) : (
-                  <MessageAssistant key={message.id} message={message} />
+                  <MessageAssistant
+                    key={message.id}
+                    message={message as DatabaseQueryAgentType}
+                    isStreaming={isStreaming && index === messages.length - 1}
+                  />
                 ),
               )}
             </div>

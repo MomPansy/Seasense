@@ -1,15 +1,12 @@
 import { anthropic } from "@ai-sdk/anthropic";
-import { zValidator } from "@hono/zod-validator";
 import {
   streamText,
   generateObject,
   type UserModelMessage,
   type AssistantModelMessage,
-  type AssistantContent,
-  type UserContent,
+  type UIMessage,
+  type ModelMessage,
   convertToModelMessages,
-  wrapLanguageModel,
-  extractReasoningMiddleware,
 } from "ai";
 import { eq, sql } from "drizzle-orm";
 import { z } from "zod";
@@ -20,33 +17,23 @@ import { factory } from "server/factory.ts";
 import { type Tx } from "server/lib/db.ts";
 import { requireAuth } from "server/middlewares/clerk.ts";
 import { drizzle } from "server/middlewares/drizzle.ts";
-import { type ChatUIMessage } from "server/types/chat.ts";
-
-// Define a flexible Zod schema for UIMessage validation
-// This schema validates the structure while allowing for all UIMessage part types
-const uiMessageSchema = z.object({
-  id: z.string(),
-  role: z.enum(["system", "user", "assistant"]),
-  parts: z.array(
-    z
-      .object({
-        type: z.string(),
-      })
-      .catchall(z.unknown()),
-  ),
-  createdAt: z.coerce.date().optional(),
-  metadata: z.unknown().optional(),
-});
+import { validateMessages } from "server/middlewares/validate-messages.ts";
+import {
+  ensureChatExists,
+  handleChatTitleGeneration,
+} from "server/utilities/chat.utils.ts";
 
 async function insertUserMessage({
   tx,
   chatId,
   message,
+  uiMessage,
   position,
 }: {
   tx: Tx;
   chatId: string;
   message: UserModelMessage;
+  uiMessage: UIMessage;
   position: number;
 }) {
   // Extract plain text content for the content column
@@ -65,9 +52,8 @@ async function insertUserMessage({
   await tx.insert(messagesTable).values({
     chatId: chatId,
     role: message.role,
-    content: textContent || undefined,
-    userContent:
-      typeof message.content === "string" ? undefined : message.content,
+    content: textContent,
+    uiMessage: uiMessage,
     position: position,
   });
 }
@@ -75,7 +61,7 @@ async function insertUserMessage({
 async function insertAssistantMessage({
   tx,
   chatId,
-  message,
+  uiMessage,
   position,
   text,
 }: {
@@ -83,17 +69,26 @@ async function insertAssistantMessage({
   chatId: string;
   text: string;
   message?: AssistantModelMessage;
+  uiMessage?: UIMessage;
   position: number;
 }) {
   await tx.insert(messagesTable).values({
     chatId: chatId,
     role: "assistant",
     content: text,
-    assistantContent:
-      message?.content && typeof message.content !== "string"
-        ? message.content
-        : undefined,
+    uiMessage: uiMessage,
     position: position,
+  });
+}
+
+function generalAssistant({
+  modelMessages,
+}: {
+  modelMessages: ModelMessage[];
+}) {
+  return streamText({
+    messages: modelMessages,
+    model: anthropic("claude-3-5-haiku-20241022"),
   });
 }
 
@@ -128,192 +123,82 @@ export const route = factory
       .where(eq(messagesTable.chatId, chatId))
       .orderBy(messagesTable.position);
 
-    // Convert database messages to ChatUIMessage format
-    const uiMessages: ChatUIMessage[] = chatMessages.map((msg) => {
-      // Extract the array element types from UserContent and AssistantContent
-      // UserContent = string | Array<TextPart | ImagePart | FilePart>
-      // AssistantContent = string | Array<TextPart | FilePart | ReasoningPart | ToolCallPart | ToolResultPart>
-      type UserPart =
-        Exclude<UserContent, string> extends (infer P)[] ? P : never;
-      type AssistantPart =
-        Exclude<AssistantContent, string> extends (infer P)[] ? P : never;
-      type MessagePart = UserPart | AssistantPart;
+    // Return the stored UIMessages directly
+    const uiMessages = chatMessages.map((msg) => msg.uiMessage).filter(Boolean);
 
-      const parts: MessagePart[] = [];
-
-      if (msg.role === "user") {
-        if (msg.userContent) {
-          if (Array.isArray(msg.userContent)) {
-            parts.push(...msg.userContent);
-          } else if (typeof msg.userContent === "string") {
-            parts.push({ type: "text", text: msg.userContent });
-          } else {
-            parts.push(msg.userContent);
-          }
-        } else if (msg.content) {
-          parts.push({ type: "text", text: msg.content });
-        }
-      } else if (msg.role === "assistant") {
-        if (msg.assistantContent) {
-          if (Array.isArray(msg.assistantContent)) {
-            parts.push(...msg.assistantContent);
-          } else if (typeof msg.assistantContent === "string") {
-            parts.push({ type: "text", text: msg.assistantContent });
-          } else {
-            parts.push(msg.assistantContent);
-          }
-        } else if (msg.content) {
-          parts.push({ type: "text", text: msg.content });
-        }
-      }
-
-      return {
-        id: msg.id,
-        role: msg.role as "user" | "assistant" | "system",
-        parts,
-        createdAt: msg.createdAt,
-      } as ChatUIMessage;
-    });
-
-    return c.json(uiMessages);
+    return c.json(uiMessages as UIMessage[]);
   })
-  .post(
-    "/",
-    zValidator(
-      "json",
-      z.object({
-        id: z.string(),
-        messages: z.array(uiMessageSchema),
-      }),
-    ),
-    drizzle(),
-    async (c) => {
-      const { id: chatId, messages } = c.req.valid("json");
-      const { tx } = c.var;
+  .post("/", validateMessages(), drizzle(), async (c) => {
+    // Get validated messages from context
+    const validatedMessages = c.var.validatedMessages;
+    const chatId = c.var.chatId;
+    const tx = c.var.tx;
+    const modelMessages = convertToModelMessages(validatedMessages);
+    const lastMessageIndex = modelMessages.length - 1;
+    const lastMessage = modelMessages[lastMessageIndex] as UserModelMessage;
 
-      const modelMessages = convertToModelMessages(messages as ChatUIMessage[]);
-      const lastMessageIndex = modelMessages.length - 1;
-      const lastMessage = modelMessages[lastMessageIndex] as UserModelMessage;
+    const messageText =
+      typeof lastMessage.content === "string"
+        ? lastMessage.content
+        : lastMessage.content
+            .map((part) => (part.type === "text" ? part.text : ""))
+            .join(" ");
 
-      const messageText =
-        typeof lastMessage.content === "string"
-          ? lastMessage.content
-          : lastMessage.content
-              .map((part) => (part.type === "text" ? part.text : ""))
-              .join(" ");
+    await ensureChatExists(tx, chatId);
 
-      // Ensure chat exists with placeholder title
-      await ensureChatExists(tx, chatId);
-
-      // Determine if we should use the database query agent
-      const {
-        object: { useAgent },
-      } = await generateObject({
-        model: anthropic("claude-3-5-haiku-20241022"),
-        schema: z.object({ useAgent: z.boolean() }),
-        prompt: messageText,
-        system:
-          'Decide if the question requires database access. Return {"useAgent": true} for database queries, {"useAgent": false} otherwise.',
-      });
-
-      // Insert user message
-      await insertUserMessage({
-        tx,
-        chatId,
-        message: lastMessage,
-        position: lastMessageIndex,
-      });
-
-      // Stream response using appropriate model/agent
-      const result = useAgent
-        ? databaseQueryAgent.stream({ messages: modelMessages })
-        : streamText({
-            messages: modelMessages,
-            model: wrapLanguageModel({
-              model: anthropic("claude-3-5-haiku-20241022"),
-              middleware: extractReasoningMiddleware({ tagName: "think" }),
-            }),
-            onFinish: async (result) => {
-              await insertAssistantMessage({
-                tx,
-                chatId,
-                text: result.text,
-                position: lastMessageIndex + 1,
-              });
-            },
-          });
-
-      return result.toUIMessageStreamResponse({
-        messageMetadata: async ({ part }) => {
-          if (part.type === "start") {
-            return await handleChatTitleGeneration(tx, chatId, messageText);
-          }
-
-          if (part.type === "finish" && useAgent) {
-            const fullText = await result.text;
-            await insertAssistantMessage({
-              tx,
-              chatId,
-              text: fullText,
-              position: lastMessageIndex + 1,
-            });
-          }
-        },
-      });
-    },
-  );
-
-// Helper function to ensure chat exists
-async function ensureChatExists(tx: Tx, chatId: string) {
-  const existingChats = await tx
-    .selectDistinct({ id: chats.id })
-    .from(chats)
-    .where(eq(chats.id, chatId));
-
-  if (existingChats.length === 0) {
-    await tx.insert(chats).values({
-      id: chatId,
-      title: "New Chat",
-    });
-  }
-}
-
-// Helper function to handle chat title generation
-async function handleChatTitleGeneration(
-  tx: Tx,
-  chatId: string,
-  messageText: string,
-) {
-  const currentChat = await tx
-    .selectDistinct({ id: chats.id, title: chats.title })
-    .from(chats)
-    .where(eq(chats.id, chatId));
-
-  if (currentChat.length === 0) return;
-
-  const chat = currentChat[0];
-
-  // Generate title only for new chats
-  if (chat.title === "New Chat") {
-    const titleResult = await generateObject({
+    const {
+      object: { useAgent },
+    } = await generateObject({
       model: anthropic("claude-3-5-haiku-20241022"),
-      prompt: "Generate a title for the chat: " + messageText,
-      schema: z.object({ title: z.string() }),
+      schema: z.object({ useAgent: z.boolean() }),
+      prompt: messageText,
+      system:
+        'Decide if the question requires database access. Return {"useAgent": true} for database queries, {"useAgent": false} otherwise.',
     });
 
-    await tx
-      .update(chats)
-      .set({ title: titleResult.object.title })
-      .where(eq(chats.id, chatId));
+    // Get the UIMessage for the last (user) message
+    const lastUIMessage = validatedMessages[lastMessageIndex];
 
-    return {
-      chatTitle: titleResult.object.title,
-      isNewChat: true,
-    };
-  }
+    // Insert user message with UIMessage
+    await insertUserMessage({
+      tx,
+      chatId,
+      message: lastMessage,
+      uiMessage: lastUIMessage,
+      position: lastMessageIndex,
+    });
 
-  return {
-    chatTitle: chat.title,
-    isNewChat: false,
-  };
-}
+    const result = useAgent
+      ? databaseQueryAgent.stream({ messages: modelMessages })
+      : generalAssistant({ modelMessages });
+
+    return result.toUIMessageStreamResponse({
+      messageMetadata: async ({ part }: { part: { type: string } }) => {
+        if (part.type === "start") {
+          return await handleChatTitleGeneration(tx, chatId, messageText);
+        }
+      },
+      sendSources: true,
+      onFinish: async ({ responseMessage }) => {
+        // The responseMessage is the assistant response UIMessage
+        const assistantUIMessage = responseMessage;
+
+        if (assistantUIMessage.role === "assistant") {
+          // Extract text content from the UIMessage
+          const textContent = assistantUIMessage.parts
+            .filter((part) => part.type === "text")
+            .map((part) => (part as { type: "text"; text: string }).text)
+            .join(" ");
+
+          // Save the assistant message with the UIMessage
+          await insertAssistantMessage({
+            tx,
+            chatId,
+            text: textContent || (await result.text),
+            uiMessage: assistantUIMessage,
+            position: lastMessageIndex + 1,
+          });
+        }
+      },
+    });
+  });

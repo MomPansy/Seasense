@@ -1,10 +1,10 @@
+import { UIMessage } from "ai";
 import { User } from "lucide-react";
-import type { ChatUIMessage } from "@/types/chat";
 import { Avatar, AvatarFallback } from "../ui/avatar";
 import { Card } from "../ui/card";
 
 interface MessageUserProps {
-  message: ChatUIMessage;
+  message: UIMessage;
 }
 
 export function MessageUser({ message }: MessageUserProps) {
