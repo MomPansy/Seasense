@@ -336,7 +336,7 @@ export function VesselTable({ vessels }: VesselTableProps) {
   const handleClearAllFilters = () => {
     setColumnFilters([]);
     setSearchQuery("");
-    setExcludeScore100(true);
+    setExcludeScore100(false);
     setIncludeOnlyTankers(false);
     setActivePreset("all");
     setSorting([{ id: "vesselArrivalDetails_dueToArriveTime", desc: false }]);
