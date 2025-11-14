@@ -7,10 +7,10 @@ import { Textarea } from "../ui/textarea";
 
 type ChatFooterProps = Pick<
   UseChatHelpers<ChatUIMessage>,
-  "sendMessage" | "status"
+  "sendMessage" | "status" | "stop"
 >;
 
-export function ChatFooter({ sendMessage, status }: ChatFooterProps) {
+export function ChatFooter({ sendMessage, status, stop }: ChatFooterProps) {
   const [input, setInput] = useState("");
 
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
@@ -54,7 +54,7 @@ export function ChatFooter({ sendMessage, status }: ChatFooterProps) {
                   variant="default"
                   className="h-8 w-8"
                   onClick={() => {
-                    // Add stop functionality if needed
+                    stop();
                   }}
                 >
                   <Square className="h-4 w-4" />

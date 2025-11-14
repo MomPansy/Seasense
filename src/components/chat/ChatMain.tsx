@@ -30,33 +30,35 @@ export function ChatMain({ chatId }: ChatMainProps) {
     staleTime: Infinity, // Messages don't change unless we update them
   });
 
-  const { messages, sendMessage, status, error } = useChat<ChatUIMessage>({
-    id: chatId,
-    messages: initialMessages,
-    // Pass the fetched messages to initialize the chat
-    transport: new DefaultChatTransport({
-      api: chatUrl,
-      headers: async () => await getAuthHeaders(),
-    }),
-    onFinish: ({ message }) => {
-      // Mark streaming as complete
-      setStreaming(chatId, false);
+  const { messages, sendMessage, status, error, stop } = useChat<ChatUIMessage>(
+    {
+      id: chatId,
+      messages: initialMessages,
+      // Pass the fetched messages to initialize the chat
+      transport: new DefaultChatTransport({
+        api: chatUrl,
+        headers: async () => await getAuthHeaders(),
+      }),
+      onFinish: ({ message }) => {
+        // Mark streaming as complete
+        setStreaming(chatId, false);
 
-      // Extract title from message metadata when streaming finishes
-      const metadata = message.metadata;
-      if (metadata?.chatTitle && metadata.isNewChat) {
-        setChatTitle(chatId, metadata.chatTitle);
-      }
+        // Extract title from message metadata when streaming finishes
+        const metadata = message.metadata;
+        if (metadata?.chatTitle && metadata.isNewChat) {
+          setChatTitle(chatId, metadata.chatTitle);
+        }
 
-      // Invalidate queries to refresh sidebar
-      queryClient.invalidateQueries({ queryKey: ["chats"] });
+        // Invalidate queries to refresh sidebar
+        queryClient.invalidateQueries({ queryKey: ["chats"] });
 
-      // Remove from active chats after first message completes and chat is saved
-      if (metadata?.isNewChat) {
-        removeChat(chatId);
-      }
+        // Remove from active chats after first message completes and chat is saved
+        if (metadata?.isNewChat) {
+          removeChat(chatId);
+        }
+      },
     },
-  });
+  );
   // Track when streaming starts
   const isStreaming = status === "streaming";
   if (isStreaming) {
@@ -111,7 +113,7 @@ export function ChatMain({ chatId }: ChatMainProps) {
           messages.length > 0 ? "sticky bottom-0 bg-background border-t" : ""
         }
       >
-        <ChatFooter sendMessage={sendMessage} status={status} />
+        <ChatFooter sendMessage={sendMessage} status={status} stop={stop} />
       </div>
       {error && (
         <div className="fixed bottom-4 right-4 bg-red-500 text-white px-4 py-2 rounded-lg">
